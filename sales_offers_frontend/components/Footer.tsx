@@ -65,11 +65,16 @@ export default function Footer() {
           <div>
             <div className="flex items-center mb-4">
               <Image
-                src={isDarkMode ? "/images/sales_and_offers_blabk_bg_white_-removebg-preview.png" : "/images/sales_and_offers_white_bg_black_-removebg-preview.png"}
+                src="/images/sales_and_offers_logo.svg"
                 alt="Sales & Offers Logo"
-                width={120}
-                height={40}
-                className="h-10 w-auto"
+                width={160}
+                height={25}
+                className="h-6 w-auto"
+                style={{ 
+                  filter: isDarkMode 
+                    ? 'brightness(0) saturate(100%) invert(89%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(89%) contrast(89%)' 
+                    : 'brightness(0) saturate(100%) invert(9%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(9%) contrast(89%)'
+                }}
               />
             </div>
             <p className="text-[rgb(var(--color-muted))]">

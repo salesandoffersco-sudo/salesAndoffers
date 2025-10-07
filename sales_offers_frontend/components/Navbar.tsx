@@ -84,11 +84,11 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           <Link href="/" className="flex items-center">
             <Image
-              src={isDarkMode ? "/images/sales_and_offers_blabk_bg_white_-removebg-preview.png" : "/images/sales_and_offers_white_bg_black_-removebg-preview.png"}
+              src="/images/sales_and_offers_blabk_bg_white_-removebg-preview icon only.svg"
               alt="Sales & Offers Logo"
-              width={120}
+              width={40}
               height={40}
-              className="h-10 w-auto"
+              className={`h-10 w-10 ${isDarkMode ? 'text-[#E2E2E2]' : 'text-[#171717]'}`}
             />
           </Link>
           <div className="hidden md:flex items-center space-x-8">
@@ -183,11 +183,11 @@ export default function Navbar() {
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center">
                   <Image
-                    src={isDarkMode ? "/images/sales_and_offers_blabk_bg_white_-removebg-preview.png" : "/images/sales_and_offers_white_bg_black_-removebg-preview.png"}
+                    src="/images/sales_and_offers_blabk_bg_white_-removebg-preview icon only.svg"
                     alt="Sales & Offers Logo"
-                    width={100}
+                    width={32}
                     height={32}
-                    className="h-8 w-auto"
+                    className={`h-8 w-8 ${isDarkMode ? 'text-[#E2E2E2]' : 'text-[#171717]'}`}
                   />
                 </div>
                 <button onClick={toggleMenu} className="text-[rgb(var(--color-muted))]">
