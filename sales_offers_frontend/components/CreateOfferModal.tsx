@@ -4,6 +4,7 @@ import { useState } from "react";
 import { FiX, FiImage, FiCalendar } from "react-icons/fi";
 import axios from "axios";
 import Button from "./Button";
+import { API_BASE_URL } from "../lib/api";
 
 interface CreateOfferModalProps {
   isOpen: boolean;
@@ -50,7 +51,7 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
 
     try {
       const token = localStorage.getItem("token");
-      await axios.post("http://localhost:8000/api/offers/", formData, {
+      await axios.post(`${API_BASE_URL}/api/offers/`, formData, {
         headers: { Authorization: `Token ${token}` }
       });
       

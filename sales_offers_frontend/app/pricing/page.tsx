@@ -5,6 +5,7 @@ import Link from "next/link";
 import { FiDollarSign, FiCheckCircle } from "react-icons/fi";
 import axios from "axios";
 import Button from "../../components/Button";
+import { API_BASE_URL } from "../../lib/api";
 
 interface PricingPlan {
   id: number;
@@ -25,7 +26,7 @@ export default function PricingPage() {
 
   const fetchPlans = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/sellers/subscription-plans/");
+      const response = await axios.get(`${API_BASE_URL}/api/sellers/subscription-plans/`);
       setPricingPlans(response.data);
       setLoading(false);
     } catch (error) {

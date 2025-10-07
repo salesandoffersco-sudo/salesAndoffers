@@ -5,6 +5,7 @@ import Link from "next/link";
 import { FiHeart, FiClock, FiTag } from "react-icons/fi";
 import axios from "axios";
 import Button from "../../components/Button";
+import { API_BASE_URL } from "../../lib/api";
 
 interface Offer {
   id: number;
@@ -34,7 +35,7 @@ export default function OffersPage() {
 
   const fetchOffers = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/offers/");
+      const response = await axios.get(`${API_BASE_URL}/api/offers/`);
       setOffers(response.data);
       setLoading(false);
     } catch (error) {

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { FiShoppingBag, FiStar, FiMapPin } from "react-icons/fi";
 import axios from "axios";
+import { API_BASE_URL } from "../../lib/api";
 
 interface Seller {
   id: number;
@@ -25,7 +26,7 @@ export default function SellersPage() {
 
   const fetchSellers = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/sellers/");
+      const response = await axios.get(`${API_BASE_URL}/api/sellers/`);
       setSellers(response.data);
       setLoading(false);
     } catch (error) {

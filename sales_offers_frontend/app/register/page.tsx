@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { FiShoppingBag, FiMail, FiLock, FiUser } from "react-icons/fi";
 import axios from "axios";
 import Button from "../../components/Button";
+import { API_BASE_URL } from "../../lib/api";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -44,7 +45,7 @@ export default function RegisterPage() {
         is_buyer: formData.account_type === "buyer",
         is_seller: formData.account_type === "seller",
       };
-      await axios.post("http://localhost:8000/api/users/register/", submitData);
+      await axios.post(`${API_BASE_URL}/api/users/register/`, submitData);
       router.push("/login");
     } catch (err: any) {
       setError(err.response?.data?.detail || "Registration failed. Please try again.");

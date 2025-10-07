@@ -6,6 +6,7 @@ import { FiShoppingBag, FiPlus, FiDollarSign, FiTrendingUp, FiPackage, FiEdit, F
 import axios from "axios";
 import Button from "../../../components/Button";
 import CreateOfferModal from "../../../components/CreateOfferModal";
+import { API_BASE_URL } from "../../../lib/api";
 
 interface SubscriptionPlan {
   id: number;
@@ -58,9 +59,9 @@ export default function SellerDashboardPage() {
       const headers = { Authorization: `Token ${token}` };
 
       const [plansRes, statsRes, offersRes] = await Promise.all([
-        axios.get("http://localhost:8000/api/sellers/subscription-plans/"),
-        axios.get("http://localhost:8000/api/sellers/stats/", { headers }),
-        axios.get("http://localhost:8000/api/sellers/offers/", { headers })
+        axios.get(`${API_BASE_URL}/api/sellers/subscription-plans/`),
+        axios.get(`${API_BASE_URL}/api/sellers/stats/`, { headers }),
+        axios.get(`${API_BASE_URL}/api/sellers/offers/`, { headers })
       ]);
 
       setPlans(plansRes.data);
