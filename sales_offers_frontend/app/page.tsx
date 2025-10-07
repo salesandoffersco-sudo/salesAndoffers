@@ -55,7 +55,7 @@ export default function Home() {
             </Link>
             <Link href="/seller/register" passHref>
               <Button as="a" size="lg" variant="outline">
-                Become a Seller
+                List Your Sale
               </Button>
             </Link>
           </div>
