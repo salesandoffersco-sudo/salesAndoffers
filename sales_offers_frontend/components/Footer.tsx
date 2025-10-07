@@ -63,13 +63,13 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <div className="flex items-center mb-4">
+            <div className="flex items-center mb-4 overflow-visible">
               <Image
                 src="/images/sales_and_offers_logo.svg"
                 alt="Sales & Offers Logo"
-                width={200}
-                height={32}
-                className="h-8 w-auto max-w-none"
+                width={240}
+                height={38}
+                className="h-9 w-auto max-w-none min-w-0"
                 style={{ 
                   filter: isDarkMode 
                     ? 'brightness(0) saturate(100%) invert(89%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(89%) contrast(89%)' 

@@ -82,13 +82,13 @@ export default function Navbar() {
     <nav className="bg-[rgb(var(--color-card))] shadow-sm border-b border-[rgb(var(--color-border))]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <Link href="/" className="flex items-center">
+          <Link href="/" className="flex items-center flex-shrink-0">
             <Image
               src="/images/sales_and_offers_logo.svg"
               alt="Sales & Offers Logo"
-              width={200}
-              height={32}
-              className="h-8 w-auto"
+              width={240}
+              height={38}
+              className="h-9 w-auto min-w-0"
               style={{ 
                 filter: isDarkMode 
                   ? 'brightness(0) saturate(100%) invert(89%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(89%) contrast(89%)' 
@@ -186,13 +186,13 @@ export default function Navbar() {
           <div className="fixed top-0 right-0 h-full w-80 bg-[rgb(var(--color-card))] shadow-xl z-50 transform transition-transform duration-300 md:hidden">
             <div className="p-6">
               <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center">
+                <div className="flex items-center flex-shrink-0">
                   <Image
                     src="/images/sales_and_offers_logo.svg"
                     alt="Sales & Offers Logo"
-                    width={150}
-                    height={24}
-                    className="h-6 w-auto"
+                    width={180}
+                    height={28}
+                    className="h-7 w-auto min-w-0"
                     style={{ 
                       filter: isDarkMode 
                         ? 'brightness(0) saturate(100%) invert(89%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(89%) contrast(89%)' 
