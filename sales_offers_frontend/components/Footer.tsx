@@ -61,15 +61,15 @@ export default function Footer() {
   return (
     <footer className="bg-[rgb(var(--color-card))] text-[rgb(var(--color-fg))] py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div>
-            <div className="flex items-center mb-4 overflow-visible">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 overflow-visible">
+          <div className="overflow-visible">
+            <div className="mb-4 overflow-visible w-full">
               <Image
                 src="/images/sales_and_offers_logo.svg"
                 alt="Sales & Offers Logo"
-                width={240}
-                height={38}
-                className="h-9 w-auto max-w-none min-w-0"
+                width={320}
+                height={50}
+                className="h-8 w-auto max-w-none"
                 style={{ 
                   filter: isDarkMode 
                     ? 'brightness(0) saturate(100%) invert(89%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(89%) contrast(89%)' 

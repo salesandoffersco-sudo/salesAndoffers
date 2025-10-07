@@ -81,14 +81,14 @@ export default function Navbar() {
   return (
     <nav className="bg-[rgb(var(--color-card))] shadow-sm border-b border-[rgb(var(--color-border))]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <Link href="/" className="flex items-center flex-shrink-0">
+        <div className="flex justify-between items-center h-16 overflow-visible">
+          <Link href="/" className="flex items-center flex-shrink-0 min-w-0 overflow-visible">
             <Image
               src="/images/sales_and_offers_logo.svg"
               alt="Sales & Offers Logo"
-              width={240}
-              height={38}
-              className="h-9 w-auto min-w-0"
+              width={320}
+              height={50}
+              className="h-8 w-auto"
               style={{ 
                 filter: isDarkMode 
                   ? 'brightness(0) saturate(100%) invert(89%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(89%) contrast(89%)' 
@@ -96,7 +96,7 @@ export default function Navbar() {
               }}
             />
           </Link>
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-8 flex-shrink-0">
             <Link href="/offers" className="text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] transition-colors font-medium">
               Browse Offers
             </Link>
