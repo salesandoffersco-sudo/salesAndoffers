@@ -84,11 +84,16 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           <Link href="/" className="flex items-center">
             <Image
-              src="/images/sales_and_offers_blabk_bg_white_-removebg-preview icon only.svg"
+              src="/images/sales_and_offers_logo.svg"
               alt="Sales & Offers Logo"
-              width={40}
-              height={40}
-              className={`h-10 w-10 ${isDarkMode ? 'text-[#E2E2E2]' : 'text-[#171717]'}`}
+              width={200}
+              height={32}
+              className="h-8 w-auto"
+              style={{ 
+                filter: isDarkMode 
+                  ? 'brightness(0) saturate(100%) invert(89%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(89%) contrast(89%)' 
+                  : 'brightness(0) saturate(100%) invert(9%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(9%) contrast(89%)'
+              }}
             />
           </Link>
           <div className="hidden md:flex items-center space-x-8">
@@ -183,11 +188,16 @@ export default function Navbar() {
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center">
                   <Image
-                    src="/images/sales_and_offers_blabk_bg_white_-removebg-preview icon only.svg"
+                    src="/images/sales_and_offers_logo.svg"
                     alt="Sales & Offers Logo"
-                    width={32}
-                    height={32}
-                    className={`h-8 w-8 ${isDarkMode ? 'text-[#E2E2E2]' : 'text-[#171717]'}`}
+                    width={150}
+                    height={24}
+                    className="h-6 w-auto"
+                    style={{ 
+                      filter: isDarkMode 
+                        ? 'brightness(0) saturate(100%) invert(89%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(89%) contrast(89%)' 
+                        : 'brightness(0) saturate(100%) invert(9%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(9%) contrast(89%)'
+                    }}
                   />
                 </div>
                 <button onClick={toggleMenu} className="text-[rgb(var(--color-muted))]">

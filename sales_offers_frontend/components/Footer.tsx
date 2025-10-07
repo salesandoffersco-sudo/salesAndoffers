@@ -67,9 +67,9 @@ export default function Footer() {
               <Image
                 src="/images/sales_and_offers_logo.svg"
                 alt="Sales & Offers Logo"
-                width={160}
-                height={25}
-                className="h-6 w-auto"
+                width={200}
+                height={32}
+                className="h-8 w-auto max-w-none"
                 style={{ 
                   filter: isDarkMode 
                     ? 'brightness(0) saturate(100%) invert(89%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(89%) contrast(89%)' 
