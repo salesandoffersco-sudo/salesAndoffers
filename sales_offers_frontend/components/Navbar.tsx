@@ -80,9 +80,9 @@ export default function Navbar() {
 
   return (
     <nav className="bg-[rgb(var(--color-card))] shadow-sm border-b border-[rgb(var(--color-border))]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-visible">
+      <div className="max-w-7xl mx-auto overflow-visible" style={{ paddingLeft: '16px', paddingRight: '16px' }}>
         <div className="flex justify-between items-center h-16 w-full overflow-visible">
-          <div style={{ flex: '1 1 auto', overflow: 'visible', minWidth: '0' }}>
+          <div style={{ flex: '1 1 auto', overflow: 'visible', minWidth: '0' }}
             <Link href="/" style={{ display: 'inline-block' }}>
               <Image
                 src="/images/sales_and_offers_logo.svg"
@@ -192,14 +192,18 @@ export default function Navbar() {
           <div className="fixed top-0 right-0 h-full w-80 bg-[rgb(var(--color-card))] shadow-xl z-50 transform transition-transform duration-300 md:hidden">
             <div className="p-6">
               <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center flex-shrink-0">
+                <div style={{ overflow: 'visible', width: '100%', maxWidth: 'none' }}>
                   <Image
                     src="/images/sales_and_offers_logo.svg"
                     alt="Sales & Offers Logo"
-                    width={180}
-                    height={28}
-                    className="h-7 w-auto min-w-0"
+                    width={317}
+                    height={50}
                     style={{ 
+                      height: '28px',
+                      width: 'auto',
+                      minWidth: '317px',
+                      maxWidth: 'none',
+                      overflow: 'visible',
                       filter: isDarkMode 
                         ? 'brightness(0) saturate(100%) invert(89%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(89%) contrast(89%)' 
                         : 'brightness(0) saturate(100%) invert(9%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(9%) contrast(89%)'
