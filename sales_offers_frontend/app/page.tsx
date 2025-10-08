@@ -47,7 +47,7 @@ export default function Home() {
             Connect with top sellers, explore exclusive offers, and save big on your favorite products. 
             Join thousands of satisfied customers today!
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-6 sm:gap-4 justify-center">
             <Link href="/offers" passHref>
               <Button as="a" size="lg" variant="primary">
                 Explore Offers
