@@ -89,12 +89,8 @@ export default function Navbar() {
                 alt="Sales & Offers Logo"
                 width={317}
                 height={50}
+                className="h-8 w-auto md:min-w-[317px]"
                 style={{ 
-                  height: '32px',
-                  width: 'auto',
-                  maxWidth: 'none',
-                  minWidth: '317px',
-                  display: 'block',
                   filter: isDarkMode 
                     ? 'brightness(0) saturate(100%) invert(89%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(89%) contrast(89%)' 
                     : 'brightness(0) saturate(100%) invert(9%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(9%) contrast(89%)'
@@ -198,12 +194,8 @@ export default function Navbar() {
                     alt="Sales & Offers Logo"
                     width={317}
                     height={50}
+                    className="h-7 w-auto max-w-full"
                     style={{ 
-                      height: '28px',
-                      width: 'auto',
-                      minWidth: '317px',
-                      maxWidth: 'none',
-                      overflow: 'visible',
                       filter: isDarkMode 
                         ? 'brightness(0) saturate(100%) invert(89%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(89%) contrast(89%)' 
                         : 'brightness(0) saturate(100%) invert(9%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(9%) contrast(89%)'
