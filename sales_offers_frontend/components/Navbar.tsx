@@ -82,7 +82,7 @@ export default function Navbar() {
     <nav className="bg-[rgb(var(--color-card))] shadow-sm border-b border-[rgb(var(--color-border))]">
       <div className="max-w-7xl mx-auto overflow-visible" style={{ paddingLeft: '16px', paddingRight: '16px' }}>
         <div className="flex justify-between items-center h-16 w-full overflow-visible">
-          <div style={{ flex: '1 1 auto', overflow: 'visible', minWidth: '0' }}
+          <div style={{ flex: '1 1 auto', overflow: 'visible', minWidth: '0' }}>
             <Link href="/" style={{ display: 'inline-block' }}>
               <Image
                 src="/images/sales_and_offers_logo.svg"
