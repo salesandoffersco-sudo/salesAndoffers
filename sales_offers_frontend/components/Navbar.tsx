@@ -89,7 +89,7 @@ export default function Navbar() {
                 alt="Sales & Offers Logo"
                 width={317}
                 height={50}
-                className="h-8 w-auto md:min-w-[317px]"
+                className="h-8 w-auto md:w-[280px]"
                 style={{ 
                   filter: isDarkMode 
                     ? 'brightness(0) saturate(100%) invert(89%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(89%) contrast(89%)' 
