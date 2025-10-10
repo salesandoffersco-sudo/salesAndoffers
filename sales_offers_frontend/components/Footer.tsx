@@ -62,7 +62,7 @@ export default function Footer() {
     <footer className="bg-[rgb(var(--color-card))] text-[rgb(var(--color-fg))] py-12">
       <div className="max-w-7xl mx-auto" style={{ paddingLeft: '16px', paddingRight: '16px' }}>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="md:col-span-2">
+          <div className="md:col-span-1">
             <div style={{ marginBottom: '1rem', width: 'fit-content' }}>
               <Image
                 src="/images/sales_and_offers_logo.svg"

@@ -2,7 +2,7 @@ services:
   - type: web
     name: sales-offers-backend
     env: python
-    buildCommand: "cd sales_offers_backend && pip install -r requirements.txt"
+    buildCommand: "pip install -r sales_offers_backend/requirements.txt"
     startCommand: "cd sales_offers_backend && python manage.py migrate && python create_superuser.py && gunicorn backend.wsgi:application"
     envVars:
       - key: DATABASE_URL
