@@ -12,18 +12,25 @@ from firebase_admin import auth as firebase_auth, credentials
 import os
 
 # Initialize Firebase Admin SDK
+firebase_initialized = False
 if not firebase_admin._apps:
-    cred = credentials.Certificate({
-        "type": "service_account",
-        "project_id": "salesandoffers-s",
-        "private_key_id": os.environ.get('FIREBASE_PRIVATE_KEY_ID'),
-        "private_key": os.environ.get('FIREBASE_PRIVATE_KEY', '').replace('\\n', '\n'),
-        "client_email": os.environ.get('FIREBASE_CLIENT_EMAIL'),
-        "client_id": os.environ.get('FIREBASE_CLIENT_ID'),
-        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-        "token_uri": "https://oauth2.googleapis.com/token",
-    })
-    firebase_admin.initialize_app(cred)
+    try:
+        private_key = os.environ.get('FIREBASE_PRIVATE_KEY', '')
+        if private_key and os.environ.get('FIREBASE_CLIENT_EMAIL'):
+            cred = credentials.Certificate({
+                "type": "service_account",
+                "project_id": "salesandoffers-s",
+                "private_key_id": os.environ.get('FIREBASE_PRIVATE_KEY_ID'),
+                "private_key": private_key.replace('\\n', '\n'),
+                "client_email": os.environ.get('FIREBASE_CLIENT_EMAIL'),
+                "client_id": os.environ.get('FIREBASE_CLIENT_ID'),
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+            })
+            firebase_admin.initialize_app(cred)
+            firebase_initialized = True
+    except Exception as e:
+        print(f"Firebase initialization failed: {e}")
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -73,6 +80,9 @@ def login(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def google_auth(request):
+    if not firebase_initialized:
+        return Response({'error': 'Google authentication not available'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+    
     try:
         id_token = request.data.get('id_token')
         decoded_token = firebase_auth.verify_id_token(id_token)
