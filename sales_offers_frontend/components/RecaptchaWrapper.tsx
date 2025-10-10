@@ -9,7 +9,7 @@ interface RecaptchaWrapperProps {
 }
 
 export default function RecaptchaWrapper({ onVerify, containerId = "recaptcha-container" }: RecaptchaWrapperProps) {
-  const recaptchaRef = useRef(null);
+  const recaptchaRef = useRef<any>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
