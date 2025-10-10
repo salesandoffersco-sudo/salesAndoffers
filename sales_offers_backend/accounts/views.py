@@ -40,13 +40,19 @@ def register(request):
     if User.objects.filter(email=data.get('email')).exists():
         return Response({'error': 'Email already exists'}, status=status.HTTP_400_BAD_REQUEST)
     
+    # Set user type flags based on account_type
+    account_type = data.get('account_type', 'buyer')
+    is_seller = account_type == 'seller'
+    is_buyer = account_type == 'buyer'
+    
     user = User.objects.create(
         username=data.get('username'),
         email=data.get('email'),
         password=make_password(data.get('password')),
         first_name=data.get('first_name', ''),
         last_name=data.get('last_name', ''),
-        user_type=data.get('user_type', 'buyer')
+        is_seller=is_seller,
+        is_buyer=is_buyer
     )
     
     token, created = Token.objects.get_or_create(user=user)
@@ -60,11 +66,11 @@ def register(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login(request):
-    email = request.data.get('email')
+    username = request.data.get('username')
     password = request.data.get('password')
     
     try:
-        user = User.objects.get(email=email)
+        user = User.objects.get(username=username)
         if user.check_password(password):
             token, created = Token.objects.get_or_create(user=user)
             serializer = UserSerializer(user)
