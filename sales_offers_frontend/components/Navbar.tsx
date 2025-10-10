@@ -82,7 +82,7 @@ export default function Navbar() {
     <nav className="bg-[rgb(var(--color-card))] shadow-sm border-b border-[rgb(var(--color-border))]">
       <div className="max-w-7xl mx-auto overflow-visible" style={{ paddingLeft: '16px', paddingRight: '16px' }}>
         <div className="flex justify-between items-center h-16 w-full overflow-visible">
-          <div style={{ flex: '1 1 auto', overflow: 'visible', minWidth: '0' }}>
+          <div className="flex-shrink-0">
             <Link href="/" style={{ display: 'inline-block' }}>
               <Image
                 src="/images/sales_and_offers_logo.svg"
@@ -98,7 +98,7 @@ export default function Navbar() {
               />
             </Link>
           </div>
-          <div className="hidden md:flex items-center space-x-8 flex-shrink-0">
+          <div className="hidden md:flex items-center space-x-8 flex-1 justify-center">
             <Link href="/offers" className="text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] transition-colors font-medium">
               Browse Offers
             </Link>
