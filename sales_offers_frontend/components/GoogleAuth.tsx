@@ -44,6 +44,10 @@ export default function GoogleAuth({ onSuccess, buttonText = "Continue with Goog
           const data = await response.json();
           localStorage.setItem("token", data.token);
           localStorage.setItem("username", data.user.username);
+          localStorage.setItem("userProfile", JSON.stringify({
+            name: user.displayName,
+            profilePicture: user.photoURL
+          }));
           window.dispatchEvent(new Event("authChange"));
           onSuccess?.(data);
         } else {

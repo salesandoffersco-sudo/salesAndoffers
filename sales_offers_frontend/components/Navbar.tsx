@@ -10,6 +10,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
+  const [userProfile, setUserProfile] = useState<{name?: string, profilePicture?: string}>({});
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -35,12 +36,23 @@ export default function Navbar() {
     const checkAuth = () => {
       const token = localStorage.getItem("token");
       const storedUsername = localStorage.getItem("username");
+      const storedProfile = localStorage.getItem("userProfile");
+      
       if (token && storedUsername) {
         setIsLoggedIn(true);
         setUsername(storedUsername);
+        
+        if (storedProfile) {
+          try {
+            setUserProfile(JSON.parse(storedProfile));
+          } catch (e) {
+            setUserProfile({});
+          }
+        }
       } else {
         setIsLoggedIn(false);
         setUsername("");
+        setUserProfile({});
       }
     };
 
@@ -68,8 +80,10 @@ export default function Navbar() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("username");
+    localStorage.removeItem("userProfile");
     setIsLoggedIn(false);
     setUsername("");
+    setUserProfile({});
     window.dispatchEvent(new Event("authChange"));
     window.location.href = "/";
   };
@@ -117,10 +131,20 @@ export default function Navbar() {
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   className="flex items-center space-x-2 px-3 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 >
-                  <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
-                    <FiUser className="w-4 h-4 text-white" />
+                  <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center overflow-hidden">
+                    {userProfile.profilePicture ? (
+                      <img 
+                        src={userProfile.profilePicture} 
+                        alt="Profile" 
+                        className="w-full h-full object-cover rounded-full"
+                      />
+                    ) : (
+                      <FiUser className="w-4 h-4 text-white" />
+                    )}
                   </div>
-                  <span className="text-gray-700 dark:text-gray-200 font-medium text-sm max-w-20 truncate">{username}</span>
+                  <span className="text-gray-700 dark:text-gray-200 font-medium text-sm max-w-20 truncate">
+                    {userProfile.name || username}
+                  </span>
                   <FiChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                 </button>
                 {dropdownOpen && (

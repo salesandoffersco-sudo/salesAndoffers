@@ -35,7 +35,11 @@ export default function LoginPage() {
     try {
       const response = await axios.post(`${API_BASE_URL}/api/users/login/`, formData);
       localStorage.setItem("token", response.data.token);
-      localStorage.setItem("username", response.data.username);
+      localStorage.setItem("username", response.data.user.username);
+      localStorage.setItem("userProfile", JSON.stringify({
+        name: `${response.data.user.first_name} ${response.data.user.last_name}`.trim() || response.data.user.username,
+        profilePicture: response.data.user.profile_picture
+      }));
       window.dispatchEvent(new Event("authChange"));
       router.push("/offers");
     } catch (err: any) {

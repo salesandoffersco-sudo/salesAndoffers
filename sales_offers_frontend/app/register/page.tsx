@@ -57,8 +57,17 @@ export default function RegisterPage() {
         is_buyer: formData.account_type === "buyer",
         is_seller: formData.account_type === "seller",
       };
-      await axios.post(`${API_BASE_URL}/api/users/register/`, submitData);
-      router.push("/login");
+      const response = await axios.post(`${API_BASE_URL}/api/users/register/`, submitData);
+      
+      // Auto-login after successful registration
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("username", response.data.user.username);
+      localStorage.setItem("userProfile", JSON.stringify({
+        name: response.data.user.username,
+        profilePicture: null
+      }));
+      window.dispatchEvent(new Event("authChange"));
+      router.push("/offers");
     } catch (err: any) {
       setError(err.response?.data?.detail || "Registration failed. Please try again.");
       setLoading(false);
