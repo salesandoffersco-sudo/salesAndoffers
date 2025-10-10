@@ -3,7 +3,12 @@
 import { useEffect, useRef } from "react";
 import { setupRecaptcha } from "../lib/firebase";
 
-export default function RecaptchaWrapper({ onVerify, containerId = "recaptcha-container" }) {
+interface RecaptchaWrapperProps {
+  onVerify?: (recaptcha?: any) => void;
+  containerId?: string;
+}
+
+export default function RecaptchaWrapper({ onVerify, containerId = "recaptcha-container" }: RecaptchaWrapperProps) {
   const recaptchaRef = useRef(null);
 
   useEffect(() => {
