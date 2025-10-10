@@ -15,7 +15,7 @@ export default function RecaptchaWrapper({ onVerify, containerId = "recaptcha-co
     if (typeof window !== 'undefined') {
       try {
         recaptchaRef.current = setupRecaptcha(containerId);
-        recaptchaRef.current.render().then((widgetId) => {
+        recaptchaRef.current.render().then((widgetId: any) => {
           onVerify?.(recaptchaRef.current);
         });
       } catch (error) {
