@@ -5,7 +5,12 @@ import { auth, googleProvider } from "../lib/firebase";
 import { FcGoogle } from "react-icons/fc";
 import { useState } from "react";
 
-export default function GoogleAuth({ onSuccess, buttonText = "Continue with Google" }) {
+interface GoogleAuthProps {
+  onSuccess?: (data?: any) => void;
+  buttonText?: string;
+}
+
+export default function GoogleAuth({ onSuccess, buttonText = "Continue with Google" }: GoogleAuthProps) {
   const [loading, setLoading] = useState(false);
 
   const handleGoogleSignIn = async () => {
