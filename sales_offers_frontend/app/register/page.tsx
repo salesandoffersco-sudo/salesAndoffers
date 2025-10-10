@@ -18,7 +18,6 @@ export default function RegisterPage() {
     email: "",
     password: "",
     password2: "",
-    account_type: "buyer",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -75,12 +74,7 @@ export default function RegisterPage() {
     }
 
     try {
-      const submitData = {
-        ...formData,
-        is_buyer: formData.account_type === "buyer",
-        is_seller: formData.account_type === "seller",
-      };
-      const response = await axios.post(`${API_BASE_URL}/api/users/register/`, submitData);
+      const response = await axios.post(`${API_BASE_URL}/api/users/register/`, formData);
       
       // Auto-login after successful registration
       localStorage.setItem("token", response.data.token);
@@ -237,35 +231,7 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                Account Type
-              </label>
-              <div className="grid grid-cols-2 gap-4">
-                <label className="flex items-center p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <input
-                    type="radio"
-                    name="account_type"
-                    value="buyer"
-                    checked={formData.account_type === "buyer"}
-                    onChange={handleChange}
-                    className="text-purple-600 focus:ring-purple-600"
-                  />
-                  <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">I'm a Buyer</span>
-                </label>
-                <label className="flex items-center p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <input
-                    type="radio"
-                    name="account_type"
-                    value="seller"
-                    checked={formData.account_type === "seller"}
-                    onChange={handleChange}
-                    className="text-purple-600 focus:ring-purple-600"
-                  />
-                  <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">I'm a Seller</span>
-                </label>
-              </div>
-            </div>
+
 
             <Button
               type="submit"

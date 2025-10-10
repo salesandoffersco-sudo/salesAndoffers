@@ -40,19 +40,14 @@ def register(request):
     if User.objects.filter(email=data.get('email')).exists():
         return Response({'error': 'Email already exists'}, status=status.HTTP_400_BAD_REQUEST)
     
-    # Set user type flags based on account_type
-    account_type = data.get('account_type', 'buyer')
-    is_seller = account_type == 'seller'
-    is_buyer = account_type == 'buyer'
-    
     user = User.objects.create(
         username=data.get('username'),
         email=data.get('email'),
         password=make_password(data.get('password')),
         first_name=data.get('first_name', ''),
         last_name=data.get('last_name', ''),
-        is_seller=is_seller,
-        is_buyer=is_buyer
+        is_seller=True,
+        is_buyer=True
     )
     
     token, created = Token.objects.get_or_create(user=user)
@@ -107,7 +102,9 @@ def google_auth(request):
                 'last_name': ' '.join(name.split(' ')[1:]) if len(name.split(' ')) > 1 else '',
                 'firebase_uid': uid,
                 'profile_picture': photo_url,
-                'is_google_user': True
+                'is_google_user': True,
+                'is_seller': True,
+                'is_buyer': True
             }
         )
         

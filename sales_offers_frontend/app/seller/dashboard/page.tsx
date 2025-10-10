@@ -97,11 +97,11 @@ export default function SellerDashboardPage() {
                   <p className="text-purple-100 text-lg">Welcome back to your dashboard</p>
                 </div>
               </div>
-              <p className="text-xl opacity-90 max-w-2xl">Ready to boost your sales? Manage your offers, track performance, and grow your business with powerful tools.</p>
+              <p className="text-xl opacity-90 max-w-2xl">Manage your listings, track performance, and grow your business with powerful tools.</p>
             </div>
             <Button variant="outline" className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20" onClick={() => setShowCreateModal(true)}>
               <FiPlus className="w-5 h-5 mr-2" />
-              Create Offer
+              List Item
             </Button>
           </div>
         </div>

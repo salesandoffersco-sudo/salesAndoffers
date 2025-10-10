@@ -268,7 +268,7 @@ export default function Navbar() {
                         onClick={toggleMenu}
                       >
                         <FiUser className="w-5 h-5" />
-                        <span>{username}</span>
+                        <span>Dashboard</span>
                       </Link>
                       <button
                         onClick={() => { handleLogout(); toggleMenu(); }}

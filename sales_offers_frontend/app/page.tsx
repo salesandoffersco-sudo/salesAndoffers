@@ -53,9 +53,9 @@ export default function Home() {
                 Explore Offers
               </Button>
             </Link>
-            <Link href="/seller/register" passHref>
+            <Link href="/seller/dashboard" passHref>
               <Button as="a" size="lg" variant="outline">
-                List Your Sale
+                List Your Item
               </Button>
             </Link>
           </div>
