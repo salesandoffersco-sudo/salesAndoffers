@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { FiShoppingBag, FiMail, FiLock } from "react-icons/fi";
+import { FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
 import axios from "axios";
 import Button from "../../components/Button";
+import GoogleAuth from "../../components/GoogleAuth";
 import { API_BASE_URL } from "../../lib/api";
 
 export default function LoginPage() {
@@ -16,6 +18,7 @@ export default function LoginPage() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -41,102 +44,113 @@ export default function LoginPage() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 flex items-center justify-center px-4">
-      <div className="max-w-md w-full">
-        {/* Logo */}
-        <Link href="/" className="flex items-center justify-center space-x-2 mb-8">
-          <FiShoppingBag className="text-purple-600 text-4xl" />
-          <span className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-            Sales & Offers
-          </span>
-        </Link>
+  const handleGoogleSuccess = () => {
+    router.push("/");
+  };
 
-        {/* Login Card */}
-        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-800">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Welcome Back</h2>
-          <p className="text-gray-600 dark:text-gray-300 mb-8">Login to access your account</p>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center py-12 px-4">
+      <div className="max-w-md w-full">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
+          {/* Logo */}
+          <div className="text-center mb-8">
+            <Link href="/">
+              <Image
+                src="/images/sales_and_offers_logo.svg"
+                alt="Sales & Offers"
+                width={200}
+                height={32}
+                className="h-8 w-auto mx-auto mb-4"
+              />
+            </Link>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              Welcome back
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 mt-2">
+              Sign in to your account
+            </p>
+          </div>
+
+          {/* Google Auth */}
+          <GoogleAuth onSuccess={handleGoogleSuccess} />
+
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300 dark:border-gray-600" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white dark:bg-gray-800 text-gray-500">Or continue with username</span>
+            </div>
+          </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-6">
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-3 rounded-lg mb-6 text-sm">
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Username
               </label>
               <div className="relative">
                 <FiMail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
-                  type="text"
-                  id="username"
                   name="username"
+                  type="text"
+                  required
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  placeholder="Enter your username"
                   value={formData.username}
                   onChange={handleChange}
-                  required
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all"
-                  placeholder="Enter your username"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Password
               </label>
               <div className="relative">
                 <FiLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
-                  type="password"
-                  id="password"
                   name="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  placeholder="Enter your password"
                   value={formData.password}
                   onChange={handleChange}
-                  required
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all"
-                  placeholder="Enter your password"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <FiEyeOff /> : <FiEye />}
+                </button>
               </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <label className="flex items-center">
-                <input type="checkbox" className="rounded text-purple-600 focus:ring-purple-600" />
-                <span className="ml-2 text-sm text-gray-600 dark:text-gray-300">Remember me</span>
-              </label>
-              <Link href="/forgot-password" className="text-sm text-purple-600 hover:text-purple-700 font-medium">
-                Forgot password?
-              </Link>
             </div>
 
             <Button
               type="submit"
+              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-3 rounded-lg font-medium transition-all"
               disabled={loading}
-              className="w-full"
-              variant="primary"
-              size="md"
             >
-              {loading ? "Logging in..." : "Login"}
+              {loading ? "Signing in..." : "Sign in"}
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-gray-600 dark:text-gray-300">
-              Don\'t have an account?{" "}
-              <Link href="/register" className="text-purple-600 hover:text-purple-700 font-semibold">
-                Sign up
-              </Link>
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-6 text-center">
-          <Link href="/" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">
-            ← Back to Home
-          </Link>
+          {/* Footer */}
+          <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-6">
+            Don't have an account?{" "}
+            <Link href="/register" className="text-purple-600 hover:text-purple-500 font-medium">
+              Sign up
+            </Link>
+          </p>
         </div>
       </div>
     </div>

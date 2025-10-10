@@ -31,3 +31,9 @@ class UserLoginSerializer(serializers.Serializer):
                 return data
             raise serializers.ValidationError('Invalid credentials')
         raise serializers.ValidationError('Must include username and password')
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'phone_number', 'is_seller', 'is_buyer', 'profile_picture', 'is_google_user')
+        read_only_fields = ('id',)

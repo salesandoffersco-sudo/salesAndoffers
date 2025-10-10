@@ -2,10 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { FiShoppingBag, FiMail, FiLock, FiUser } from "react-icons/fi";
+import { FiMail, FiLock, FiUser, FiEye, FiEyeOff } from "react-icons/fi";
 import axios from "axios";
 import Button from "../../components/Button";
+import GoogleAuth from "../../components/GoogleAuth";
+import PasswordStrength from "../../components/PasswordStrength";
 import { API_BASE_URL } from "../../lib/api";
 
 export default function RegisterPage() {
@@ -19,6 +22,9 @@ export default function RegisterPage() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword2, setShowPassword2] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState(0);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -39,6 +45,12 @@ export default function RegisterPage() {
       return;
     }
 
+    if (passwordStrength < 3) {
+      setError("Please choose a stronger password");
+      setLoading(false);
+      return;
+    }
+
     try {
       const submitData = {
         ...formData,
@@ -53,102 +65,138 @@ export default function RegisterPage() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 flex items-center justify-center px-4 py-12">
-      <div className="max-w-md w-full">
-        {/* Logo */}
-        <Link href="/" className="flex items-center justify-center space-x-2 mb-8">
-          <FiShoppingBag className="text-purple-600 text-4xl" />
-          <span className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-            Sales & Offers
-          </span>
-        </Link>
+  const handleGoogleSuccess = () => {
+    router.push("/");
+  };
 
-        {/* Register Card */}
-        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-800">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Create Account</h2>
-          <p className="text-gray-600 dark:text-gray-300 mb-8">Join us and start exploring amazing deals</p>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center py-12 px-4">
+      <div className="max-w-md w-full">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
+          {/* Logo */}
+          <div className="text-center mb-8">
+            <Link href="/">
+              <Image
+                src="/images/sales_and_offers_logo.svg"
+                alt="Sales & Offers"
+                width={200}
+                height={32}
+                className="h-8 w-auto mx-auto mb-4"
+              />
+            </Link>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              Create your account
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 mt-2">
+              Join us and start exploring amazing deals
+            </p>
+          </div>
+
+          {/* Google Auth */}
+          <GoogleAuth onSuccess={handleGoogleSuccess} buttonText="Sign up with Google" />
+
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300 dark:border-gray-600" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white dark:bg-gray-800 text-gray-500">Or sign up with email</span>
+            </div>
+          </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-6">
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-3 rounded-lg mb-6 text-sm">
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Username
               </label>
               <div className="relative">
                 <FiUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
-                  type="text"
-                  id="username"
                   name="username"
+                  type="text"
+                  required
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  placeholder="Choose a username"
                   value={formData.username}
                   onChange={handleChange}
-                  required
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all"
-                  placeholder="Choose a username"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Email
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Email address
               </label>
               <div className="relative">
                 <FiMail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
-                  type="email"
-                  id="email"
                   name="email"
+                  type="email"
+                  required
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  placeholder="Enter your email"
                   value={formData.email}
                   onChange={handleChange}
-                  required
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all"
-                  placeholder="Enter your email"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Password
               </label>
               <div className="relative">
                 <FiLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
-                  type="password"
-                  id="password"
                   name="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  placeholder="Create a password"
                   value={formData.password}
                   onChange={handleChange}
-                  required
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all"
-                  placeholder="Create a password"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <FiEyeOff /> : <FiEye />}
+                </button>
               </div>
+              <PasswordStrength password={formData.password} onStrengthChange={setPasswordStrength} />
             </div>
 
             <div>
-              <label htmlFor="password2" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Confirm Password
               </label>
               <div className="relative">
                 <FiLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
-                  type="password"
-                  id="password2"
                   name="password2"
+                  type={showPassword2 ? "text" : "password"}
+                  required
+                  className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  placeholder="Confirm your password"
                   value={formData.password2}
                   onChange={handleChange}
-                  required
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all"
-                  placeholder="Confirm your password"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword2(!showPassword2)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword2 ? <FiEyeOff /> : <FiEye />}
+                </button>
               </div>
             </div>
 
@@ -156,8 +204,8 @@ export default function RegisterPage() {
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                 Account Type
               </label>
-              <div className="flex items-center space-x-6">
-                <label className="flex items-center">
+              <div className="grid grid-cols-2 gap-4">
+                <label className="flex items-center p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
                   <input
                     type="radio"
                     name="account_type"
@@ -166,9 +214,9 @@ export default function RegisterPage() {
                     onChange={handleChange}
                     className="text-purple-600 focus:ring-purple-600"
                   />
-                  <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">I\'m a Buyer</span>
+                  <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">I'm a Buyer</span>
                 </label>
-                <label className="flex items-center">
+                <label className="flex items-center p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
                   <input
                     type="radio"
                     name="account_type"
@@ -177,36 +225,27 @@ export default function RegisterPage() {
                     onChange={handleChange}
                     className="text-purple-600 focus:ring-purple-600"
                   />
-                  <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">I\'m a Seller</span>
+                  <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">I'm a Seller</span>
                 </label>
               </div>
             </div>
 
             <Button
               type="submit"
-              disabled={loading}
-              className="w-full"
-              variant="primary"
-              size="md"
+              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-3 rounded-lg font-medium transition-all"
+              disabled={loading || passwordStrength < 3}
             >
               {loading ? "Creating account..." : "Create Account"}
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-gray-600 dark:text-gray-300">
-              Already have an account?{" "}
-              <Link href="/login" className="text-purple-600 hover:text-purple-700 font-semibold">
-                Login
-              </Link>
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-6 text-center">
-          <Link href="/" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">
-            ← Back to Home
-          </Link>
+          {/* Footer */}
+          <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-6">
+            Already have an account?{" "}
+            <Link href="/login" className="text-purple-600 hover:text-purple-500 font-medium">
+              Sign in
+            </Link>
+          </p>
         </div>
       </div>
     </div>
