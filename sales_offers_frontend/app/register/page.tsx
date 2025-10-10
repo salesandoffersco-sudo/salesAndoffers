@@ -70,9 +70,9 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center py-12 px-4">
+    <div className="min-h-screen bg-[rgb(var(--color-bg))] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
+        <div className="bg-[rgb(var(--color-card))] rounded-2xl shadow-xl p-6 sm:p-8 border border-[rgb(var(--color-border))] w-full max-w-md">
           {/* Logo */}
           <div className="text-center mb-8">
             <Link href="/">
@@ -84,10 +84,10 @@ export default function RegisterPage() {
                 className="h-8 w-auto mx-auto mb-4"
               />
             </Link>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <h2 className="text-2xl font-bold text-[rgb(var(--color-fg))]">
               Create your account
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">
+            <p className="text-[rgb(var(--color-muted))] mt-2">
               Join us and start exploring amazing deals
             </p>
           </div>
@@ -101,7 +101,7 @@ export default function RegisterPage() {
               <div className="w-full border-t border-gray-300 dark:border-gray-600" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white dark:bg-gray-800 text-gray-500">Or sign up with email</span>
+              <span className="px-2 bg-[rgb(var(--color-card))] text-[rgb(var(--color-muted))]">Or sign up with email</span>
             </div>
           </div>
 
@@ -232,7 +232,7 @@ export default function RegisterPage() {
 
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-3 rounded-lg font-medium transition-all"
+              className="w-full bg-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-primary))]/90 text-[rgb(var(--color-on-primary))] py-3 rounded-lg font-medium transition-all"
               disabled={loading || passwordStrength < 3}
             >
               {loading ? "Creating account..." : "Create Account"}
@@ -240,9 +240,9 @@ export default function RegisterPage() {
           </form>
 
           {/* Footer */}
-          <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-6">
+          <p className="text-center text-sm text-[rgb(var(--color-muted))] mt-6">
             Already have an account?{" "}
-            <Link href="/login" className="text-purple-600 hover:text-purple-500 font-medium">
+            <Link href="/login" className="text-[rgb(var(--color-primary))] hover:text-[rgb(var(--color-primary))]/80 font-medium">
               Sign in
             </Link>
           </p>
