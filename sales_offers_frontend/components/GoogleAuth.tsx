@@ -16,11 +16,14 @@ export default function GoogleAuth({ onSuccess, buttonText = "Continue with Goog
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
+      googleProvider.setCustomParameters({
+        prompt: 'select_account'
+      });
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
       
       // Send user data to backend
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/google/`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/google/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
