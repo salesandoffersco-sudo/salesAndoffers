@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { FiCheckCircle, FiXCircle, FiLoader } from "react-icons/fi";
@@ -9,6 +9,14 @@ import Button from "../../../components/Button";
 import { API_BASE_URL } from "../../../lib/api";
 
 export default function SubscriptionCallbackPage() {
+  return (
+    <Suspense fallback={null}>
+      <SubscriptionCallbackPageContent />
+    </Suspense>
+  );
+}
+
+function SubscriptionCallbackPageContent() {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');
   const searchParams = useSearchParams();
