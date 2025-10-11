@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import NewsletterSubscription from "./NewsletterSubscription";
 
 export default function Footer() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -106,8 +107,18 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-        <div className="border-t border-[rgb(var(--color-border))] mt-8 pt-8 text-center text-[rgb(var(--color-muted))]">
-          <p>&copy; 2025 Sales & Offers. All rights reserved.</p>
+        {/* Newsletter Subscription */}
+        <div className="border-t border-[rgb(var(--color-border))] mt-8 pt-8">
+          <div className="max-w-md mx-auto text-center mb-6">
+            <h4 className="font-semibold mb-2 text-[rgb(var(--color-fg))]">Stay Updated</h4>
+            <p className="text-[rgb(var(--color-muted))] text-sm mb-4">
+              Subscribe to our newsletter for the latest deals and offers
+            </p>
+            <NewsletterSubscription />
+          </div>
+          <div className="text-center text-[rgb(var(--color-muted))]">
+            <p>&copy; 2025 Sales & Offers. All rights reserved.</p>
+          </div>
         </div>
       </div>
     </footer>
