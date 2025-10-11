@@ -110,6 +110,7 @@ export default function Navbar() {
   };
 
   const canAccessAdmin = () => {
+    if (typeof window === 'undefined') return false;
     const isStaff = localStorage.getItem("is_staff") === "true" || localStorage.getItem("is_superuser") === "true";
     const hasEnterprise = subscription?.plan_name === "Enterprise";
     return isStaff || hasEnterprise;
@@ -152,6 +153,11 @@ export default function Navbar() {
             <Link href="/about" className="text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] transition-colors font-medium">
               About
             </Link>
+            {canAccessAdmin() && (
+              <Link href="/admin/dashboard" className="text-purple-600 dark:text-purple-400 transition-colors font-semibold">
+                Admin
+              </Link>
+            )}
           </div>
           <div className="hidden md:flex items-center space-x-4">
             <ThemeToggle />
