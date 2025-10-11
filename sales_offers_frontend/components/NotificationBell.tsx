@@ -68,7 +68,7 @@ export default function NotificationBell() {
       });
       setNotifications(response.data);
       setUnreadCount(response.data.filter((n: Notification) => !n.is_read).length);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching notifications:", error);
       if (error.response?.status === 401) {
         setNotifications([]);
