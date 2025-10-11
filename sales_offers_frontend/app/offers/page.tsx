@@ -27,13 +27,10 @@ interface Offer {
 export default function OffersPage() {
   const [offers, setOffers] = useState<Offer[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState("All");
   const [subscription, setSubscription] = useState<any>(null);
   const [filterOpen, setFilterOpen] = useState(false);
   const [filters, setFilters] = useState<any>({});
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-
-  const categories = ["All", "Electronics", "Fashion", "Food", "Home", "Services", "Other"];
 
   useEffect(() => {
     fetchOffers();
@@ -72,7 +69,6 @@ export default function OffersPage() {
   };
 
   const filteredOffers = offers.filter(offer => {
-    if (selectedCategory !== "All" && offer.category !== selectedCategory) return false;
     if (filters.search && !offer.title.toLowerCase().includes(filters.search.toLowerCase())) return false;
     if (filters.price && parseFloat(offer.discounted_price) > filters.price) return false;
     if (filters.categories && filters.categories.length > 0 && !filters.categories.includes(offer.category)) return false;
@@ -140,39 +136,23 @@ export default function OffersPage() {
         <div className="flex-1 lg:ml-80">
           <div className="sticky top-16 z-30 bg-[rgb(var(--color-bg))] border-b border-[rgb(var(--color-border))] py-4">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                <div className="flex flex-wrap gap-3">
-                  {categories.map((category) => (
-                    <Button
-                      key={category}
-                      onClick={() => setSelectedCategory(category)}
-                      variant={selectedCategory === category ? "primary" : "outline"}
-                      size="sm"
-                      className={selectedCategory === category ? "shadow-lg" : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"}
-                    >
-                      {category}
-                    </Button>
-                  ))}
-                </div>
-                
-                <div className="flex items-center space-x-4">
-                  <span className="text-sm text-[rgb(var(--color-muted))]">
-                    {filteredOffers.length} offers found
-                  </span>
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={() => setViewMode('grid')}
-                      className={`p-2 rounded ${viewMode === 'grid' ? 'bg-purple-100 text-purple-600' : 'text-gray-500 hover:text-gray-700'}`}
-                    >
-                      <FiGrid className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => setViewMode('list')}
-                      className={`p-2 rounded ${viewMode === 'list' ? 'bg-purple-100 text-purple-600' : 'text-gray-500 hover:text-gray-700'}`}
-                    >
-                      <FiList className="w-4 h-4" />
-                    </button>
-                  </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[rgb(var(--color-muted))]">
+                  {filteredOffers.length} offers found
+                </span>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => setViewMode('grid')}
+                    className={`p-2 rounded ${viewMode === 'grid' ? 'bg-purple-100 text-purple-600' : 'text-gray-500 hover:text-gray-700'}`}
+                  >
+                    <FiGrid className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setViewMode('list')}
+                    className={`p-2 rounded ${viewMode === 'list' ? 'bg-purple-100 text-purple-600' : 'text-gray-500 hover:text-gray-700'}`}
+                  >
+                    <FiList className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
             </div>
