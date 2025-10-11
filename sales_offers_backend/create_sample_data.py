@@ -12,22 +12,46 @@ plans = [
         'name': 'Basic',
         'price_ksh': 0,
         'duration_days': 30,
-        'max_offers': 5,
-        'features': ['Basic analytics', 'Email support', 'Standard listing']
+        'max_offers': 1,
+        'features': {
+            'max_offers': 1,
+            'blog_posts': 2,
+            'analytics': 'basic',
+            'support': 'email',
+            'branding': False,
+            'featured_listings': False,
+            'api_access': False
+        }
     },
     {
         'name': 'Pro',
         'price_ksh': 2999,
         'duration_days': 30,
         'max_offers': 50,
-        'features': ['Advanced analytics', 'Priority support', 'Custom branding', 'Featured listings']
+        'features': {
+            'max_offers': 50,
+            'blog_posts': 20,
+            'analytics': 'advanced',
+            'support': 'priority',
+            'branding': True,
+            'featured_listings': True,
+            'api_access': False
+        }
     },
     {
         'name': 'Enterprise',
         'price_ksh': 9999,
         'duration_days': 30,
-        'max_offers': 999,
-        'features': ['Unlimited offers', 'Dedicated manager', 'API access', 'Custom integrations']
+        'max_offers': -1,
+        'features': {
+            'max_offers': -1,
+            'blog_posts': -1,
+            'analytics': 'premium',
+            'support': 'dedicated',
+            'branding': True,
+            'featured_listings': True,
+            'api_access': True
+        }
     }
 ]
 

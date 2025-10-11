@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from .models import User
+from .models import User, Favorite, Notification
+from deals.serializers import DealSerializer
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -35,5 +36,19 @@ class UserLoginSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'phone_number', 'is_seller', 'is_buyer', 'profile_picture', 'is_google_user')
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'phone_number', 'phone', 'address', 'is_seller', 'is_buyer', 'profile_picture', 'is_google_user')
         read_only_fields = ('id',)
+
+class FavoriteSerializer(serializers.ModelSerializer):
+    offer = DealSerializer(read_only=True)
+    
+    class Meta:
+        model = Favorite
+        fields = ('id', 'offer', 'created_at')
+        read_only_fields = ('id', 'created_at')
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = ('id', 'title', 'message', 'type', 'is_read', 'related_offer_id', 'created_at')
+        read_only_fields = ('id', 'created_at')

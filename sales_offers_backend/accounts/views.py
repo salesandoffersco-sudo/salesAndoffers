@@ -1,6 +1,6 @@
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
@@ -10,15 +10,21 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.core.mail import send_mail
 from django.conf import settings
-from .models import User
-from .serializers import UserSerializer
-import firebase_admin
-from firebase_admin import auth as firebase_auth, credentials
+from .models import User, Favorite, Notification
+from .serializers import UserSerializer, FavoriteSerializer, NotificationSerializer
+from .notification_service import NotificationService
+from deals.models import Deal
 import os
+try:
+    import firebase_admin
+    from firebase_admin import auth as firebase_auth, credentials
+    FIREBASE_AVAILABLE = True
+except ImportError:
+    FIREBASE_AVAILABLE = False
 
 # Initialize Firebase Admin SDK
 firebase_initialized = False
-if not firebase_admin._apps:
+if FIREBASE_AVAILABLE and not firebase_admin._apps:
     try:
         private_key = os.environ.get('FIREBASE_PRIVATE_KEY', '')
         if private_key and os.environ.get('FIREBASE_CLIENT_EMAIL'):
@@ -86,6 +92,9 @@ Sales & Offers Team
         user.delete()  # Remove user if email fails
         return Response({'error': 'Failed to send verification email'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
+    # Create welcome notification
+    NotificationService.create_welcome_notification(user)
+    
     return Response({
         'message': 'Registration successful! Please check your email to verify your account.'
     }, status=status.HTTP_201_CREATED)
@@ -113,7 +122,7 @@ def login(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def google_auth(request):
-    if not firebase_initialized:
+    if not FIREBASE_AVAILABLE or not firebase_initialized:
         return Response({'error': 'Google authentication not available'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
     
     try:
@@ -147,7 +156,11 @@ def google_auth(request):
             user.profile_picture = photo_url
             user.save()
         
-        token, created = Token.objects.get_or_create(user=user)
+        # Create welcome notification for new Google users
+        if created:
+            NotificationService.create_welcome_notification(user)
+        
+        token, created_token = Token.objects.get_or_create(user=user)
         serializer = UserSerializer(user)
         
         return Response({
@@ -271,9 +284,122 @@ def verify_email(request):
         user.is_active = True
         user.save()
         
+        # Create welcome notification for email verified users
+        if not Notification.objects.filter(user=user, type='welcome').exists():
+            NotificationService.create_welcome_notification(user)
+        
         return Response({'message': 'Email verified successfully! You can now login.'})
         
     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
         return Response({'error': 'Invalid verification link'}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
         return Response({'error': 'Failed to verify email'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET', 'PATCH'])
+@permission_classes([IsAuthenticated])
+def profile(request):
+    if request.method == 'GET':
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
+    
+    elif request.method == 'PATCH':
+        serializer = UserSerializer(request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def dashboard_stats(request):
+    user = request.user
+    favorites_count = Favorite.objects.filter(user=user).count()
+    notifications_count = Notification.objects.filter(user=user, is_read=False).count()
+    
+    return Response({
+        'favorites_count': favorites_count,
+        'viewed_offers': 0,
+        'saved_searches': 0,
+        'notifications_count': notifications_count
+    })
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def favorites(request):
+    if request.method == 'GET':
+        favorites = Favorite.objects.filter(user=request.user).select_related('offer__seller')
+        serializer = FavoriteSerializer(favorites, many=True)
+        return Response(serializer.data)
+    
+    elif request.method == 'POST':
+        offer_id = request.data.get('offer_id')
+        try:
+            offer = Deal.objects.get(id=offer_id)
+            favorite, created = Favorite.objects.get_or_create(user=request.user, offer=offer)
+            if created:
+                # Create system notification for adding to favorites
+                NotificationService.create_system_notification(
+                    request.user,
+                    "Added to Favorites! ❤️",
+                    f"You've added '{offer.title}' to your favorites. We'll notify you of any updates!"
+                )
+                return Response({'message': 'Added to favorites'}, status=status.HTTP_201_CREATED)
+            else:
+                return Response({'message': 'Already in favorites'}, status=status.HTTP_200_OK)
+        except Deal.DoesNotExist:
+            return Response({'error': 'Offer not found'}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def remove_favorite(request, favorite_id):
+    try:
+        favorite = Favorite.objects.get(id=favorite_id, user=request.user)
+        favorite.delete()
+        return Response({'message': 'Removed from favorites'})
+    except Favorite.DoesNotExist:
+        return Response({'error': 'Favorite not found'}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def notifications(request):
+    limit = request.GET.get('limit')
+    notifications = Notification.objects.filter(user=request.user).order_by('-created_at')
+    
+    if limit:
+        try:
+            limit = int(limit)
+            notifications = notifications[:limit]
+        except ValueError:
+            pass
+    
+    serializer = NotificationSerializer(notifications, many=True)
+    return Response(serializer.data)
+
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def update_notification(request, notification_id):
+    try:
+        notification = Notification.objects.get(id=notification_id, user=request.user)
+        serializer = NotificationSerializer(notification, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except Notification.DoesNotExist:
+        return Response({'error': 'Notification not found'}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_notification(request, notification_id):
+    try:
+        notification = Notification.objects.get(id=notification_id, user=request.user)
+        notification.delete()
+        return Response({'message': 'Notification deleted'})
+    except Notification.DoesNotExist:
+        return Response({'error': 'Notification not found'}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def mark_all_notifications_read(request):
+    Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
+    return Response({'message': 'All notifications marked as read'})

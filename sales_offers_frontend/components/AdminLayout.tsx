@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { 
-  FiHome, FiUsers, FiTag, FiShoppingBag, FiMail, FiBarChart3, 
+  FiHome, FiUsers, FiTag, FiShoppingBag, FiMail, FiBarChart, 
   FiSettings, FiFileText, FiActivity, FiServer, FiMenu, FiX,
   FiLogOut, FiShield, FiUser
 } from "react-icons/fi";
@@ -20,7 +20,7 @@ const menuItems = [
   { icon: FiTag, label: "Deals", href: "/admin/deals", adminOnly: false },
   { icon: FiShoppingBag, label: "Sellers", href: "/admin/sellers", adminOnly: false },
   { icon: FiMail, label: "Newsletter", href: "/admin/newsletter", adminOnly: false },
-  { icon: FiBarChart3, label: "Analytics", href: "/admin/analytics", adminOnly: false },
+  { icon: FiBarChart, label: "Analytics", href: "/admin/analytics", adminOnly: false },
   { icon: FiFileText, label: "Reports", href: "/admin/reports", adminOnly: true },
   { icon: FiActivity, label: "Logs", href: "/admin/logs", adminOnly: true },
   { icon: FiServer, label: "System", href: "/admin/system", adminOnly: true },

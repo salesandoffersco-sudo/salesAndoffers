@@ -6,6 +6,7 @@ import { FiShoppingBag, FiPlus, FiDollarSign, FiTrendingUp, FiPackage, FiEdit, F
 import axios from "axios";
 import Button from "../../../components/Button";
 import CreateOfferModal from "../../../components/CreateOfferModal";
+import SubscriptionStatus from "../../../components/SubscriptionStatus";
 import { API_BASE_URL } from "../../../lib/api";
 
 interface SubscriptionPlan {
@@ -22,6 +23,13 @@ interface SellerStats {
   active_offers: number;
   revenue: number;
   growth: number;
+  subscription: {
+    has_subscription: boolean;
+    plan_name: string;
+    max_offers: number;
+    offers_remaining: number;
+    can_create_offers: boolean;
+  };
 }
 
 interface Offer {
@@ -36,7 +44,19 @@ interface Offer {
 
 export default function SellerDashboardPage() {
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
-  const [stats, setStats] = useState<SellerStats>({ total_offers: 0, active_offers: 0, revenue: 0, growth: 0 });
+  const [stats, setStats] = useState<SellerStats>({
+    total_offers: 0,
+    active_offers: 0,
+    revenue: 0,
+    growth: 0,
+    subscription: {
+      has_subscription: false,
+      plan_name: 'No Plan',
+      max_offers: 1,
+      offers_remaining: 1,
+      can_create_offers: true
+    }
+  });
   const [offers, setOffers] = useState<Offer[]>([]);
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState("");
@@ -99,15 +119,27 @@ export default function SellerDashboardPage() {
               </div>
               <p className="text-xl opacity-90 max-w-2xl">Manage your listings, track performance, and grow your business with powerful tools.</p>
             </div>
-            <Button variant="outline" className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20" onClick={() => setShowCreateModal(true)}>
-              <FiPlus className="w-5 h-5 mr-2" />
-              List Item
-            </Button>
+            {stats.subscription.can_create_offers ? (
+              <Button variant="outline" className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20" onClick={() => setShowCreateModal(true)}>
+                <FiPlus className="w-5 h-5 mr-2" />
+                List Item
+              </Button>
+            ) : (
+              <Link href="/pricing">
+                <Button variant="outline" className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20">
+                  <FiTrendingUp className="w-5 h-5 mr-2" />
+                  Upgrade Plan
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Subscription Status */}
+        <SubscriptionStatus showDetails={true} />
+
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
@@ -202,56 +234,38 @@ export default function SellerDashboardPage() {
           </div>
         </div>
 
-        {/* Subscription Plans */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Subscription Plans</h2>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">Choose a plan to unlock more features</p>
-          </div>
-          <div className="p-6">
-            {loading ? (
-              <div className="text-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto"></div>
+        {/* Plan Limits Warning */}
+        {!stats.subscription.can_create_offers && (
+          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-6 mb-8">
+            <div className="flex items-center space-x-3">
+              <div className="bg-yellow-100 dark:bg-yellow-900/40 p-2 rounded-full">
+                <FiTrendingUp className="text-yellow-600 dark:text-yellow-400 text-xl" />
               </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {plans.map((plan) => (
-                  <div key={plan.id} className="border border-gray-200 dark:border-gray-600 rounded-lg p-6 hover:border-purple-300 dark:hover:border-purple-600 transition-colors">
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">{plan.name}</h3>
-                    <div className="flex items-baseline mb-4">
-                      <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">KES {plan.price_ksh}</span>
-                      <span className="text-gray-600 dark:text-gray-400 ml-1">/{plan.duration_days} days</span>
-                    </div>
-                    <ul className="space-y-2 mb-6">
-                      <li className="flex items-center text-sm text-gray-700 dark:text-gray-300">
-                        <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                        Up to {plan.max_offers} offers
-                      </li>
-                      {plan.features.map((feature, index) => (
-                        <li key={index} className="flex items-center text-sm text-gray-700 dark:text-gray-300">
-                          <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-                    <Button variant="primary" size="sm" className="w-full" onClick={() => alert('Subscription coming soon!')}>
-                      Subscribe
-                    </Button>
-                  </div>
-                ))}
+              <div className="flex-1">
+                <h3 className="font-semibold text-yellow-800 dark:text-yellow-200">Plan Limit Reached</h3>
+                <p className="text-yellow-700 dark:text-yellow-300 text-sm mt-1">
+                  You've reached your plan limit of {stats.subscription.max_offers} offers. Upgrade to create more.
+                </p>
               </div>
-            )}
+              <Link href="/pricing">
+                <Button variant="primary" size="sm">
+                  Upgrade Now
+                </Button>
+              </Link>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
-      <CreateOfferModal 
-        isOpen={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-        onSuccess={() => {
-          fetchData(); // Refresh data after creating offer
-        }}
-      />
+      {stats.subscription.can_create_offers && (
+        <CreateOfferModal 
+          isOpen={showCreateModal}
+          onClose={() => setShowCreateModal(false)}
+          onSuccess={() => {
+            fetchData(); // Refresh data after creating offer
+          }}
+        />
+      )}
     </div>
   );
 }

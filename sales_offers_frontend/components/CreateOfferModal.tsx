@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import React from "react";
 import { FiX, FiImage, FiCalendar } from "react-icons/fi";
 import axios from "axios";
 import Button from "./Button";
@@ -24,6 +25,7 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [subscription, setSubscription] = useState<any>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -42,6 +44,18 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
       
       return updated;
     });
+  };
+
+  const fetchSubscription = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`${API_BASE_URL}/api/sellers/stats/`, {
+        headers: { Authorization: `Token ${token}` }
+      });
+      setSubscription(response.data.subscription);
+    } catch (error) {
+      console.error("Error fetching subscription:", error);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -73,6 +87,12 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
     }
   };
 
+  React.useEffect(() => {
+    if (isOpen) {
+      fetchSubscription();
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
@@ -88,6 +108,15 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          {subscription && !subscription.can_create_offers && (
+            <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg">
+              <div className="flex items-center space-x-2">
+                <span className="font-medium">Plan Limit Reached:</span>
+                <span>You've used {subscription.max_offers === -1 ? 'unlimited' : subscription.max_offers} offers. </span>
+                <a href="/pricing" className="underline font-medium">Upgrade now</a>
+              </div>
+            </div>
+          )}
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
               {error}

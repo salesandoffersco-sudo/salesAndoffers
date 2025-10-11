@@ -87,6 +87,7 @@ export default function Footer() {
             <ul className="space-y-2 text-[rgb(var(--color-muted))]">
               <li><Link href="/offers" className="hover:text-[rgb(var(--color-primary))] transition-colors">Browse Offers</Link></li>
               <li><Link href="/sellers" className="hover:text-[rgb(var(--color-primary))] transition-colors">Sellers</Link></li>
+              <li><Link href="/blog" className="hover:text-[rgb(var(--color-primary))] transition-colors">Blog</Link></li>
               <li><Link href="/about" className="hover:text-[rgb(var(--color-primary))] transition-colors">About Us</Link></li>
             </ul>
           </div>
@@ -94,7 +95,7 @@ export default function Footer() {
             <h4 className="font-semibold mb-4 text-[rgb(var(--color-fg))]">Selling</h4>
             <ul className="space-y-2 text-[rgb(var(--color-muted))]">
               <li><Link href="/seller/dashboard" className="hover:text-[rgb(var(--color-primary))] transition-colors">Dashboard</Link></li>
-              <li><Link href="/list-item" className="hover:text-[rgb(var(--color-primary))] transition-colors">List Your Item</Link></li>
+              <li><Link href="/subscription" className="hover:text-[rgb(var(--color-primary))] transition-colors">My Subscription</Link></li>
               <li><Link href="/pricing" className="hover:text-[rgb(var(--color-primary))] transition-colors">Pricing</Link></li>
             </ul>
           </div>

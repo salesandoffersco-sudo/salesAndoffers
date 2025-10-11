@@ -5,6 +5,7 @@ import Image from "next/image";
 import { FiMenu, FiX, FiUser, FiLogOut, FiChevronDown } from "react-icons/fi";
 import { useState, useEffect, useRef } from "react";
 import ThemeToggle from "./ThemeToggle";
+import NotificationBell from "./NotificationBell";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,6 +14,7 @@ export default function Navbar() {
   const [userProfile, setUserProfile] = useState<{name?: string, profilePicture?: string}>({});
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [subscription, setSubscription] = useState<any>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -57,6 +59,7 @@ export default function Navbar() {
     };
 
     checkAuth();
+    fetchSubscription();
     window.addEventListener("storage", checkAuth);
     window.addEventListener("authChange", checkAuth);
 
@@ -85,7 +88,31 @@ export default function Navbar() {
     setUsername("");
     setUserProfile({});
     window.dispatchEvent(new Event("authChange"));
+    setSubscription(null);
     window.location.href = "/";
+  };
+
+  const fetchSubscription = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (token) {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000'}/api/sellers/stats/`, {
+          headers: { Authorization: `Token ${token}` }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setSubscription(data.subscription);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching subscription:", error);
+    }
+  };
+
+  const canAccessAdmin = () => {
+    const isStaff = localStorage.getItem("is_staff") === "true" || localStorage.getItem("is_superuser") === "true";
+    const hasEnterprise = subscription?.plan_name === "Enterprise";
+    return isStaff || hasEnterprise;
   };
 
   const toggleMenu = () => {
@@ -93,7 +120,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-[rgb(var(--color-card))] shadow-sm border-b border-[rgb(var(--color-border))]">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-[rgb(var(--color-card))] shadow-sm border-b border-[rgb(var(--color-border))] backdrop-blur-sm bg-opacity-95">
       <div className="max-w-7xl mx-auto overflow-visible" style={{ paddingLeft: '16px', paddingRight: '16px' }}>
         <div className="flex justify-between items-center h-16 w-full overflow-visible">
           <div className="flex-shrink-0">
@@ -119,12 +146,16 @@ export default function Navbar() {
             <Link href="/sellers" className="text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] transition-colors font-medium">
               Sellers
             </Link>
+            <Link href="/blog" className="text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] transition-colors font-medium">
+              Blog
+            </Link>
             <Link href="/about" className="text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] transition-colors font-medium">
               About
             </Link>
           </div>
           <div className="hidden md:flex items-center space-x-4">
             <ThemeToggle />
+            {isLoggedIn && <NotificationBell />}
             {isLoggedIn ? (
               <div className="relative" ref={dropdownRef}>
                 <button
@@ -150,12 +181,50 @@ export default function Navbar() {
                 {dropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
                     <Link
-                      href="/seller/dashboard"
+                      href="/dashboard"
                       className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                       onClick={() => setDropdownOpen(false)}
                     >
                       Dashboard
                     </Link>
+                    <Link
+                      href="/seller/dashboard"
+                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      Seller Dashboard
+                    </Link>
+                    <Link
+                      href="/favorites"
+                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      Favorites
+                    </Link>
+                    <Link
+                      href="/notifications"
+                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      Notifications
+                    </Link>
+                    <Link
+                      href="/subscription"
+                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      Subscription ({subscription?.plan_name || 'No Plan'})
+                    </Link>
+                    {canAccessAdmin() && (
+                      <Link
+                        href="/admin/dashboard"
+                        className="block px-4 py-2 text-sm text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors font-medium"
+                        onClick={() => setDropdownOpen(false)}
+                      >
+                        Admin Dashboard
+                      </Link>
+                    )}
+                    <hr className="my-2 border-gray-200 dark:border-gray-600" />
                     <Link
                       href="/profile"
                       className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -163,14 +232,6 @@ export default function Navbar() {
                     >
                       Profile
                     </Link>
-                    <Link
-                      href="/settings"
-                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                      onClick={() => setDropdownOpen(false)}
-                    >
-                      Settings
-                    </Link>
-                    <hr className="my-2 border-gray-200 dark:border-gray-600" />
                     <button
                       onClick={() => { handleLogout(); setDropdownOpen(false); }}
                       className="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
@@ -247,6 +308,13 @@ export default function Navbar() {
                   Sellers
                 </Link>
                 <Link
+                  href="/blog"
+                  className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                  onClick={toggleMenu}
+                >
+                  Blog
+                </Link>
+                <Link
                   href="/about"
                   className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
                   onClick={toggleMenu}
@@ -260,10 +328,16 @@ export default function Navbar() {
                     <ThemeToggle />
                   </div>
                   
+                  {isLoggedIn && (
+                    <div className="mb-4">
+                      <NotificationBell />
+                    </div>
+                  )}
+                  
                   {isLoggedIn ? (
                     <div className="space-y-2">
                       <Link
-                        href="/seller/dashboard"
+                        href="/dashboard"
                         className="flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
                         onClick={toggleMenu}
                       >
@@ -279,6 +353,43 @@ export default function Navbar() {
                           )}
                         </div>
                         <span>{userProfile.name || username}</span>
+                      </Link>
+                      <Link
+                        href="/favorites"
+                        className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                        onClick={toggleMenu}
+                      >
+                        Favorites
+                      </Link>
+                      <Link
+                        href="/notifications"
+                        className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                        onClick={toggleMenu}
+                      >
+                        Notifications
+                      </Link>
+                      <Link
+                        href="/subscription"
+                        className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                        onClick={toggleMenu}
+                      >
+                        Subscription ({subscription?.plan_name || 'No Plan'})
+                      </Link>
+                      {canAccessAdmin() && (
+                        <Link
+                          href="/admin/dashboard"
+                          className="block px-4 py-3 rounded-lg text-base font-medium text-purple-600 hover:bg-purple-50 transition-colors"
+                          onClick={toggleMenu}
+                        >
+                          Admin Dashboard
+                        </Link>
+                      )}
+                      <Link
+                        href="/profile"
+                        className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                        onClick={toggleMenu}
+                      >
+                        Profile
                       </Link>
                       <button
                         onClick={() => { handleLogout(); toggleMenu(); }}

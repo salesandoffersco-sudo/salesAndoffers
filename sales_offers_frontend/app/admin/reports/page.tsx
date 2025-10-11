@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import AdminLayout from "../../../components/AdminLayout";
-import { FiDownload, FiCalendar, FiFileText, FiBarChart3, FiUsers, FiDollarSign } from "react-icons/fi";
+import { FiDownload, FiCalendar, FiFileText, FiBarChart, FiUsers, FiDollarSign } from "react-icons/fi";
 
 export default function ReportsPage() {
   const [selectedReport, setSelectedReport] = useState("revenue");
@@ -27,7 +27,7 @@ export default function ReportsPage() {
       id: "deals",
       title: "Deals Performance",
       description: "Deal conversion and performance analytics",
-      icon: FiBarChart3,
+      icon: FiBarChart,
       color: "purple"
     },
     {
@@ -124,7 +124,7 @@ export default function ReportsPage() {
                     </button>
                     <button className="p-3 border border-[rgb(var(--color-border))] rounded-lg hover:bg-[rgb(var(--color-ui))] transition-colors">
                       <div className="text-center">
-                        <FiBarChart3 className="w-6 h-6 mx-auto mb-1 text-[rgb(var(--color-muted))]" />
+                        <FiBarChart className="w-6 h-6 mx-auto mb-1 text-[rgb(var(--color-muted))]" />
                         <span className="text-sm text-[rgb(var(--color-fg))]">Excel</span>
                       </div>
                     </button>

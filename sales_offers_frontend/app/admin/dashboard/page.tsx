@@ -1,7 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import AdminLayout from "../../../components/AdminLayout";
+import axios from "axios";
+import { API_BASE_URL } from "../../../lib/api";
 import { 
   FiUsers, FiTag, FiShoppingBag, FiMail, FiTrendingUp, 
   FiDollarSign, FiActivity, FiAlertCircle 
@@ -26,10 +29,31 @@ export default function AdminDashboard() {
     activeUsers: 0
   });
   const [loading, setLoading] = useState(true);
+  const [hasAccess, setHasAccess] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    // Mock data - replace with actual API calls
-    setTimeout(() => {
+    checkAdminAccess();
+  }, []);
+
+  const checkAdminAccess = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`${API_BASE_URL}/api/sellers/stats/`, {
+        headers: { Authorization: `Token ${token}` }
+      });
+      
+      const subscription = response.data.subscription;
+      const isAdmin = localStorage.getItem("is_staff") === "true" || localStorage.getItem("is_superuser") === "true";
+      const hasEnterprise = subscription?.plan_name === "Enterprise";
+      
+      if (!isAdmin && !hasEnterprise) {
+        router.push("/dashboard");
+        return;
+      }
+      
+      setHasAccess(true);
+      // Mock data - replace with actual API calls
       setStats({
         totalUsers: 1247,
         totalDeals: 89,
@@ -39,8 +63,11 @@ export default function AdminDashboard() {
         activeUsers: 234
       });
       setLoading(false);
-    }, 1000);
-  }, []);
+    } catch (error) {
+      console.error("Error checking admin access:", error);
+      router.push("/login");
+    }
+  };
 
   const statCards = [
     {
@@ -100,6 +127,20 @@ export default function AdminDashboard() {
     { id: 2, type: "info", message: "Weekly backup completed successfully", time: "1 hour ago" },
     { id: 3, type: "error", message: "Failed email delivery to 3 subscribers", time: "2 hours ago" }
   ];
+
+  if (!hasAccess) {
+    return (
+      <div className="min-h-screen bg-[rgb(var(--color-bg))] flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-[rgb(var(--color-fg))] mb-4">Access Restricted</h1>
+          <p className="text-[rgb(var(--color-muted))] mb-6">Admin access requires Enterprise subscription or staff privileges.</p>
+          <a href="/pricing" className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700">
+            Upgrade to Enterprise
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <AdminLayout>

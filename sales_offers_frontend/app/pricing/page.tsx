@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { FiDollarSign, FiCheckCircle } from "react-icons/fi";
+import { FiDollarSign, FiCheckCircle, FiLoader } from "react-icons/fi";
 import axios from "axios";
 import Button from "../../components/Button";
 import { API_BASE_URL } from "../../lib/api";
@@ -13,14 +13,25 @@ interface PricingPlan {
   price_ksh: number;
   duration_days: number;
   max_offers: number;
-  features: string[];
+  features: {
+    max_offers: number;
+    blog_posts: number;
+    analytics: string;
+    support: string;
+    branding: boolean;
+    featured_listings: boolean;
+    api_access: boolean;
+  } | string[];
 }
 
 export default function PricingPage() {
   const [pricingPlans, setPricingPlans] = useState<PricingPlan[]>([]);
   const [loading, setLoading] = useState(true);
+  const [subscribing, setSubscribing] = useState<number | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
+    setIsLoggedIn(!!localStorage.getItem("token"));
     fetchPlans();
   }, []);
 
@@ -36,12 +47,43 @@ export default function PricingPage() {
   };
 
   const getButtonText = (plan: PricingPlan) => {
-    if (plan.name === "Basic Seller") return "Start Free";
-    if (plan.name === "Pro Seller") return "Choose Pro";
-    return "Get a Quote";
+    if (plan.name === "Basic") return "Start Free";
+    if (plan.name === "Pro") return "Choose Pro";
+    return "Get Enterprise";
   };
 
-  const isHighlighted = (plan: PricingPlan) => plan.name === "Pro Seller";
+  const isHighlighted = (plan: PricingPlan) => plan.name === "Pro";
+
+  const handleSubscribe = async (planId: number) => {
+    if (!isLoggedIn) {
+      window.location.href = "/login";
+      return;
+    }
+
+    setSubscribing(planId);
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        `${API_BASE_URL}/api/sellers/subscribe/${planId}/`,
+        {},
+        { headers: { Authorization: `Token ${token}` } }
+      );
+
+      if (response.data.payment_url) {
+        // Redirect to Paystack payment page
+        window.location.href = response.data.payment_url;
+      } else {
+        // Free plan activated
+        alert("Subscription activated successfully!");
+        window.location.href = "/seller/dashboard";
+      }
+    } catch (error: any) {
+      console.error("Subscription error:", error);
+      alert(error.response?.data?.error || "Subscription failed. Please try again.");
+    } finally {
+      setSubscribing(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 py-12">
@@ -66,25 +108,73 @@ export default function PricingPage() {
               >
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">{plan.name}</h2>
                 <p className="text-5xl font-extrabold text-gray-900 dark:text-gray-100 mb-2">
-                  {plan.name === "Enterprise" ? "KES 9,999" : `KES ${plan.price_ksh}`}
+                  KES {plan.price_ksh.toLocaleString()}
                 </p>
                 <p className="text-gray-600 dark:text-gray-300 mb-8">/ month</p>
                 
                 <ul className="text-left space-y-3 mb-8">
-                  {plan.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-center text-gray-700 dark:text-gray-300">
-                      <FiCheckCircle className="text-green-500 dark:text-green-400 mr-2" />
-                      {feature}
-                    </li>
-                  ))}
+                  {typeof plan.features === 'object' && !Array.isArray(plan.features) ? (
+                    <>
+                      <li className="flex items-center text-gray-700 dark:text-gray-300">
+                        <FiCheckCircle className="text-green-500 dark:text-green-400 mr-2" />
+                        {plan.features.max_offers === -1 ? 'Unlimited offers' : `${plan.features.max_offers} offers`}
+                      </li>
+                      <li className="flex items-center text-gray-700 dark:text-gray-300">
+                        <FiCheckCircle className="text-green-500 dark:text-green-400 mr-2" />
+                        {plan.features.blog_posts === -1 ? 'Unlimited blog posts' : `${plan.features.blog_posts} blog posts`}
+                      </li>
+                      <li className="flex items-center text-gray-700 dark:text-gray-300">
+                        <FiCheckCircle className="text-green-500 dark:text-green-400 mr-2" />
+                        {plan.features.analytics.charAt(0).toUpperCase() + plan.features.analytics.slice(1)} analytics
+                      </li>
+                      <li className="flex items-center text-gray-700 dark:text-gray-300">
+                        <FiCheckCircle className="text-green-500 dark:text-green-400 mr-2" />
+                        {plan.features.support.charAt(0).toUpperCase() + plan.features.support.slice(1)} support
+                      </li>
+                      {plan.features.branding && (
+                        <li className="flex items-center text-gray-700 dark:text-gray-300">
+                          <FiCheckCircle className="text-green-500 dark:text-green-400 mr-2" />
+                          Custom branding
+                        </li>
+                      )}
+                      {plan.features.featured_listings && (
+                        <li className="flex items-center text-gray-700 dark:text-gray-300">
+                          <FiCheckCircle className="text-green-500 dark:text-green-400 mr-2" />
+                          Featured listings
+                        </li>
+                      )}
+                      {plan.features.api_access && (
+                        <li className="flex items-center text-gray-700 dark:text-gray-300">
+                          <FiCheckCircle className="text-green-500 dark:text-green-400 mr-2" />
+                          API access
+                        </li>
+                      )}
+                    </>
+                  ) : (
+                    Array.isArray(plan.features) && plan.features.map((feature, featureIndex) => (
+                      <li key={featureIndex} className="flex items-center text-gray-700 dark:text-gray-300">
+                        <FiCheckCircle className="text-green-500 dark:text-green-400 mr-2" />
+                        {feature}
+                      </li>
+                    ))
+                  )}
                 </ul>
 
                 <Button
                   variant={isHighlighted(plan) ? "primary" : "outline"}
                   size="md"
                   className="w-full"
+                  onClick={() => handleSubscribe(plan.id)}
+                  disabled={subscribing === plan.id}
                 >
-                  {getButtonText(plan)}
+                  {subscribing === plan.id ? (
+                    <>
+                      <FiLoader className="animate-spin mr-2" />
+                      Processing...
+                    </>
+                  ) : (
+                    getButtonText(plan)
+                  )}
                 </Button>
               </div>
             ))}
