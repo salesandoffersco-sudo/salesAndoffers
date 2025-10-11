@@ -85,7 +85,7 @@ export default function FilterSidebar({
       {/* Mobile Overlay */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-[60] lg:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
           onClick={onToggle}
         />
       )}
@@ -106,7 +106,7 @@ export default function FilterSidebar({
       {/* Sidebar */}
       <div className={`
         fixed top-16 left-0 h-[calc(100vh-4rem)] w-80 bg-[rgb(var(--color-card))] border-r border-[rgb(var(--color-border))] 
-        transform transition-transform duration-300 ease-in-out z-[60] overflow-y-auto
+        transform transition-transform duration-300 ease-in-out z-40 overflow-y-auto
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:sticky lg:translate-x-0 lg:transform-none lg:top-16 lg:h-[calc(100vh-4rem)]
         ${className}
