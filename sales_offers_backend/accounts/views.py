@@ -52,15 +52,42 @@ def register(request):
         first_name=data.get('first_name', ''),
         last_name=data.get('last_name', ''),
         is_seller=True,
-        is_buyer=True
+        is_buyer=True,
+        is_active=False  # User inactive until email verified
     )
     
-    token, created = Token.objects.get_or_create(user=user)
-    serializer = UserSerializer(user)
+    # Send verification email
+    token = default_token_generator.make_token(user)
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+    verification_link = f"{settings.FRONTEND_URL}/verify-email/{uid}/{token}/"
+    
+    subject = 'Verify Your Email - Sales & Offers'
+    message = f'''
+Welcome to Sales & Offers, {user.username}!
+
+Please verify your email address by clicking the link below:
+{verification_link}
+
+This link will expire in 24 hours.
+
+Best regards,
+Sales & Offers Team
+'''
+    
+    try:
+        send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            [user.email],
+            fail_silently=False,
+        )
+    except Exception as e:
+        user.delete()  # Remove user if email fails
+        return Response({'error': 'Failed to send verification email'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
     return Response({
-        'token': token.key,
-        'user': serializer.data
+        'message': 'Registration successful! Please check your email to verify your account.'
     }, status=status.HTTP_201_CREATED)
 
 @api_view(['POST'])
@@ -109,7 +136,9 @@ def google_auth(request):
                 'profile_picture': photo_url,
                 'is_google_user': True,
                 'is_seller': True,
-                'is_buyer': True
+                'is_buyer': True,
+                'is_email_verified': True,
+                'is_active': True
             }
         )
         
@@ -218,3 +247,33 @@ def reset_password(request):
         return Response({'error': 'Invalid reset link'}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
         return Response({'error': 'Failed to reset password'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def verify_email(request):
+    uid = request.data.get('uid')
+    token = request.data.get('token')
+    
+    if not all([uid, token]):
+        return Response({'error': 'Invalid verification link'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        user_id = force_str(urlsafe_base64_decode(uid))
+        user = User.objects.get(pk=user_id)
+        
+        if not default_token_generator.check_token(user, token):
+            return Response({'error': 'Invalid or expired verification link'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if user.is_email_verified:
+            return Response({'message': 'Email already verified'})
+        
+        user.is_email_verified = True
+        user.is_active = True
+        user.save()
+        
+        return Response({'message': 'Email verified successfully! You can now login.'})
+        
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        return Response({'error': 'Invalid verification link'}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({'error': 'Failed to verify email'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

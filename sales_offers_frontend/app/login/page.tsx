@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
 import axios from "axios";
 import Button from "../../components/Button";
@@ -20,6 +20,8 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [message, setMessage] = useState("");
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const checkTheme = () => {
@@ -37,11 +39,17 @@ export default function LoginPage() {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     mediaQuery.addEventListener('change', checkTheme);
 
+    // Check for message from URL params
+    const urlMessage = searchParams.get('message');
+    if (urlMessage) {
+      setMessage(urlMessage);
+    }
+
     return () => {
       observer.disconnect();
       mediaQuery.removeEventListener('change', checkTheme);
     };
-  }, []);
+  }, [searchParams]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -115,6 +123,12 @@ export default function LoginPage() {
               <span className="px-2 bg-[rgb(var(--color-card))] text-[rgb(var(--color-muted))]">Or continue with username</span>
             </div>
           </div>
+
+          {message && (
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 px-4 py-3 rounded-lg mb-6 text-sm">
+              {message}
+            </div>
+          )}
 
           {error && (
             <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-3 rounded-lg mb-6 text-sm">

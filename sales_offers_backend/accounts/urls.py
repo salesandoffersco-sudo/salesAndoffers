@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import register, login, google_auth, logout, forgot_password, reset_password
+from .views import register, login, google_auth, logout, forgot_password, reset_password, verify_email
 
 urlpatterns = [
     path('register/', register, name='register'),
@@ -8,4 +8,5 @@ urlpatterns = [
     path('google/', google_auth, name='google_auth'),
     path('forgot-password/', forgot_password, name='forgot_password'),
     path('reset-password/', reset_password, name='reset_password'),
+    path('verify-email/', verify_email, name='verify_email'),
 ]

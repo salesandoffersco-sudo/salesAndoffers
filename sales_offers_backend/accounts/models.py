@@ -8,6 +8,7 @@ class User(AbstractUser):
     firebase_uid = models.CharField(max_length=128, blank=True, null=True)
     profile_picture = models.URLField(blank=True, null=True)
     is_google_user = models.BooleanField(default=False)
+    is_email_verified = models.BooleanField(default=False)
 
     def __str__(self):
         return self.username

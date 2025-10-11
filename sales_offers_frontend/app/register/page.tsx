@@ -76,17 +76,14 @@ export default function RegisterPage() {
     try {
       const response = await axios.post(`${API_BASE_URL}/api/users/register/`, formData);
       
-      // Auto-login after successful registration
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("username", response.data.user.username);
-      localStorage.setItem("userProfile", JSON.stringify({
-        name: response.data.user.username,
-        profilePicture: null
-      }));
-      window.dispatchEvent(new Event("authChange"));
-      router.push("/offers");
+      // Show success message instead of auto-login
+      setError("");
+      setLoading(false);
+      
+      // Redirect to login with success message
+      router.push("/login?message=Please check your email to verify your account before logging in.");
     } catch (err: any) {
-      setError(err.response?.data?.detail || "Registration failed. Please try again.");
+      setError(err.response?.data?.error || "Registration failed. Please try again.");
       setLoading(false);
     }
   };
