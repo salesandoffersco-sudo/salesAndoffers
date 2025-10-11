@@ -108,7 +108,7 @@ export default function FilterSidebar({
         fixed top-16 left-0 h-[calc(100vh-4rem)] w-80 bg-[rgb(var(--color-card))] border-r border-[rgb(var(--color-border))] 
         transform transition-transform duration-300 ease-in-out z-40 overflow-y-auto
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-        lg:sticky lg:translate-x-0 lg:top-16 lg:h-[calc(100vh-4rem)]
+        lg:sticky lg:translate-x-0 lg:transform-none lg:top-16 lg:h-[calc(100vh-4rem)]
         ${className}
       `}>
         <div className="p-4">

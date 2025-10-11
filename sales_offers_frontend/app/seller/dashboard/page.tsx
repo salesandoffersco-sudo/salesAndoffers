@@ -113,8 +113,8 @@ export default function SellerDashboardPage() {
                   <FiShoppingBag className="w-6 h-6" />
                 </div>
                 <div>
-                  <h1 className="text-4xl font-bold">Hello, {username}! 👋</h1>
-                  <p className="text-purple-100 text-lg">Welcome back to your dashboard</p>
+                  <h1 className="text-4xl font-bold">Seller Control Panel</h1>
+                  <p className="text-purple-100 text-lg">Hello, {username}! Manage your store, offers, and subscription here.</p>
                 </div>
               </div>
               <p className="text-xl opacity-90 max-w-2xl">Manage your listings, track performance, and grow your business with powerful tools.</p>
