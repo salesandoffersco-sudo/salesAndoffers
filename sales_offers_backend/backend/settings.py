@@ -162,13 +162,17 @@ REST_FRAMEWORK = {
 PAYSTACK_SECRET_KEY = "sk_test_YOUR_SECRET_KEY"
 PAYSTACK_PUBLIC_KEY = "pk_test_YOUR_PUBLIC_KEY"
 
-# Email Service Settings
-EMAIL_HOST = "smtp.sendgrid.net"
+# Email Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "apikey"
-EMAIL_HOST_PASSWORD = "YOUR_SENDGRID_API_KEY"
-DEFAULT_FROM_EMAIL = "noreply@salesandoffers.com"
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'salesandoffers.co@gmail.com')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'salesandoffers.co@gmail.com')
+
+# Frontend URL for password reset links
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
 
 AUTH_USER_MODEL = 'accounts.User'
 

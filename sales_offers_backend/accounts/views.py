@@ -5,6 +5,11 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.core.mail import send_mail
+from django.conf import settings
 from .models import User
 from .serializers import UserSerializer
 import firebase_admin
@@ -131,3 +136,85 @@ def logout(request):
         return Response({'message': 'Successfully logged out'})
     except:
         return Response({'error': 'Error logging out'}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def forgot_password(request):
+    email = request.data.get('email')
+    
+    if not email:
+        return Response({'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        user = User.objects.get(email=email)
+        
+        # Generate password reset token
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        
+        # Create reset link
+        reset_link = f"{settings.FRONTEND_URL}/reset-password/{uid}/{token}/"
+        
+        # Send email
+        subject = 'Password Reset - Sales & Offers'
+        message = f'''
+Hi {user.username},
+
+You requested a password reset for your Sales & Offers account.
+
+Click the link below to reset your password:
+{reset_link}
+
+This link will expire in 24 hours.
+
+If you didn't request this, please ignore this email.
+
+Best regards,
+Sales & Offers Team
+'''
+        
+        send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            [email],
+            fail_silently=False,
+        )
+        
+        return Response({'message': 'Password reset email sent successfully'})
+        
+    except User.DoesNotExist:
+        # Don't reveal if email exists or not for security
+        return Response({'message': 'Password reset email sent successfully'})
+    except Exception as e:
+        return Response({'error': 'Failed to send email'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def reset_password(request):
+    uid = request.data.get('uid')
+    token = request.data.get('token')
+    new_password = request.data.get('new_password')
+    
+    if not all([uid, token, new_password]):
+        return Response({'error': 'All fields are required'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        # Decode user ID
+        user_id = force_str(urlsafe_base64_decode(uid))
+        user = User.objects.get(pk=user_id)
+        
+        # Verify token
+        if not default_token_generator.check_token(user, token):
+            return Response({'error': 'Invalid or expired reset link'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Update password
+        user.password = make_password(new_password)
+        user.save()
+        
+        return Response({'message': 'Password reset successfully'})
+        
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        return Response({'error': 'Invalid reset link'}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({'error': 'Failed to reset password'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
