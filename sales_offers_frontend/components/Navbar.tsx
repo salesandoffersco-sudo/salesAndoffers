@@ -267,7 +267,17 @@ export default function Navbar() {
                         className="flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
                         onClick={toggleMenu}
                       >
-                        <FiUser className="w-5 h-5" />
+                        <div className="w-5 h-5 bg-purple-600 rounded-full flex items-center justify-center overflow-hidden">
+                          {userProfile.profilePicture ? (
+                            <img 
+                              src={userProfile.profilePicture} 
+                              alt="Profile" 
+                              className="w-full h-full object-cover rounded-full"
+                            />
+                          ) : (
+                            <FiUser className="w-3 h-3 text-white" />
+                          )}
+                        </div>
                         <span>Dashboard</span>
                       </Link>
                       <button
