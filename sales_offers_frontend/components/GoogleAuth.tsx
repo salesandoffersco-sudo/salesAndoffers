@@ -26,7 +26,7 @@ export default function GoogleAuth({ onSuccess, buttonText = "Continue with Goog
         const user = result.user;
         
         // Send user data to backend
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/google/`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/accounts/google/`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

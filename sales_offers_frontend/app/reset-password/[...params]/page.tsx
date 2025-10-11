@@ -65,7 +65,7 @@ export default function ResetPasswordPage() {
     }
 
     try {
-      await axios.post(`${API_BASE_URL}/api/users/reset-password/`, {
+      await axios.post(`${API_BASE_URL}/api/accounts/reset-password/`, {
         uid,
         token,
         new_password: password

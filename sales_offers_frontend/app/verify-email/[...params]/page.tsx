@@ -53,7 +53,7 @@ export default function VerifyEmailPage() {
 
   const verifyEmail = async () => {
     try {
-      await axios.post(`${API_BASE_URL}/api/users/verify-email/`, {
+      await axios.post(`${API_BASE_URL}/api/accounts/verify-email/`, {
         uid,
         token
       });

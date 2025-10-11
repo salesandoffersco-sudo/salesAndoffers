@@ -74,7 +74,7 @@ export default function RegisterPage() {
     }
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/users/register/`, formData);
+      const response = await axios.post(`${API_BASE_URL}/api/accounts/register/`, formData);
       
       // Show success message instead of auto-login
       setError("");

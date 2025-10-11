@@ -72,7 +72,7 @@ function LoginPageContent() {
     setError("");
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/users/login/`, formData);
+      const response = await axios.post(`${API_BASE_URL}/api/accounts/login/`, formData);
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("username", response.data.user.username);
       localStorage.setItem("userProfile", JSON.stringify({
