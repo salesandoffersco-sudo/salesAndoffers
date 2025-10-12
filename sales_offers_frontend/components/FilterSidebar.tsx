@@ -90,18 +90,6 @@ export default function FilterSidebar({
         />
       )}
 
-      {/* Filter Toggle Button */}
-      <button
-        onClick={onToggle}
-        className="fixed top-20 left-4 z-50 lg:hidden bg-purple-600 text-white p-3 rounded-full shadow-lg hover:bg-purple-700 transition-all duration-300"
-      >
-        <FiFilter className="w-5 h-5" />
-        {getActiveFilterCount() > 0 && (
-          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-            {getActiveFilterCount()}
-          </span>
-        )}
-      </button>
 
       {/* Sidebar (Mobile) */}
       <div className={`

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { FiHeart, FiClock, FiTag, FiGrid, FiList } from "react-icons/fi";
+import { FiHeart, FiClock, FiTag, FiGrid, FiList, FiFilter } from "react-icons/fi";
 import axios from "axios";
 import Button from "../../components/Button";
 
@@ -137,9 +137,18 @@ export default function OffersPage() {
           <div className="sticky top-16 z-30 bg-[rgb(var(--color-bg))] border-b border-[rgb(var(--color-border))] py-4">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-[rgb(var(--color-muted))]">
-                  {filteredOffers.length} offers found
-                </span>
+                <div className="flex items-center">
+                  <button
+                    onClick={() => setFilterOpen(true)}
+                    className="lg:hidden mr-3 p-2 rounded border border-[rgb(var(--color-border))] text-[rgb(var(--color-fg))] hover:bg-[rgb(var(--color-ui))]"
+                    aria-label="Open filters"
+                  >
+                    <FiFilter className="w-4 h-4" />
+                  </button>
+                  <span className="text-sm text-[rgb(var(--color-muted))]">
+                    {filteredOffers.length} offers found
+                  </span>
+                </div>
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() => setViewMode('grid')}
