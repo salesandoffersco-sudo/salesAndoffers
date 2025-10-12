@@ -134,7 +134,7 @@ export default function OffersPage() {
         </div>
       </div>
 
-      <div className="flex">
+      <div className="flex items-start">
         <FilterSidebar
           isOpen={filterOpen}
           onToggle={() => setFilterOpen(!filterOpen)}
