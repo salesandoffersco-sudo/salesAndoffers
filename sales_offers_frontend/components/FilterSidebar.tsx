@@ -297,8 +297,8 @@ export default function FilterSidebar({
       </div>
 
       {/* Sidebar (Desktop) */}
-      <div className={`hidden lg:block w-80 shrink-0 sticky top-16 self-start z-10 ${className}`}>
-        <div className="max-h-[calc(100vh-4rem)] w-full bg-[rgb(var(--color-card))] border-r border-[rgb(var(--color-border))] overflow-y-auto p-4">
+      <div className={`hidden lg:block w-80 shrink-0 bg-[rgb(var(--color-card))] border-r border-[rgb(var(--color-border))] ${className}`}>
+        <div className="sticky top-16 max-h-[calc(100vh-4rem)] w-full overflow-y-auto p-4">
           <div className="mb-3">
             <div className="flex items-center gap-2">
               <FiFilter className="w-5 h-5 text-purple-600" />

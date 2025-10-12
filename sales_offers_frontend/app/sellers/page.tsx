@@ -98,7 +98,7 @@ export default function SellersPage() {
         </div>
       </div>
 
-      <div className="flex items-start">
+      <div className="flex">
         <FilterSidebar
           isOpen={filterOpen}
           onToggle={() => setFilterOpen(!filterOpen)}
