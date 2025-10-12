@@ -17,7 +17,14 @@ class BlogPost(models.Model):
     
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.title)
+            base_slug = slugify(self.title) or "post"
+            slug_candidate = base_slug
+            idx = 1
+            from django.db.models import Q
+            while BlogPost.objects.filter(Q(slug=slug_candidate)).exclude(pk=self.pk).exists():
+                idx += 1
+                slug_candidate = f"{base_slug}-{idx}"
+            self.slug = slug_candidate
         super().save(*args, **kwargs)
     
     def __str__(self):

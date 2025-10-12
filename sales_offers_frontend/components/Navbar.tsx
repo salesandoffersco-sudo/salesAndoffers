@@ -6,6 +6,7 @@ import { FiMenu, FiX, FiUser, FiLogOut, FiChevronDown } from "react-icons/fi";
 import { useState, useEffect, useRef } from "react";
 import ThemeToggle from "./ThemeToggle";
 import NotificationBell from "./NotificationBell";
+import { API_BASE_URL } from "../lib/api";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -96,7 +97,7 @@ export default function Navbar() {
     try {
       const token = localStorage.getItem("token");
       if (token) {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000'}/api/sellers/stats/`, {
+        const response = await fetch(`${API_BASE_URL}/api/sellers/stats/`, {
           headers: { Authorization: `Token ${token}` }
         });
         if (response.ok) {
