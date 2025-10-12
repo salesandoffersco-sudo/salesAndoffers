@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { FiHeart, FiClock, FiTag, FiGrid, FiList, FiFilter } from "react-icons/fi";
+import { FiHeart, FiClock, FiTag, FiGrid, FiList, FiFilter, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import axios from "axios";
 import Button from "../../components/Button";
 
@@ -31,6 +31,8 @@ export default function OffersPage() {
   const [filterOpen, setFilterOpen] = useState(false);
   const [filters, setFilters] = useState<any>({});
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [page, setPage] = useState(1);
+  const pageSize = 12;
 
   useEffect(() => {
     fetchOffers();
@@ -74,6 +76,13 @@ export default function OffersPage() {
     if (filters.categories && filters.categories.length > 0 && !filters.categories.includes(offer.category)) return false;
     return true;
   });
+
+  useEffect(() => {
+    setPage(1);
+  }, [filters]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredOffers.length / pageSize));
+  const visibleOffers = filteredOffers.slice((page - 1) * pageSize, page * pageSize);
 
   const filterSections = [
     {
@@ -183,7 +192,7 @@ export default function OffersPage() {
                 ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" 
                 : "space-y-6"
               }>
-                {filteredOffers.map((offer, index) => {
+                {visibleOffers.map((offer, index) => {
                   const isFeatured = index < 3 && canSeeFeaturedListings();
                   
                   if (viewMode === 'list') {
@@ -299,6 +308,27 @@ export default function OffersPage() {
                 })}
               </div>
             )}
+
+            {/* Pagination */}
+            <div className="mt-8 flex items-center justify-between">
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={page <= 1}
+                className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-[rgb(var(--color-border))] ${page <= 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[rgb(var(--color-ui))]'}`}
+              >
+                <FiChevronLeft className="w-4 h-4" />
+                Previous
+              </button>
+              <span className="text-sm text-[rgb(var(--color-muted))]">Page {page} of {totalPages}</span>
+              <button
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                disabled={page >= totalPages}
+                className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-[rgb(var(--color-border))] ${page >= totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[rgb(var(--color-ui))]'}`}
+              >
+                Next
+                <FiChevronRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       </div>

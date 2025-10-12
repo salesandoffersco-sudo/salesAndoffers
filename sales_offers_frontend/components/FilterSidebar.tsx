@@ -298,10 +298,9 @@ export default function FilterSidebar({
 
       {/* Sidebar (Desktop) */}
       <div className={`
-        hidden lg:block sticky top-16 h-[calc(100vh-4rem)] w-80 bg-[rgb(var(--color-card))] border-r border-[rgb(var(--color-border))]
-        overflow-y-auto z-10 ${className}
+        hidden lg:block self-start sticky top-16 z-10 ${className}
       `}>
-        <div className="p-4">
+        <div className="h-[calc(100vh-4rem)] w-80 bg-[rgb(var(--color-card))] border-r border-[rgb(var(--color-border))] overflow-y-auto p-4">
           <div className="mb-3">
             <div className="flex items-center gap-2">
               <FiFilter className="w-5 h-5 text-purple-600" />
