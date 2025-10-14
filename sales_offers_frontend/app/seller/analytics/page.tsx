@@ -114,6 +114,12 @@ export default function AnalyticsPage() {
 
   const fetchAnalytics = async () => {
     try {
+      // Skip API call during build/SSR
+      if (typeof window === 'undefined') {
+        setLoading(false);
+        return;
+      }
+      
       const token = localStorage.getItem('token');
       const response = await fetch('http://localhost:8000/api/analytics/seller/', {
         headers: {
