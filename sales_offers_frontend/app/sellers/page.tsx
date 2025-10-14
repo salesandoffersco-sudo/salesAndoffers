@@ -7,7 +7,6 @@ import axios from "axios";
 
 import FilterSidebar from "../../components/FilterSidebar";
 import SellersCarousel from "../../components/SellersCarousel";
-import SellersCarousel from "../../components/SellersCarousel";
 import { API_BASE_URL } from "../../lib/api";
 
 interface Seller {
