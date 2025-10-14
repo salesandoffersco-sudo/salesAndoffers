@@ -110,11 +110,6 @@
   section[class*="min-h-screen"] {
     min-height: 70vh !important;
   }
-  
-  /* Ensure carousel container is centered */
-  .relative.flex-shrink-0 {
-    margin: 0 auto;
-  }
 }
 
 @media (max-width: 480px) {
@@ -126,13 +121,6 @@
   /* Minimal hero section height for small mobile */
   section[class*="min-h-screen"] {
     min-height: 60vh !important;
-  }
-  
-  /* Ensure carousel container is centered on small screens */
-  .relative.flex-shrink-0 {
-    margin: 0 auto;
-    display: flex;
-    justify-content: center;
   }
 }
 
