@@ -113,10 +113,11 @@ const PlanBadge = ({ plan }: { plan: string }) => {
   );
 };
 
-// Force dynamic rendering
-export const revalidate = 0;
-
 export default function AnalyticsPage() {
+  // Skip rendering during build
+  if (typeof window === 'undefined') {
+    return <div>Loading...</div>;
+  }
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
