@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FiScan, FiCheck, FiX, FiBarChart3, FiDollarSign } from "react-icons/fi";
+import { FiSearch, FiCheck, FiX, FiBarChart, FiDollarSign } from "react-icons/fi";
 import axios from "axios";
 import Button from "../../../components/Button";
 import { API_BASE_URL } from "../../../lib/api";
@@ -115,7 +115,7 @@ export default function MerchantDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div className="bg-[rgb(var(--color-card))] rounded-xl p-6 border border-[rgb(var(--color-border))]">
               <div className="flex items-center">
-                <FiBarChart3 className="text-2xl text-blue-500 mr-3" />
+                <FiBarChart className="text-2xl text-blue-500 mr-3" />
                 <div>
                   <p className="text-sm text-[rgb(var(--color-muted))]">Total Vouchers</p>
                   <p className="text-2xl font-bold text-[rgb(var(--color-fg))]">{analytics.total_vouchers}</p>
@@ -145,7 +145,7 @@ export default function MerchantDashboard() {
             
             <div className="bg-[rgb(var(--color-card))] rounded-xl p-6 border border-[rgb(var(--color-border))]">
               <div className="flex items-center">
-                <FiScan className="text-2xl text-orange-500 mr-3" />
+                <FiSearch className="text-2xl text-orange-500 mr-3" />
                 <div>
                   <p className="text-sm text-[rgb(var(--color-muted))]">Redemption Rate</p>
                   <p className="text-2xl font-bold text-[rgb(var(--color-fg))]">
@@ -206,7 +206,7 @@ export default function MerchantDashboard() {
               </div>
             ) : redemptions.length === 0 ? (
               <div className="p-8 text-center">
-                <FiScan className="text-4xl text-[rgb(var(--color-muted))] mx-auto mb-2" />
+                <FiSearch className="text-4xl text-[rgb(var(--color-muted))] mx-auto mb-2" />
                 <p className="text-[rgb(var(--color-muted))]">No redemptions yet</p>
               </div>
             ) : (
