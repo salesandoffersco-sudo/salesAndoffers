@@ -113,6 +113,9 @@ const PlanBadge = ({ plan }: { plan: string }) => {
   );
 };
 
+// Disable static generation for this page
+export const dynamic = 'force-dynamic';
+
 export default function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
