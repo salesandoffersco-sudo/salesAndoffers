@@ -26,7 +26,7 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
   const [currentRotation, setCurrentRotation] = useState(0);
   const [isBg1Active, setIsBg1Active] = useState(true);
   const carouselRef = useRef<HTMLDivElement>(null);
-  const autoPlayRef = useRef<NodeJS.Timeout>();
+  const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
   const { addToCart } = useCart();
 
   const totalSlides = items.length;
