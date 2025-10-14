@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { 
   FiTrendingUp, FiDollarSign, FiShoppingBag, FiEye, 
-  FiArrowUp, FiArrowDown, FiBarChart3, FiChevronRight
+  FiArrowUp, FiArrowDown, FiBarChart, FiChevronRight
 } from 'react-icons/fi';
 
 interface AnalyticsData {
@@ -109,7 +109,7 @@ export default function AnalyticsWidget({ className = '' }: AnalyticsWidgetProps
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-              <FiBarChart3 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <FiBarChart className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Analytics Overview</h3>
@@ -187,7 +187,7 @@ export default function AnalyticsWidget({ className = '' }: AnalyticsWidgetProps
             href="/seller/analytics"
             className="flex items-center justify-center gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors text-sm font-medium"
           >
-            <FiBarChart3 className="w-4 h-4" />
+            <FiBarChart className="w-4 h-4" />
             Full Analytics
           </Link>
           <button className="flex items-center justify-center gap-2 p-3 bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors text-sm font-medium">

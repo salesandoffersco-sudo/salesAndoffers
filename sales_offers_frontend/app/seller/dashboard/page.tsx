@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { FiShoppingBag, FiPlus, FiDollarSign, FiTrendingUp, FiPackage, FiEdit, FiEye, FiTrash2, FiBarChart3 } from "react-icons/fi";
+import { FiShoppingBag, FiPlus, FiDollarSign, FiTrendingUp, FiPackage, FiEdit, FiEye, FiTrash2, FiBarChart } from "react-icons/fi";
 import axios from "axios";
 import Button from "../../../components/Button";
 import CreateOfferModal from "../../../components/CreateOfferModal";
@@ -201,7 +201,7 @@ export default function SellerDashboardPage() {
                 <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">View detailed performance insights</p>
               </div>
               <div className="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-lg">
-                <FiBarChart3 className="text-blue-600 dark:text-blue-400 text-xl" />
+                <FiBarChart className="text-blue-600 dark:text-blue-400 text-xl" />
               </div>
             </div>
           </Link>
@@ -262,7 +262,7 @@ export default function SellerDashboardPage() {
                     <div className="flex items-center space-x-2">
                       <Link href={`/seller/analytics/deal/${offer.id}`}>
                         <Button variant="outline" size="sm" title="View Analytics">
-                          <FiBarChart3 className="w-4 h-4" />
+                          <FiBarChart className="w-4 h-4" />
                         </Button>
                       </Link>
                       <Button variant="outline" size="sm" onClick={() => alert('Edit offer coming soon!')}>
@@ -288,7 +288,7 @@ export default function SellerDashboardPage() {
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
             <div className="space-y-3">
               <Link href="/seller/analytics" className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
-                <FiBarChart3 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <FiBarChart className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 <span className="text-blue-600 dark:text-blue-400 font-medium">View Full Analytics</span>
               </Link>
               <button className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors w-full text-left">

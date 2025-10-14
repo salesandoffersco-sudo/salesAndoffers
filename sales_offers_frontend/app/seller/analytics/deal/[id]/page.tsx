@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { 
   FiArrowLeft, FiDollarSign, FiShoppingBag, FiTarget, 
-  FiTrendingUp, FiClock, FiStar, FiUsers, FiBarChart3
+  FiTrendingUp, FiClock, FiStar, FiUsers, FiBarChart
 } from 'react-icons/fi';
 
 interface DealAnalytics {

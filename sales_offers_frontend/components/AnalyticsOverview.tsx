@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { 
   FiTrendingUp, FiDollarSign, FiShoppingBag, FiUsers, 
-  FiBarChart3, FiPieChart, FiActivity, FiTarget,
+  FiBarChart, FiPieChart, FiActivity, FiTarget,
   FiArrowUp, FiArrowDown, FiEye, FiLock
 } from 'react-icons/fi';
 
@@ -60,7 +60,7 @@ export default function AnalyticsOverview({ plan, className = '' }: AnalyticsOve
 
   const features = [
     {
-      icon: FiBarChart3,
+      icon: FiBarChart,
       title: 'Revenue Analytics',
       description: 'Track your earnings, daily revenue trends, and financial performance over time.',
       available: true
@@ -209,7 +209,7 @@ export default function AnalyticsOverview({ plan, className = '' }: AnalyticsOve
           animate={{ opacity: 1, y: 0 }}
           className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl p-8 text-white text-center"
         >
-          <FiBarChart3 className="w-16 h-16 mx-auto mb-4 text-white/80" />
+          <FiBarChart className="w-16 h-16 mx-auto mb-4 text-white/80" />
           <h3 className="text-2xl font-bold mb-2">Unlock Advanced Analytics</h3>
           <p className="text-purple-100 mb-6 max-w-2xl mx-auto">
             Get detailed insights into your business performance, customer behavior, and market trends. 

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FiTrendingUp, FiDollarSign, FiShoppingBag, FiUsers, 
-  FiBarChart3, FiPieChart, FiActivity, FiTarget,
+  FiBarChart, FiPieChart, FiActivity, FiTarget,
   FiArrowUp, FiArrowDown, FiEye, FiRefreshCw, FiDownload
 } from 'react-icons/fi';
 import RealTimeAnalytics from '../../../components/RealTimeAnalytics';
