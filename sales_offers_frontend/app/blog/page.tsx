@@ -42,7 +42,7 @@ export default function BlogPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [emojis, setEmojis] = useState<EmojiParticle[]>([]);
   const heroRef = useRef<HTMLDivElement>(null);
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number | null>(null);
   const mousePos = useRef({ x: 0, y: 0 });
 
   const emojiList = [
