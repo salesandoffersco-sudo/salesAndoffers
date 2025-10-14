@@ -27,7 +27,7 @@ export default function SellersCarousel({ sellers, className = '' }: SellersCaro
   const [isPaused, setIsPaused] = useState(false);
   const [currentOffset, setCurrentOffset] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number | null>(null);
 
   // Duplicate sellers for seamless loop
   const duplicatedSellers = [...sellers, ...sellers, ...sellers];
