@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { FiHeart, FiMessageCircle, FiUser, FiCalendar, FiTrendingUp, FiEdit3 } from "react-icons/fi";
 import axios from "axios";
@@ -26,15 +26,125 @@ interface BlogPost {
   is_liked: boolean;
 }
 
+interface EmojiParticle {
+  id: number;
+  emoji: string;
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  size: number;
+}
+
 export default function BlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [emojis, setEmojis] = useState<EmojiParticle[]>([]);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const animationRef = useRef<number>();
+  const mousePos = useRef({ x: 0, y: 0 });
+
+  const emojiList = [
+    '😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃', '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '😚', '😙',
+    '😋', '😛', '😜', '🤪', '😝', '🤑', '🤗', '🤭', '🤫', '🤔', '🤐', '🤨', '😐', '😑', '😶', '😏', '😒', '🙄', '😬', '🤥',
+    '😔', '😪', '🤤', '😴', '😷', '🤒', '🤕', '🤢', '🤮', '🤧', '🥵', '🥶', '🥴', '😵', '🤯', '🤠', '🥳', '😎', '🤓', '🧐',
+    '🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵', '🙈', '🙉', '🙊', '🐒', '🐔',
+    '🐧', '🐦', '🐤', '🐣', '🐥', '🦆', '🦅', '🦉', '🦇', '🐺', '🐗', '🐴', '🦄', '🐝', '🐛', '🦋', '🐌', '🐞', '🐜', '🦟',
+    '🛒', '🛍️', '💰', '💎', '💳', '💸', '💵', '💴', '💶', '💷', '🎁', '🎉', '🎊', '🎈', '🎂', '🍰', '🧁', '🍭', '🍬', '🍫',
+    '❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💔', '❣️', '💕', '💞', '💓', '💗', '💖', '💘', '💝', '💟', '☮️',
+    '⭐', '🌟', '✨', '⚡', '💫', '🔥', '💥', '💢', '💨', '💦', '💤', '🌈', '☀️', '⛅', '☁️', '🌙', '🌛', '🌜', '🌚', '🌝'
+  ];
 
   useEffect(() => {
     setIsLoggedIn(!!localStorage.getItem("token"));
     fetchPosts();
+    initEmojis();
+    startAnimation();
+    
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
   }, []);
+
+  const initEmojis = () => {
+    const newEmojis: EmojiParticle[] = [];
+    for (let i = 0; i < 80; i++) {
+      newEmojis.push({
+        id: i,
+        emoji: emojiList[Math.floor(Math.random() * emojiList.length)],
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * 600,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        size: Math.random() * 20 + 15
+      });
+    }
+    setEmojis(newEmojis);
+  };
+
+  const startAnimation = () => {
+    const animate = () => {
+      setEmojis(prevEmojis => 
+        prevEmojis.map(emoji => {
+          let { x, y, vx, vy } = emoji;
+          
+          // Mouse repulsion
+          const dx = x - mousePos.current.x;
+          const dy = y - mousePos.current.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          
+          if (distance < 100) {
+            const force = (100 - distance) / 100;
+            vx += (dx / distance) * force * 0.5;
+            vy += (dy / distance) * force * 0.5;
+          }
+          
+          // Apply velocity
+          x += vx;
+          y += vy;
+          
+          // Friction
+          vx *= 0.98;
+          vy *= 0.98;
+          
+          // Boundaries
+          if (x < 0 || x > window.innerWidth) vx *= -0.5;
+          if (y < 0 || y > 600) vy *= -0.5;
+          
+          x = Math.max(0, Math.min(window.innerWidth, x));
+          y = Math.max(0, Math.min(600, y));
+          
+          return { ...emoji, x, y, vx, vy };
+        })
+      );
+      
+      animationRef.current = requestAnimationFrame(animate);
+    };
+    animate();
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (heroRef.current) {
+      const rect = heroRef.current.getBoundingClientRect();
+      mousePos.current = {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      };
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (heroRef.current && e.touches[0]) {
+      const rect = heroRef.current.getBoundingClientRect();
+      mousePos.current = {
+        x: e.touches[0].clientX - rect.left,
+        y: e.touches[0].clientY - rect.top
+      };
+    }
+  };
 
   const fetchPosts = async () => {
     try {
@@ -66,26 +176,29 @@ export default function BlogPage() {
   return (
     <div className="min-h-screen bg-[rgb(var(--color-bg))]">
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 text-white py-20 relative overflow-hidden">
-        {/* Animated Background Elements */}
-        <div className="absolute inset-0">
-          {/* Floating Orbs */}
-          <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl animate-float" />
-          <div className="absolute top-20 right-20 w-24 h-24 bg-yellow-300/20 rounded-full blur-xl animate-float" style={{animationDelay: '2s'}} />
-          <div className="absolute bottom-20 left-1/4 w-40 h-40 bg-purple-300/15 rounded-full blur-3xl animate-float" style={{animationDelay: '4s'}} />
-          <div className="absolute bottom-10 right-1/3 w-28 h-28 bg-blue-300/20 rounded-full blur-2xl animate-float" style={{animationDelay: '1s'}} />
-          
-          {/* Moving Gradient Shapes */}
-          <div className="absolute top-0 left-0 w-full h-full">
-            <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-r from-purple-400/10 to-pink-400/10 rounded-full blur-3xl animate-spin-slow" />
-            <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-gradient-to-r from-blue-400/10 to-cyan-400/10 rounded-full blur-2xl animate-spin-slow" style={{animationDelay: '3s', animationDirection: 'reverse'}} />
-          </div>
-          
-          {/* Particle-like Elements */}
-          <div className="absolute top-1/3 left-1/2 w-2 h-2 bg-white/40 rounded-full animate-ping" style={{animationDelay: '0.5s'}} />
-          <div className="absolute top-2/3 left-1/3 w-1 h-1 bg-yellow-300/60 rounded-full animate-ping" style={{animationDelay: '1.5s'}} />
-          <div className="absolute top-1/2 right-1/4 w-3 h-3 bg-purple-300/50 rounded-full animate-ping" style={{animationDelay: '2.5s'}} />
-          <div className="absolute bottom-1/3 left-2/3 w-1.5 h-1.5 bg-blue-300/50 rounded-full animate-ping" style={{animationDelay: '3.5s'}} />
+      <div 
+        ref={heroRef}
+        className="bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 text-white py-20 relative overflow-hidden"
+        onMouseMove={handleMouseMove}
+        onTouchMove={handleTouchMove}
+      >
+        {/* Interactive Emoji Background */}
+        <div className="absolute inset-0 pointer-events-none">
+          {emojis.map(emoji => (
+            <div
+              key={emoji.id}
+              className="absolute transition-transform duration-100 ease-out select-none"
+              style={{
+                left: `${emoji.x}px`,
+                top: `${emoji.y}px`,
+                fontSize: `${emoji.size}px`,
+                transform: `translate(-50%, -50%)`,
+                filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
+              }}
+            >
+              {emoji.emoji}
+            </div>
+          ))}
         </div>
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-5xl md:text-6xl font-bold mb-6">
