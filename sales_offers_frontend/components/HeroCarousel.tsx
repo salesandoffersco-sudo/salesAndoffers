@@ -65,9 +65,23 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
     });
   };
 
+  const updateBackground = () => {
+    const activeSlideImg = items[currentIndex]?.image;
+    if (!activeSlideImg) return;
+    
+    const bgElement = isBg1Active ? 
+      document.querySelector('.hero-bg-2') : 
+      document.querySelector('.hero-bg-1');
+    
+    if (bgElement) {
+      (bgElement as HTMLElement).style.backgroundImage = `url(${activeSlideImg})`;
+    }
+  };
+
   const navigate = (direction: number) => {
+    const newIndex = (currentIndex + direction + totalSlides) % totalSlides;
     setCurrentRotation(prev => prev + direction * -angle);
-    setCurrentIndex(prev => (prev + direction + totalSlides) % totalSlides);
+    setCurrentIndex(newIndex);
     setIsBg1Active(prev => !prev);
     resetAutoPlay();
   };
@@ -101,6 +115,7 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
   useEffect(() => {
     if (totalSlides > 0) {
       updateCarousel();
+      updateBackground();
       startAutoPlay();
     }
     
@@ -110,6 +125,11 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
       }
     };
   }, [currentIndex, currentRotation, totalSlides]);
+
+  // Update background when currentIndex changes
+  useEffect(() => {
+    updateBackground();
+  }, [currentIndex, isBg1Active]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -129,7 +149,7 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
     <section className={`relative min-h-screen flex items-center justify-center overflow-hidden ${className}`}>
       {/* Dynamic Background */}
       <div 
-        className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${isBg1Active ? 'opacity-100' : 'opacity-0'}`}
+        className={`hero-bg-1 absolute inset-0 bg-cover bg-center transition-opacity duration-1200 ${isBg1Active ? 'opacity-100' : 'opacity-0'}`}
         style={{
           backgroundImage: `url(${currentItem?.image})`,
           filter: 'blur(25px) brightness(0.6)',
@@ -137,9 +157,8 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
         }}
       />
       <div 
-        className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${!isBg1Active ? 'opacity-100' : 'opacity-0'}`}
+        className={`hero-bg-2 absolute inset-0 bg-cover bg-center transition-opacity duration-1200 ${!isBg1Active ? 'opacity-100' : 'opacity-0'}`}
         style={{
-          backgroundImage: `url(${items[(currentIndex + 1) % totalSlides]?.image})`,
           filter: 'blur(25px) brightness(0.6)',
           transform: 'scale(1.1)'
         }}
@@ -181,7 +200,10 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
                       const shortestPath = Math.abs(diff) > totalSlides / 2 
                         ? diff > 0 ? diff - totalSlides : diff + totalSlides 
                         : diff;
-                      navigate(shortestPath);
+                      setCurrentRotation(prev => prev + shortestPath * -angle);
+                      setCurrentIndex(index);
+                      setIsBg1Active(prev => !prev);
+                      resetAutoPlay();
                     }
                   }}
                 >
