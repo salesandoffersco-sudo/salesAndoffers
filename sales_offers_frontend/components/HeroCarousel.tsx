@@ -55,7 +55,9 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
     const carousel = carouselRef.current;
     carousel.style.transform = `rotateY(${currentRotation}deg)`;
     
-    const radius = Math.round((280 / 2) / Math.tan(Math.PI / totalSlides));
+    // Get actual slide width for responsive radius calculation
+    const slideWidth = window.innerWidth <= 480 ? 200 : window.innerWidth <= 768 ? 240 : 280;
+    const radius = Math.round((slideWidth / 2) / Math.tan(Math.PI / totalSlides));
     
     const slides = carousel.querySelectorAll('.carousel-slide');
     slides.forEach((slide, index) => {
@@ -198,7 +200,7 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
         </div>
 
         {/* 3D Carousel */}
-        <div className="relative flex-shrink-0 z-10" style={{
+        <div className="relative flex-shrink-0 z-10 mx-auto" style={{
           width: 'min(280px, 80vw)',
           height: 'min(420px, 60vh)'
         }}>
