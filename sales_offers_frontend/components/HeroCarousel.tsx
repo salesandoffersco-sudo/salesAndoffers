@@ -186,7 +186,7 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
       <div className="relative z-10 flex flex-col lg:flex-row items-center justify-center lg:justify-between w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Left Details - Desktop Only */}
-        <div className="hidden lg:block flex-1 text-white text-left pr-8">
+        <div className="hidden lg:block flex-1 text-white text-left pr-8 relative z-20">
           <div className="details-content opacity-0 transform translate-y-5 transition-all duration-600">
             <h1 className="text-4xl xl:text-5xl font-extrabold mb-4 text-shadow-lg">
               {currentItem?.title}
@@ -198,7 +198,7 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
         </div>
 
         {/* 3D Carousel */}
-        <div className="relative flex-shrink-0" style={{
+        <div className="relative flex-shrink-0 z-10" style={{
           width: 'min(280px, 80vw)',
           height: 'min(420px, 60vh)'
         }}>
@@ -307,7 +307,7 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
         </div>
 
         {/* Right Details - Desktop Only */}
-        <div className="hidden lg:block flex-1 text-white text-right pl-8">
+        <div className="hidden lg:block flex-1 text-white text-right pl-8 relative z-20">
           <div className="details-content opacity-0 transform translate-y-5 transition-all duration-600">
             <div className="text-4xl xl:text-5xl font-bold mb-2">
               {currentItem?.price}
