@@ -41,11 +41,11 @@ export default function OffersPage() {
 
   const fetchOffers = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/offers/`);
+      const response = await axios.get(`${API_BASE_URL}/api/deals/`);
       setOffers(response.data);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching offers:", error);
+      console.error("Error fetching deals:", error);
       setLoading(false);
     }
   };

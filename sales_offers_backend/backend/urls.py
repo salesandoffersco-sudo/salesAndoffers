@@ -21,7 +21,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/sellers/', include('sellers.urls')),
     path('api/accounts/', include('accounts.urls')),
-    path('api/offers/', include('deals.urls')),
+    path('api/deals/', include('deals.urls')),
+    path('api/offers/', include('deals.urls')),  # Keep for backward compatibility
+    path('api/payments/', include('payments.urls')),
+    path('api/merchants/', include('merchants.urls')),
     path('api/newsletter/', include('newsletter.urls')),
     path('api/blog/', include('blog.urls')),
 ]

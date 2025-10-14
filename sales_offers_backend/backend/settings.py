@@ -36,6 +36,8 @@ INSTALLED_APPS = [
     'accounts',
     'sellers',
     'deals',
+    'payments',
+    'merchants',
     'transactions',
     'newsletter',
     'blog',
@@ -162,8 +164,8 @@ REST_FRAMEWORK = {
 }
 
 # Paystack Settings
-PAYSTACK_SECRET_KEY = "sk_test_YOUR_SECRET_KEY"
-PAYSTACK_PUBLIC_KEY = "pk_test_YOUR_PUBLIC_KEY"
+PAYSTACK_SECRET_KEY = os.environ.get('PAYSTACK_SECRET_KEY', 'sk_test_YOUR_SECRET_KEY')
+PAYSTACK_PUBLIC_KEY = os.environ.get('PAYSTACK_PUBLIC_KEY', 'pk_test_YOUR_PUBLIC_KEY')
 
 # Email Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

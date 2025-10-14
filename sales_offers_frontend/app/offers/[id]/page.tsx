@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { FiHeart, FiClock, FiTag, FiMapPin, FiStar, FiShare2 } from "react-icons/fi";
+import { FiHeart, FiClock, FiTag, FiMapPin, FiStar, FiShare2, FiMinus, FiPlus, FiShoppingCart } from "react-icons/fi";
 import axios from "axios";
 import Button from "../../../components/Button";
 import { API_BASE_URL } from "../../../lib/api";
 
-interface Offer {
+interface Deal {
   id: number;
   title: string;
   description: string;
@@ -16,7 +16,15 @@ interface Offer {
   discounted_price: string;
   discount_percentage: number;
   category: string;
-  valid_until: string;
+  location: string;
+  max_vouchers: number;
+  min_purchase: number;
+  max_purchase: number;
+  vouchers_sold: number;
+  vouchers_available: number;
+  redemption_instructions: string;
+  expires_at: string;
+  redemption_deadline: string;
   image?: string;
   seller: {
     id: number;
@@ -26,25 +34,28 @@ interface Offer {
   };
 }
 
-export default function OfferDetailsPage() {
+export default function DealDetailsPage() {
   const params = useParams();
-  const [offer, setOffer] = useState<Offer | null>(null);
+  const router = useRouter();
+  const [deal, setDeal] = useState<Deal | null>(null);
   const [loading, setLoading] = useState(true);
+  const [purchasing, setPurchasing] = useState(false);
+  const [quantity, setQuantity] = useState(1);
   const [isFavorited, setIsFavorited] = useState(false);
 
   useEffect(() => {
     if (params.id) {
-      fetchOffer();
+      fetchDeal();
     }
   }, [params.id]);
 
-  const fetchOffer = async () => {
+  const fetchDeal = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/offers/${params.id}/`);
-      setOffer(response.data);
+      const response = await axios.get(`${API_BASE_URL}/api/deals/${params.id}/`);
+      setDeal(response.data);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching offer:", error);
+      console.error("Error fetching deal:", error);
       setLoading(false);
     }
   };
@@ -52,6 +63,48 @@ export default function OfferDetailsPage() {
   const handleFavorite = () => {
     setIsFavorited(!isFavorited);
   };
+
+  const handleQuantityChange = (change: number) => {
+    if (!deal) return;
+    const newQuantity = quantity + change;
+    if (newQuantity >= deal.min_purchase && newQuantity <= deal.max_purchase && newQuantity <= deal.vouchers_available) {
+      setQuantity(newQuantity);
+    }
+  };
+
+  const handlePurchase = async () => {
+    if (!deal) return;
+    
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+
+    setPurchasing(true);
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/api/payments/initialize/`,
+        {
+          deal_id: deal.id,
+          quantity: quantity
+        },
+        {
+          headers: { Authorization: `Token ${token}` }
+        }
+      );
+
+      // Redirect to Paystack checkout
+      window.location.href = response.data.authorization_url;
+    } catch (error: any) {
+      console.error("Error initializing payment:", error);
+      alert(error.response?.data?.error || "Failed to initialize payment");
+      setPurchasing(false);
+    }
+  };
+
+  const totalAmount = deal ? parseFloat(deal.discounted_price) * quantity : 0;
+  const savings = deal ? (parseFloat(deal.original_price) - parseFloat(deal.discounted_price)) * quantity : 0;
 
   if (loading) {
     return (
@@ -61,15 +114,15 @@ export default function OfferDetailsPage() {
     );
   }
 
-  if (!offer) {
+  if (!deal) {
     return (
       <div className="min-h-screen bg-[rgb(var(--color-bg))] flex items-center justify-center">
         <div className="text-center">
           <FiTag className="text-6xl text-[rgb(var(--color-muted))] mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-[rgb(var(--color-text))] mb-2">Offer Not Found</h1>
-          <p className="text-[rgb(var(--color-muted))] mb-4">The offer you're looking for doesn't exist.</p>
+          <h1 className="text-2xl font-bold text-[rgb(var(--color-text))] mb-2">Deal Not Found</h1>
+          <p className="text-[rgb(var(--color-muted))] mb-4">The deal you're looking for doesn't exist.</p>
           <Link href="/offers">
-            <Button variant="primary">Browse Offers</Button>
+            <Button variant="primary">Browse Deals</Button>
           </Link>
         </div>
       </div>
@@ -83,11 +136,25 @@ export default function OfferDetailsPage() {
           {/* Image Section */}
           <div className="bg-[rgb(var(--color-card))] rounded-2xl p-6 border border-[rgb(var(--color-border))]">
             <div className="aspect-square bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl flex items-center justify-center">
-              {offer.image ? (
-                <img src={offer.image} alt={offer.title} className="w-full h-full object-cover rounded-xl" />
+              {deal.image ? (
+                <img src={deal.image} alt={deal.title} className="w-full h-full object-cover rounded-xl" />
               ) : (
                 <FiTag className="text-6xl text-[rgb(var(--color-muted))]" />
               )}
+            </div>
+            
+            {/* Availability Info */}
+            <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+              <div className="flex justify-between text-sm">
+                <span className="text-[rgb(var(--color-muted))]">Vouchers Available:</span>
+                <span className="font-semibold text-[rgb(var(--color-fg))]">{deal.vouchers_available} / {deal.max_vouchers}</span>
+              </div>
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-2">
+                <div 
+                  className="bg-purple-600 h-2 rounded-full" 
+                  style={{ width: `${(deal.vouchers_sold / deal.max_vouchers) * 100}%` }}
+                ></div>
+              </div>
             </div>
           </div>
 
@@ -96,7 +163,7 @@ export default function OfferDetailsPage() {
             <div>
               <div className="flex items-center justify-between mb-4">
                 <span className="bg-purple-100 dark:bg-indigo-900/40 text-purple-600 dark:text-indigo-300 px-3 py-1 rounded-full text-sm font-semibold">
-                  {offer.category}
+                  {deal.category}
                 </span>
                 <div className="flex space-x-2">
                   <Button
@@ -113,69 +180,146 @@ export default function OfferDetailsPage() {
                 </div>
               </div>
               
-              <h1 className="text-3xl font-bold text-[rgb(var(--color-text))] mb-4">{offer.title}</h1>
+              <h1 className="text-3xl font-bold text-[rgb(var(--color-text))] mb-4">{deal.title}</h1>
               
               <div className="flex items-center space-x-4 mb-6">
                 <span className="text-3xl font-bold text-purple-600 dark:text-indigo-300">
-                  KES {offer.discounted_price}
+                  KES {deal.discounted_price}
                 </span>
                 <span className="text-xl text-[rgb(var(--color-muted))] line-through">
-                  KES {offer.original_price}
+                  KES {deal.original_price}
                 </span>
                 <span className="bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-300 px-3 py-1 rounded-full text-sm font-semibold">
-                  {offer.discount_percentage}% OFF
+                  {deal.discount_percentage}% OFF
                 </span>
               </div>
 
-              <div className="flex items-center text-[rgb(var(--color-muted))] mb-6">
-                <FiClock className="mr-2" />
-                <span>Valid until {new Date(offer.valid_until).toLocaleDateString()}</span>
+              <div className="space-y-2 text-sm text-[rgb(var(--color-muted))] mb-6">
+                <div className="flex items-center">
+                  <FiClock className="mr-2" />
+                  <span>Deal expires: {new Date(deal.expires_at).toLocaleDateString()}</span>
+                </div>
+                <div className="flex items-center">
+                  <FiMapPin className="mr-2" />
+                  <span>Location: {deal.location}</span>
+                </div>
+                <div className="flex items-center">
+                  <FiTag className="mr-2" />
+                  <span>Redeem by: {new Date(deal.redemption_deadline).toLocaleDateString()}</span>
+                </div>
               </div>
+            </div>
+
+            {/* Purchase Section */}
+            <div className="bg-[rgb(var(--color-card))] rounded-xl p-6 border border-[rgb(var(--color-border))]">
+              <h3 className="text-lg font-semibold text-[rgb(var(--color-text))] mb-4">Purchase Voucher</h3>
+              
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-[rgb(var(--color-muted))]">Quantity:</span>
+                <div className="flex items-center space-x-3">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleQuantityChange(-1)}
+                    disabled={quantity <= deal.min_purchase}
+                  >
+                    <FiMinus className="w-4 h-4" />
+                  </Button>
+                  <span className="font-semibold text-lg w-8 text-center">{quantity}</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleQuantityChange(1)}
+                    disabled={quantity >= deal.max_purchase || quantity >= deal.vouchers_available}
+                  >
+                    <FiPlus className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="text-sm text-[rgb(var(--color-muted))] mb-4">
+                Min: {deal.min_purchase} • Max: {deal.max_purchase}
+              </div>
+              
+              <div className="border-t border-[rgb(var(--color-border))] pt-4 space-y-2">
+                <div className="flex justify-between">
+                  <span>Subtotal:</span>
+                  <span>KES {totalAmount.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-green-600">
+                  <span>You save:</span>
+                  <span>KES {savings.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between font-bold text-lg border-t border-[rgb(var(--color-border))] pt-2">
+                  <span>Total:</span>
+                  <span>KES {totalAmount.toFixed(2)}</span>
+                </div>
+              </div>
+              
+              <Button
+                variant="primary"
+                size="lg"
+                className="w-full mt-4"
+                onClick={handlePurchase}
+                disabled={purchasing || deal.vouchers_available === 0}
+              >
+                {purchasing ? (
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Processing...
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center">
+                    <FiShoppingCart className="mr-2" />
+                    Buy Voucher - KES {totalAmount.toFixed(2)}
+                  </div>
+                )}
+              </Button>
+              
+              {deal.vouchers_available === 0 && (
+                <p className="text-red-500 text-sm mt-2 text-center">This deal is sold out</p>
+              )}
             </div>
 
             <div className="bg-[rgb(var(--color-card))] rounded-xl p-6 border border-[rgb(var(--color-border))]">
               <h3 className="text-lg font-semibold text-[rgb(var(--color-text))] mb-3">Description</h3>
-              <p className="text-[rgb(var(--color-muted))] leading-relaxed">{offer.description}</p>
+              <p className="text-[rgb(var(--color-muted))] leading-relaxed">{deal.description}</p>
+            </div>
+            
+            <div className="bg-[rgb(var(--color-card))] rounded-xl p-6 border border-[rgb(var(--color-border))]">
+              <h3 className="text-lg font-semibold text-[rgb(var(--color-text))] mb-3">Redemption Instructions</h3>
+              <p className="text-[rgb(var(--color-muted))] leading-relaxed">{deal.redemption_instructions}</p>
             </div>
 
             <div className="bg-[rgb(var(--color-card))] rounded-xl p-6 border border-[rgb(var(--color-border))]">
-              <h3 className="text-lg font-semibold text-[rgb(var(--color-text))] mb-4">Seller Information</h3>
+              <h3 className="text-lg font-semibold text-[rgb(var(--color-text))] mb-4">Merchant Information</h3>
               <div className="flex items-center justify-between">
                 <div>
-                  <Link href={`/sellers/${offer.seller.id}`} className="text-purple-600 dark:text-indigo-300 font-semibold hover:underline">
-                    {offer.seller.business_name}
+                  <Link href={`/sellers/${deal.seller.id}`} className="text-purple-600 dark:text-indigo-300 font-semibold hover:underline">
+                    {deal.seller.business_name}
                   </Link>
                   <div className="flex items-center mt-1">
                     <div className="flex items-center">
                       {[...Array(5)].map((_, i) => (
                         <FiStar
                           key={i}
-                          className={`w-4 h-4 ${i < Math.floor(offer.seller.rating) ? "text-yellow-400 fill-current" : "text-gray-300"}`}
+                          className={`w-4 h-4 ${i < Math.floor(deal.seller.rating) ? "text-yellow-400 fill-current" : "text-gray-300"}`}
                         />
                       ))}
                     </div>
                     <span className="text-sm text-[rgb(var(--color-muted))] ml-2">
-                      {offer.seller.rating.toFixed(1)}
+                      {deal.seller.rating.toFixed(1)}
                     </span>
                   </div>
                   <div className="flex items-center text-sm text-[rgb(var(--color-muted))] mt-1">
                     <FiMapPin className="w-4 h-4 mr-1" />
-                    {offer.seller.address}
+                    {deal.seller.address}
                   </div>
                 </div>
-                <Link href={`/sellers/${offer.seller.id}`}>
+                <Link href={`/sellers/${deal.seller.id}`}>
                   <Button variant="outline" size="sm">View Profile</Button>
                 </Link>
               </div>
-            </div>
-
-            <div className="flex space-x-4">
-              <Button variant="primary" size="lg" className="flex-1">
-                Contact Seller
-              </Button>
-              <Button variant="outline" size="lg" className="flex-1">
-                Get Directions
-              </Button>
             </div>
           </div>
         </div>
