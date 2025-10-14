@@ -7,8 +7,16 @@ import {
   FiBarChart, FiPieChart, FiActivity, FiTarget,
   FiArrowUp, FiArrowDown, FiEye, FiRefreshCw, FiDownload
 } from 'react-icons/fi';
-import RealTimeAnalytics from '../../../components/RealTimeAnalytics';
-import AnalyticsExport from '../../../components/AnalyticsExport';
+import dynamic from 'next/dynamic';
+
+const RealTimeAnalytics = dynamic(() => import('../../../components/RealTimeAnalytics'), {
+  ssr: false,
+  loading: () => <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+});
+
+const AnalyticsExport = dynamic(() => import('../../../components/AnalyticsExport'), {
+  ssr: false
+});
 
 interface AnalyticsData {
   plan: string;
