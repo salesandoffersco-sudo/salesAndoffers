@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'transactions',
     'newsletter',
     'blog',
+    'analytics',
 ]
 
 MIDDLEWARE = [
