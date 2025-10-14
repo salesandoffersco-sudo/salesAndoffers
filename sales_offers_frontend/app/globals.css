@@ -70,6 +70,38 @@
   overflow: hidden;
 }
 
+/* 3D Carousel Styles */
+.carousel-slide {
+  transform-origin: center center;
+  transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1), 
+              opacity 0.8s ease, 
+              filter 0.8s ease;
+  filter: brightness(0.6);
+}
+
+.carousel-slide.active {
+  filter: brightness(1);
+}
+
+.text-shadow-lg {
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Responsive carousel adjustments */
+@media (max-width: 768px) {
+  .carousel-slide {
+    width: 240px !important;
+    height: 360px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .carousel-slide {
+    width: 200px !important;
+    height: 300px !important;
+  }
+}
+
 :root {
   /* Light Mode Palette */
   --color-bg: 226, 226, 226; /* #E2E2E2 */

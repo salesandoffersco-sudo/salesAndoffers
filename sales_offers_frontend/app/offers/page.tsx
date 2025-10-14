@@ -8,6 +8,7 @@ import Button from "../../components/Button";
 import { useCart } from "../../contexts/CartContext";
 
 import FilterSidebar from "../../components/FilterSidebar";
+import HeroCarousel from "../../components/HeroCarousel";
 import { API_BASE_URL } from "../../lib/api";
 
 interface Offer {
@@ -141,15 +142,35 @@ export default function OffersPage() {
     }
   ];
 
+  // Featured items for hero carousel
+  const featuredItems = offers.slice(0, 6).map(offer => ({
+    id: offer.id,
+    title: offer.title,
+    description: offer.description,
+    price: `KES ${offer.discounted_price}`,
+    originalPrice: `KES ${offer.original_price}`,
+    rating: 4.5, // Mock rating
+    image: `https://images.unsplash.com/photo-${1526170375885 + offer.id}?q=80&w=400&h=600&auto=format&fit=crop`,
+    category: offer.category,
+    discount: offer.discount_percentage
+  }));
+
   return (
     <div className="min-h-screen bg-[rgb(var(--color-bg))]">
+      {/* Hero Carousel Section */}
+      {featuredItems.length > 0 && (
+        <HeroCarousel items={featuredItems} />
+      )}
       
-      <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl font-bold mb-4">Explore Amazing Offers</h1>
-          <p className="text-xl opacity-90">Discover exclusive deals from verified sellers</p>
+      {/* Fallback Hero for when no offers */}
+      {featuredItems.length === 0 && (
+        <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 className="text-4xl font-bold mb-4">Explore Amazing Offers</h1>
+            <p className="text-xl opacity-90">Discover exclusive deals from verified sellers</p>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="flex">
         <FilterSidebar
