@@ -267,7 +267,7 @@ export default function AnalyticsPage() {
               color="bg-indigo-500"
             />
             <StatCard
-              icon={FiBarChart3}
+              icon={FiBarChart}
               title="Avg Deal Value"
               value={`KES ${(analytics.avg_deal_value || 0).toLocaleString()}`}
               color="bg-pink-500"
