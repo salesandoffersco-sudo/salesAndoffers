@@ -69,12 +69,16 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
     const activeSlideImg = items[currentIndex]?.image;
     if (!activeSlideImg) return;
     
-    const bgElement = isBg1Active ? 
-      document.querySelector('.hero-bg-2') : 
-      document.querySelector('.hero-bg-1');
+    const targetBg = isBg1Active ? '.hero-bg-2' : '.hero-bg-1';
+    const activeBg = isBg1Active ? '.hero-bg-1' : '.hero-bg-2';
     
-    if (bgElement) {
-      (bgElement as HTMLElement).style.backgroundImage = `url(${activeSlideImg})`;
+    const targetElement = document.querySelector(targetBg) as HTMLElement;
+    const activeElement = document.querySelector(activeBg) as HTMLElement;
+    
+    if (targetElement && activeElement) {
+      targetElement.style.backgroundImage = `url(${activeSlideImg})`;
+      targetElement.style.opacity = '1';
+      activeElement.style.opacity = '0';
     }
   };
 
@@ -157,7 +161,7 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
   const currentItem = items[currentIndex];
 
   return (
-    <section className={`relative min-h-screen flex items-center justify-center overflow-hidden ${className}`}>
+    <section className={`relative min-h-screen lg:min-h-screen md:min-h-[80vh] sm:min-h-[70vh] min-h-[60vh] flex items-center justify-center overflow-hidden ${className}`}>
       {/* Dynamic Background */}
       <div 
         className={`hero-bg-1 absolute inset-0 bg-cover bg-center transition-opacity duration-1200 ${isBg1Active ? 'opacity-100' : 'opacity-0'}`}

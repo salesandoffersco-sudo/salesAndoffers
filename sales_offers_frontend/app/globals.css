@@ -93,6 +93,11 @@
   .details-content {
     display: none !important;
   }
+  
+  /* Reduce hero section height for tablets */
+  section[class*="min-h-screen"] {
+    min-height: 80vh !important;
+  }
 }
 
 @media (max-width: 768px) {
@@ -100,12 +105,22 @@
     width: min(240px, 80vw) !important;
     height: min(360px, 60vh) !important;
   }
+  
+  /* Further reduce hero section height for mobile */
+  section[class*="min-h-screen"] {
+    min-height: 70vh !important;
+  }
 }
 
 @media (max-width: 480px) {
   .carousel-slide {
     width: min(200px, 85vw) !important;
     height: min(300px, 55vh) !important;
+  }
+  
+  /* Minimal hero section height for small mobile */
+  section[class*="min-h-screen"] {
+    min-height: 60vh !important;
   }
 }
 
