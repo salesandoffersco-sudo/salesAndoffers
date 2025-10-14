@@ -53,7 +53,7 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
     if (!carouselRef.current || totalSlides === 0) return;
     
     const carousel = carouselRef.current;
-    carousel.style.transform = `translate(-50%, -50%) rotateY(${currentRotation}deg)`;
+    carousel.style.transform = `rotateY(${currentRotation}deg)`;
     
     // Get actual slide width for responsive radius calculation
     const slideWidth = window.innerWidth <= 480 ? 200 : window.innerWidth <= 768 ? 240 : 280;
@@ -200,7 +200,7 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
         </div>
 
         {/* 3D Carousel */}
-        <div className="relative flex-shrink-0 z-10 mx-auto" style={{
+        <div className="relative flex-shrink-0 z-10" style={{
           width: 'min(280px, 80vw)',
           height: 'min(420px, 60vh)'
         }}>
@@ -210,10 +210,7 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
               className="w-full h-full absolute transition-transform duration-700 ease-out"
               style={{ 
                 transformStyle: 'preserve-3d',
-                transformOrigin: 'center center',
-                left: '50%',
-                top: '50%',
-                transform: 'translate(-50%, -50%)'
+                transformOrigin: 'center center'
               }}
             >
               {items.map((item, index) => (
