@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { FiStar, FiMapPin, FiTrendingUp, FiUsers } from 'react-icons/fi';
+import { FiStar, FiMapPin, FiTrendingUp, FiUsers, FiChevronLeft, FiChevronRight, FiPlay, FiPause } from 'react-icons/fi';
 
 interface Seller {
   id: number;
@@ -25,7 +25,9 @@ interface SellersCarouselProps {
 
 export default function SellersCarousel({ sellers, className = '' }: SellersCarouselProps) {
   const [isPaused, setIsPaused] = useState(false);
+  const [currentOffset, setCurrentOffset] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
+  const animationRef = useRef<number>();
 
   // Duplicate sellers for seamless loop
   const duplicatedSellers = [...sellers, ...sellers, ...sellers];
@@ -42,7 +44,7 @@ export default function SellersCarousel({ sellers, className = '' }: SellersCaro
       stars.push(<FiStar key="half" className="fill-current text-yellow-400 opacity-50" />);
     }
     for (let i = 0; i < 5 - Math.ceil(rating); i++) {
-      stars.push(<FiStar key={`empty-${i}`} className="text-gray-300" />);
+      stars.push(<FiStar key={`empty-${i}`} className="text-[rgb(var(--color-muted))]" />);
     }
     return stars;
   };
@@ -53,39 +55,92 @@ export default function SellersCarousel({ sellers, className = '' }: SellersCaro
     return num.toString();
   };
 
-  return (
-    <section className={`relative py-16 overflow-hidden ${className}`}>
-      {/* Background Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-purple-900/20 dark:to-indigo-900/20" />
-      
-      {/* Floating Orbs Background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="floating-orb absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rounded-full blur-xl animate-float" />
-        <div className="floating-orb absolute top-40 right-20 w-24 h-24 bg-gradient-to-r from-blue-400/20 to-cyan-400/20 rounded-full blur-xl animate-float" style={{ animationDelay: '2s' }} />
-        <div className="floating-orb absolute bottom-20 left-1/3 w-40 h-40 bg-gradient-to-r from-indigo-400/20 to-purple-400/20 rounded-full blur-xl animate-float" style={{ animationDelay: '4s' }} />
-      </div>
+  // Animation loop
+  useEffect(() => {
+    if (!isPaused) {
+      const animate = () => {
+        setCurrentOffset(prev => {
+          const newOffset = prev + 0.5;
+          const resetPoint = (sellers.length * 320);
+          return newOffset >= resetPoint ? 0 : newOffset;
+        });
+        animationRef.current = requestAnimationFrame(animate);
+      };
+      animationRef.current = requestAnimationFrame(animate);
+    }
+    
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [isPaused, sellers.length]);
 
-      <div className="relative z-10 container-responsive">
+  const navigate = (direction: number) => {
+    const cardWidth = 320;
+    const newOffset = currentOffset + (direction * cardWidth);
+    const maxOffset = sellers.length * cardWidth;
+    
+    if (newOffset < 0) {
+      setCurrentOffset(maxOffset - cardWidth);
+    } else if (newOffset >= maxOffset) {
+      setCurrentOffset(0);
+    } else {
+      setCurrentOffset(newOffset);
+    }
+  };
+
+  return (
+    <section className={`relative py-12 bg-[rgb(var(--color-bg))] ${className}`}>
+      <div className="container-responsive">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-            Featured Sellers
-          </h2>
-          <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Discover amazing sellers offering incredible deals and quality products
-          </p>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h2 className="text-2xl md:text-3xl font-bold text-[rgb(var(--color-fg))] mb-2">
+              Featured Sellers
+            </h2>
+            <p className="text-[rgb(var(--color-muted))] max-w-2xl">
+              Discover amazing sellers offering incredible deals and quality products
+            </p>
+          </div>
+          
+          {/* Controls */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsPaused(!isPaused)}
+              className="p-2 rounded-lg bg-[rgb(var(--color-card))] border border-[rgb(var(--color-border))] text-[rgb(var(--color-fg))] hover:bg-[rgb(var(--color-ui))] transition-colors"
+              aria-label={isPaused ? 'Play' : 'Pause'}
+            >
+              {isPaused ? <FiPlay className="w-4 h-4" /> : <FiPause className="w-4 h-4" />}
+            </button>
+            <button
+              onClick={() => navigate(-1)}
+              className="p-2 rounded-lg bg-[rgb(var(--color-card))] border border-[rgb(var(--color-border))] text-[rgb(var(--color-fg))] hover:bg-[rgb(var(--color-ui))] transition-colors"
+              aria-label="Previous"
+            >
+              <FiChevronLeft className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => navigate(1)}
+              className="p-2 rounded-lg bg-[rgb(var(--color-card))] border border-[rgb(var(--color-border))] text-[rgb(var(--color-fg))] hover:bg-[rgb(var(--color-ui))] transition-colors"
+              aria-label="Next"
+            >
+              <FiChevronRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Carousel Container */}
-        <div 
-          className="relative"
-          onMouseEnter={() => setIsPaused(true)}
-          onMouseLeave={() => setIsPaused(false)}
-        >
+        <div className="relative overflow-hidden">
           <div 
             ref={carouselRef}
-            className={`flex gap-6 ${isPaused ? 'sellers-carousel-paused' : 'sellers-carousel-scroll'}`}
-            style={{ width: `${duplicatedSellers.length * 320}px` }}
+            className="flex gap-6 transition-transform duration-300 ease-out"
+            style={{ 
+              transform: `translateX(-${currentOffset}px)`,
+              width: `${duplicatedSellers.length * 320}px`
+            }}
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
           >
             {duplicatedSellers.map((seller, index) => (
               <div
@@ -93,10 +148,10 @@ export default function SellersCarousel({ sellers, className = '' }: SellersCaro
                 className="seller-card flex-shrink-0 w-80 group cursor-pointer"
               >
                 {/* Card Container */}
-                <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-200 dark:border-gray-700 group-hover:scale-105 group-hover:-translate-y-2">
+                <div className="card relative overflow-hidden group-hover:scale-105 group-hover:-translate-y-2 transition-all duration-500">
                   
                   {/* Cover Image */}
-                  <div className="relative h-32 overflow-hidden">
+                  <div className="relative h-32 overflow-hidden rounded-t-2xl">
                     <img 
                       src={seller.coverImage} 
                       alt={seller.businessName}
@@ -126,9 +181,9 @@ export default function SellersCarousel({ sellers, className = '' }: SellersCaro
                       <img 
                         src={seller.avatar} 
                         alt={seller.name}
-                        className="w-16 h-16 rounded-full border-4 border-white dark:border-gray-800 shadow-lg"
+                        className="w-16 h-16 rounded-full border-4 border-[rgb(var(--color-card))] shadow-lg"
                       />
-                      <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800" />
+                      <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-[rgb(var(--color-card))]" />
                     </div>
                   </div>
 
@@ -136,11 +191,11 @@ export default function SellersCarousel({ sellers, className = '' }: SellersCaro
                   <div className="pt-12 p-6">
                     {/* Business Info */}
                     <div className="mb-4">
-                      <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-1 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                      <h3 className="font-bold text-lg text-[rgb(var(--color-fg))] mb-1 group-hover:text-[rgb(var(--color-primary))] transition-colors">
                         {seller.businessName}
                       </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{seller.name}</p>
-                      <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-sm text-[rgb(var(--color-muted))] mb-2">{seller.name}</p>
+                      <div className="flex items-center gap-1 text-xs text-[rgb(var(--color-muted))]">
                         <FiMapPin className="w-3 h-3" />
                         {seller.location}
                       </div>
@@ -148,7 +203,7 @@ export default function SellersCarousel({ sellers, className = '' }: SellersCaro
 
                     {/* Category */}
                     <div className="mb-4">
-                      <span className="inline-block bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-3 py-1 rounded-full text-xs font-medium">
+                      <span className="pill">
                         {seller.category}
                       </span>
                     </div>
@@ -158,31 +213,31 @@ export default function SellersCarousel({ sellers, className = '' }: SellersCaro
                       <div className="flex items-center gap-1">
                         {generateStars(seller.rating)}
                       </div>
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <span className="text-sm font-medium text-[rgb(var(--color-fg))]">
                         {seller.rating}
                       </span>
                     </div>
 
                     {/* Stats */}
-                    <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[rgb(var(--color-border))]">
                       <div className="text-center">
-                        <div className="flex items-center justify-center gap-1 text-green-600 dark:text-green-400 mb-1">
+                        <div className="flex items-center justify-center gap-1 text-green-600 mb-1">
                           <FiTrendingUp className="w-4 h-4" />
                           <span className="font-bold text-sm">{formatNumber(seller.totalSales)}</span>
                         </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">Sales</p>
+                        <p className="text-xs text-[rgb(var(--color-muted))]">Sales</p>
                       </div>
                       <div className="text-center">
-                        <div className="flex items-center justify-center gap-1 text-blue-600 dark:text-blue-400 mb-1">
+                        <div className="flex items-center justify-center gap-1 text-blue-600 mb-1">
                           <FiUsers className="w-4 h-4" />
                           <span className="font-bold text-sm">{formatNumber(seller.followers)}</span>
                         </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">Followers</p>
+                        <p className="text-xs text-[rgb(var(--color-muted))]">Followers</p>
                       </div>
                     </div>
 
                     {/* CTA Button */}
-                    <button className="w-full mt-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-2 px-4 rounded-lg font-medium transition-all duration-300 transform group-hover:scale-105">
+                    <button className="w-full mt-4 bg-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-secondary))] text-[rgb(var(--color-on-primary))] py-2 px-4 rounded-xl font-medium transition-all duration-300 transform group-hover:scale-105">
                       View Store
                     </button>
                   </div>
