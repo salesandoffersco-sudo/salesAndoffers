@@ -53,7 +53,7 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
     if (!carouselRef.current || totalSlides === 0) return;
     
     const carousel = carouselRef.current;
-    carousel.style.transform = `rotateY(${currentRotation}deg)`;
+    carousel.style.transform = `translate(-50%, -50%) rotateY(${currentRotation}deg)`;
     
     // Get actual slide width for responsive radius calculation
     const slideWidth = window.innerWidth <= 480 ? 200 : window.innerWidth <= 768 ? 240 : 280;
@@ -204,13 +204,18 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
           width: 'min(280px, 80vw)',
           height: 'min(420px, 60vh)'
         }}>
-          <div className="relative w-full h-full" style={{ perspective: '2000px' }}>
+          <div className="relative w-full h-full flex items-center justify-center" style={{ perspective: '2000px' }}>
             <div 
               ref={carouselRef}
-              className="w-full h-full absolute transition-transform duration-700 ease-out"
+              className="absolute transition-transform duration-700 ease-out"
               style={{ 
                 transformStyle: 'preserve-3d',
-                transformOrigin: 'center center'
+                transformOrigin: 'center center',
+                left: '50%',
+                top: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: 'min(280px, 80vw)',
+                height: 'min(420px, 60vh)'
               }}
             >
               {items.map((item, index) => (
@@ -220,8 +225,8 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
                     index === currentIndex ? 'active brightness-100' : 'brightness-60'
                   }`}
                   style={{
-                    width: 'min(280px, 80vw)',
-                    height: 'min(420px, 60vh)'
+                    width: '100%',
+                    height: '100%'
                   }}
                   onClick={() => {
                     if (index !== currentIndex) {
