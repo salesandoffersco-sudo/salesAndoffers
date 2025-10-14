@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { FiHeart, FiClock, FiTag, FiGrid, FiList, FiFilter, FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { FiHeart, FiClock, FiTag, FiGrid, FiList, FiFilter, FiChevronLeft, FiChevronRight, FiShoppingCart } from "react-icons/fi";
 import axios from "axios";
 import Button from "../../components/Button";
+import { useCart } from "../../contexts/CartContext";
 
 import FilterSidebar from "../../components/FilterSidebar";
 import { API_BASE_URL } from "../../lib/api";
@@ -33,6 +34,22 @@ export default function OffersPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [page, setPage] = useState(1);
   const pageSize = 12;
+  const { addToCart } = useCart();
+
+  const handleAddToCart = (offer: Offer) => {
+    addToCart({
+      dealId: offer.id,
+      title: offer.title,
+      originalPrice: parseFloat(offer.original_price),
+      discountedPrice: parseFloat(offer.discounted_price),
+      discountPercentage: offer.discount_percentage,
+      maxPurchase: 10, // Default values since not in offer interface
+      minPurchase: 1,
+      availableVouchers: 100,
+      expiresAt: offer.valid_until,
+      seller: offer.seller
+    });
+  };
 
   useEffect(() => {
     fetchOffers();
@@ -237,11 +254,20 @@ export default function OffersPage() {
                                 {offer.discount_percentage}% OFF
                               </span>
                             </div>
-                            <Link href={`/offers/${offer.id}`}>
-                              <Button variant="primary" size="md">
-                                View Details
+                            <div className="flex space-x-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleAddToCart(offer)}
+                              >
+                                <FiShoppingCart className="w-4 h-4" />
                               </Button>
-                            </Link>
+                              <Link href={`/offers/${offer.id}`}>
+                                <Button variant="primary" size="md">
+                                  View Details
+                                </Button>
+                              </Link>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -296,11 +322,22 @@ export default function OffersPage() {
                           <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
                             By <span className="font-semibold text-purple-600 dark:text-indigo-300">{offer.seller.business_name}</span>
                           </p>
-                          <Link href={`/offers/${offer.id}`}>
-                            <Button variant="primary" size="md" className="w-full">
-                              View Details
+                          <div className="flex space-x-2">
+                            <Button
+                              variant="outline"
+                              size="md"
+                              onClick={() => handleAddToCart(offer)}
+                              className="flex-1"
+                            >
+                              <FiShoppingCart className="w-4 h-4 mr-1" />
+                              Add to Cart
                             </Button>
-                          </Link>
+                            <Link href={`/offers/${offer.id}`} className="flex-1">
+                              <Button variant="primary" size="md" className="w-full">
+                                View Details
+                              </Button>
+                            </Link>
+                          </div>
                         </div>
                       </div>
                     </div>

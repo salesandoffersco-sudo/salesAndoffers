@@ -6,6 +6,7 @@ import { FiMenu, FiX, FiUser, FiLogOut, FiChevronDown } from "react-icons/fi";
 import { useState, useEffect, useRef } from "react";
 import ThemeToggle from "./ThemeToggle";
 import NotificationBell from "./NotificationBell";
+import CartIcon from "./CartIcon";
 import { API_BASE_URL } from "../lib/api";
 
 export default function Navbar() {
@@ -162,6 +163,7 @@ export default function Navbar() {
           </div>
           <div className="hidden md:flex items-center space-x-4">
             <ThemeToggle />
+            <CartIcon />
             {isLoggedIn && <NotificationBell />}
             {isLoggedIn ? (
               <div className="relative" ref={dropdownRef}>
@@ -333,6 +335,10 @@ export default function Navbar() {
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-sm font-medium text-[rgb(var(--color-muted))]">Theme</span>
                     <ThemeToggle />
+                  </div>
+                  
+                  <div className="mb-4">
+                    <CartIcon />
                   </div>
                   
                   {isLoggedIn && (

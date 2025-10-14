@@ -6,6 +6,7 @@ import Link from "next/link";
 import { FiHeart, FiClock, FiTag, FiMapPin, FiStar, FiShare2, FiMinus, FiPlus, FiShoppingCart } from "react-icons/fi";
 import axios from "axios";
 import Button from "../../../components/Button";
+import { useCart } from "../../../contexts/CartContext";
 import { API_BASE_URL } from "../../../lib/api";
 
 interface Deal {
@@ -72,7 +73,29 @@ export default function DealDetailsPage() {
     }
   };
 
-  const handlePurchase = async () => {
+  const { addToCart, openCart } = useCart();
+
+  const handleAddToCart = () => {
+    if (!deal) return;
+    
+    addToCart({
+      dealId: deal.id,
+      title: deal.title,
+      image: deal.image,
+      originalPrice: parseFloat(deal.original_price),
+      discountedPrice: parseFloat(deal.discounted_price),
+      discountPercentage: deal.discount_percentage,
+      maxPurchase: deal.max_purchase,
+      minPurchase: deal.min_purchase,
+      availableVouchers: deal.vouchers_available,
+      expiresAt: deal.expires_at,
+      seller: deal.seller
+    });
+    
+    openCart();
+  };
+
+  const handleBuyNow = async () => {
     if (!deal) return;
     
     const token = localStorage.getItem("token");
@@ -256,25 +279,37 @@ export default function DealDetailsPage() {
                 </div>
               </div>
               
-              <Button
-                variant="primary"
-                size="lg"
-                className="w-full mt-4"
-                onClick={handlePurchase}
-                disabled={purchasing || deal.vouchers_available === 0}
-              >
-                {purchasing ? (
-                  <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Processing...
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-center">
-                    <FiShoppingCart className="mr-2" />
-                    Buy Voucher - KES {totalAmount.toFixed(2)}
-                  </div>
-                )}
-              </Button>
+              <div className="space-y-3 mt-4">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full"
+                  onClick={handleAddToCart}
+                  disabled={deal.vouchers_available === 0}
+                >
+                  <FiShoppingCart className="mr-2" />
+                  Add to Cart
+                </Button>
+                
+                <Button
+                  variant="primary"
+                  size="lg"
+                  className="w-full"
+                  onClick={handleBuyNow}
+                  disabled={purchasing || deal.vouchers_available === 0}
+                >
+                  {purchasing ? (
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Processing...
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center">
+                      Buy Now - KES {totalAmount.toFixed(2)}
+                    </div>
+                  )}
+                </Button>
+              </div>
               
               {deal.vouchers_available === 0 && (
                 <p className="text-red-500 text-sm mt-2 text-center">This deal is sold out</p>

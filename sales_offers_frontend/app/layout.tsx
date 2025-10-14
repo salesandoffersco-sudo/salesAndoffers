@@ -5,6 +5,8 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import NavSpacer from "../components/NavSpacer";
 import ThemeToggle from "../components/ThemeToggle";
+import { CartProvider } from "../contexts/CartContext";
+import Cart from "../components/Cart";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -36,10 +38,13 @@ export default function RootLayout({
             `,
           }}
         />
-        <Navbar />
-        <NavSpacer />
-        {children}
-        <Footer />
+        <CartProvider>
+          <Navbar />
+          <NavSpacer />
+          {children}
+          <Footer />
+          <Cart />
+        </CartProvider>
       </body>
     </html>
   );
