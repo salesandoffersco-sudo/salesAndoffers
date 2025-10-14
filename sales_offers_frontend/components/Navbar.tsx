@@ -267,7 +267,9 @@ export default function Navbar() {
               </>
             )}
           </div>
-          <div className="md:hidden flex items-center">
+          <div className="md:hidden flex items-center space-x-3">
+            <CartIcon />
+            {isLoggedIn && <NotificationBell />}
             <button onClick={toggleMenu} className="text-[rgb(var(--color-muted))] focus:outline-none">
               <FiMenu className="h-6 w-6" />
             </button>
@@ -336,16 +338,6 @@ export default function Navbar() {
                     <span className="text-sm font-medium text-[rgb(var(--color-muted))]">Theme</span>
                     <ThemeToggle />
                   </div>
-                  
-                  <div className="mb-4">
-                    <CartIcon />
-                  </div>
-                  
-                  {isLoggedIn && (
-                    <div className="mb-4">
-                      <NotificationBell />
-                    </div>
-                  )}
                   
                   {isLoggedIn ? (
                     <div className="space-y-2">
