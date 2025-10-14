@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { FiCheckCircle, FiXCircle, FiClock } from "react-icons/fi";
 import axios from "axios";
 import Button from "../../../components/Button";
 import { API_BASE_URL } from "../../../lib/api";
 
-export default function PaymentCallbackPage() {
+function PaymentCallbackContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [status, setStatus] = useState<'loading' | 'success' | 'failed'>('loading');
@@ -126,5 +126,17 @@ export default function PaymentCallbackPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function PaymentCallbackPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[rgb(var(--color-bg))] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600"></div>
+      </div>
+    }>
+      <PaymentCallbackContent />
+    </Suspense>
   );
 }
