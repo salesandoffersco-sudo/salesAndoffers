@@ -98,7 +98,7 @@ export default function RealTimeAnalytics({ plan, className = '' }: RealTimeAnal
   });
   const [connected, setConnected] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
-  const intervalRef = useRef<NodeJS.Timeout>();
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Simulate real-time data updates
   useEffect(() => {
