@@ -102,13 +102,26 @@ export default function BlogPage() {
             vy += (dy / distance) * force * 0.5;
           }
           
+          // Add gentle ambient movement
+          vx += (Math.random() - 0.5) * 0.02;
+          vy += (Math.random() - 0.5) * 0.02;
+          
           // Apply velocity
           x += vx;
           y += vy;
           
           // Friction
-          vx *= 0.98;
-          vy *= 0.98;
+          vx *= 0.99;
+          vy *= 0.99;
+          
+          // Keep minimum movement
+          const minSpeed = 0.1;
+          const speed = Math.sqrt(vx * vx + vy * vy);
+          if (speed < minSpeed) {
+            const angle = Math.random() * Math.PI * 2;
+            vx += Math.cos(angle) * 0.05;
+            vy += Math.sin(angle) * 0.05;
+          }
           
           // Boundaries
           if (x < 0 || x > window.innerWidth) vx *= -0.5;
