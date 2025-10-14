@@ -105,7 +105,11 @@ export default function RealTimeAnalytics({ plan, className = '' }: RealTimeAnal
     if (plan === 'Basic') return; // Real-time only for Pro/Enterprise
 
     const simulateRealTimeData = () => {
-      const activities = [
+      const activities: Array<{
+        type: 'sale' | 'redemption' | 'view';
+        message: string;
+        amount?: number;
+      }> = [
         { type: 'sale', message: 'New voucher purchased for "50% Off Electronics"', amount: 2500 },
         { type: 'redemption', message: 'Voucher redeemed at Tech Store Downtown' },
         { type: 'view', message: '5 new customers viewed your deals' },
