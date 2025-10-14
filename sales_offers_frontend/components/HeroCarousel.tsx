@@ -112,10 +112,20 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
     });
   };
 
+  // Animate desktop details
+  const animateDetails = () => {
+    const detailsElements = document.querySelectorAll('.details-content');
+    detailsElements.forEach(el => {
+      el.classList.remove('opacity-0', 'translate-y-5');
+      el.classList.add('opacity-100', 'translate-y-0');
+    });
+  };
+
   useEffect(() => {
     if (totalSlides > 0) {
       updateCarousel();
       updateBackground();
+      setTimeout(animateDetails, 400); // Delay for smooth transition
       startAutoPlay();
     }
     
@@ -129,6 +139,7 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
   // Update background when currentIndex changes
   useEffect(() => {
     updateBackground();
+    setTimeout(animateDetails, 400);
   }, [currentIndex, isBg1Active]);
 
   useEffect(() => {
@@ -168,20 +179,25 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
       <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 flex flex-col lg:flex-row items-center justify-center lg:justify-between w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Left Details - Desktop */}
+        {/* Left Details - Desktop Only */}
         <div className="hidden lg:block flex-1 text-white text-left pr-8">
-          <h1 className="text-4xl xl:text-5xl font-extrabold mb-4 text-shadow-lg">
-            {currentItem?.title}
-          </h1>
-          <p className="text-lg text-gray-200 leading-relaxed max-w-md">
-            {currentItem?.description}
-          </p>
+          <div className="details-content opacity-0 transform translate-y-5 transition-all duration-600">
+            <h1 className="text-4xl xl:text-5xl font-extrabold mb-4 text-shadow-lg">
+              {currentItem?.title}
+            </h1>
+            <p className="text-lg text-gray-200 leading-relaxed max-w-md">
+              {currentItem?.description}
+            </p>
+          </div>
         </div>
 
         {/* 3D Carousel */}
-        <div className="relative w-[280px] h-[420px] flex-shrink-0">
+        <div className="relative flex-shrink-0" style={{
+          width: 'min(280px, 80vw)',
+          height: 'min(420px, 60vh)'
+        }}>
           <div className="relative w-full h-full" style={{ perspective: '2000px' }}>
             <div 
               ref={carouselRef}
@@ -191,9 +207,13 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
               {items.map((item, index) => (
                 <div
                   key={item.id}
-                  className={`carousel-slide absolute w-[280px] h-[420px] rounded-3xl overflow-hidden shadow-2xl bg-white/5 border border-white/20 cursor-pointer transition-all duration-700 ${
+                  className={`carousel-slide absolute rounded-3xl overflow-hidden shadow-2xl bg-white/5 border border-white/20 cursor-pointer transition-all duration-700 ${
                     index === currentIndex ? 'active brightness-100' : 'brightness-60'
                   }`}
+                  style={{
+                    width: 'min(280px, 80vw)',
+                    height: 'min(420px, 60vh)'
+                  }}
                   onClick={() => {
                     if (index !== currentIndex) {
                       const diff = index - currentIndex;
@@ -228,17 +248,17 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
                     </button>
                   </div>
 
-                  {/* Mobile Details Overlay */}
-                  <div className={`lg:hidden absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-black/90 to-transparent text-white transition-all duration-500 ${
+                  {/* Mobile Details Overlay - Show on tablets and mobile */}
+                  <div className={`lg:hidden absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 via-black/60 to-transparent text-white transition-all duration-500 ${
                     index === currentIndex ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
                   }`}>
-                    <h3 className="text-lg font-bold mb-1">{item.title}</h3>
-                    <p className="text-xs text-gray-300 mb-2 line-clamp-2">{item.description}</p>
-                    <div className="flex justify-between items-center">
+                    <h3 className="text-base sm:text-lg font-bold mb-1">{item.title}</h3>
+                    <p className="text-xs text-gray-300 mb-2 line-clamp-2 leading-relaxed">{item.description}</p>
+                    <div className="flex justify-between items-center mb-2">
                       <div className="flex items-center gap-2">
-                        <span className="text-lg font-bold">{item.price}</span>
+                        <span className="text-base sm:text-lg font-bold">{item.price}</span>
                         {item.originalPrice && (
-                          <span className="text-sm text-gray-400 line-through">{item.originalPrice}</span>
+                          <span className="text-xs sm:text-sm text-gray-400 line-through">{item.originalPrice}</span>
                         )}
                       </div>
                       <button 
@@ -246,13 +266,13 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
                           e.stopPropagation();
                           handleAddToCart(item);
                         }}
-                        className="bg-white text-indigo-600 px-3 py-1 rounded-full text-xs font-bold hover:bg-gray-100 transition-colors flex items-center gap-1"
+                        className="bg-white text-indigo-600 px-3 py-1.5 rounded-full text-xs font-bold hover:bg-gray-100 transition-colors flex items-center gap-1"
                       >
                         <FiShoppingCart className="w-3 h-3" />
-                        Add
+                        Add to Cart
                       </button>
                     </div>
-                    <div className="flex items-center text-yellow-400 text-sm mt-2">
+                    <div className="flex items-center text-yellow-400 text-sm">
                       {generateStars(item.rating)}
                     </div>
                   </div>
@@ -261,39 +281,36 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
             </div>
           </div>
 
-          {/* Navigation Buttons */}
+          {/* Navigation Buttons - Responsive positioning */}
           <button
             onClick={() => navigate(-1)}
-            className="absolute left-[-80px] top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/20 border border-white/30 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all hover:scale-110 z-20"
+            className="absolute top-1/2 transform -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-white/20 border border-white/30 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all hover:scale-110 z-20"
+            style={{
+              left: 'clamp(-60px, -15vw, -10px)'
+            }}
           >
-            <FiChevronLeft className="w-5 h-5" />
+            <FiChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
           <button
             onClick={() => navigate(1)}
-            className="absolute right-[-80px] top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/20 border border-white/30 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all hover:scale-110 z-20"
+            className="absolute top-1/2 transform -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-white/20 border border-white/30 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all hover:scale-110 z-20"
+            style={{
+              right: 'clamp(-60px, -15vw, -10px)'
+            }}
           >
-            <FiChevronRight className="w-5 h-5" />
+            <FiChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
 
-        {/* Right Details - Desktop */}
+        {/* Right Details - Desktop Only */}
         <div className="hidden lg:block flex-1 text-white text-right pl-8">
-          <div className="text-4xl xl:text-5xl font-bold mb-2">
-            {currentItem?.price}
-          </div>
-          <div className="flex justify-end text-yellow-400 text-2xl xl:text-3xl space-x-1">
-            {generateStars(currentItem?.rating || 0)}
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile Title - Shown below carousel */}
-      <div className="lg:hidden absolute bottom-8 left-0 right-0 text-center text-white px-4">
-        <h1 className="text-2xl font-bold mb-2">{currentItem?.title}</h1>
-        <div className="flex justify-center items-center gap-4">
-          <span className="text-xl font-bold">{currentItem?.price}</span>
-          <div className="flex text-yellow-400">
-            {generateStars(currentItem?.rating || 0)}
+          <div className="details-content opacity-0 transform translate-y-5 transition-all duration-600">
+            <div className="text-4xl xl:text-5xl font-bold mb-2">
+              {currentItem?.price}
+            </div>
+            <div className="flex justify-end text-yellow-400 text-2xl xl:text-3xl space-x-1">
+              {generateStars(currentItem?.rating || 0)}
+            </div>
           </div>
         </div>
       </div>
