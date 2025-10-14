@@ -77,6 +77,8 @@
               opacity 0.8s ease, 
               filter 0.8s ease;
   filter: brightness(0.6);
+  left: 50%;
+  top: 50%;
 }
 
 .carousel-slide.active {

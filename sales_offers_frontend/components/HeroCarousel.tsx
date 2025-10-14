@@ -62,7 +62,9 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
     const slides = carousel.querySelectorAll('.carousel-slide');
     slides.forEach((slide, index) => {
       const slideAngle = index * angle;
-      (slide as HTMLElement).style.transform = `rotateY(${slideAngle}deg) translateZ(${radius}px)`;
+      (slide as HTMLElement).style.transform = `translate(-50%, -50%) rotateY(${slideAngle}deg) translateZ(${radius}px)`;
+      (slide as HTMLElement).style.left = '50%';
+      (slide as HTMLElement).style.top = '50%';
       slide.classList.toggle('active', index === currentIndex);
     });
   };
