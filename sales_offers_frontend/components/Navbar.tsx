@@ -86,6 +86,8 @@ export default function Navbar() {
     localStorage.removeItem("token");
     localStorage.removeItem("username");
     localStorage.removeItem("userProfile");
+    localStorage.removeItem("is_staff");
+    localStorage.removeItem("is_superuser");
     setIsLoggedIn(false);
     setUsername("");
     setUserProfile({});

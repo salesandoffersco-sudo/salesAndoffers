@@ -75,6 +75,8 @@ function LoginPageContent() {
       const response = await axios.post(`${API_BASE_URL}/api/accounts/login/`, formData);
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("username", response.data.user.username);
+      localStorage.setItem("is_staff", response.data.user.is_staff?.toString() || "false");
+      localStorage.setItem("is_superuser", response.data.user.is_superuser?.toString() || "false");
       localStorage.setItem("userProfile", JSON.stringify({
         name: `${response.data.user.first_name} ${response.data.user.last_name}`.trim() || response.data.user.username,
         profilePicture: response.data.user.profile_picture
