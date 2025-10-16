@@ -5,6 +5,7 @@ import Link from "next/link";
 import { FiHeart, FiMessageCircle, FiUser, FiCalendar, FiTrendingUp, FiEdit3 } from "react-icons/fi";
 import axios from "axios";
 import Button from "../../components/Button";
+import VerificationBadge from "../../components/VerificationBadge";
 import { API_BASE_URL } from "../../lib/api";
 
 interface BlogPost {
@@ -19,6 +20,7 @@ interface BlogPost {
     first_name: string;
     last_name: string;
     profile_picture?: string;
+    is_verified?: boolean;
   };
   created_at: string;
   likes_count: number;
@@ -172,6 +174,27 @@ export default function BlogPage() {
     }
   };
 
+  const handleLike = async (postId: number) => {
+    if (!isLoggedIn) return;
+    
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        `${API_BASE_URL}/api/blog/posts/${postId}/like/`,
+        {},
+        { headers: { Authorization: `Token ${token}` } }
+      );
+      
+      setPosts(posts.map(post => 
+        post.id === postId 
+          ? { ...post, is_liked: response.data.liked, likes_count: response.data.likes_count }
+          : post
+      ));
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    }
+  };
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { 
@@ -281,17 +304,28 @@ export default function BlogPage() {
                 
                 <div className="p-6">
                   <div className="flex items-center space-x-3 mb-4">
-                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center overflow-hidden">
-                      {post.author.profile_picture ? (
-                        <img src={post.author.profile_picture} alt={post.author.username} className="w-full h-full object-cover" />
-                      ) : (
-                        <FiUser className="w-5 h-5 text-white" />
-                      )}
+                    <div className="relative">
+                      <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center overflow-hidden">
+                        {post.author.profile_picture ? (
+                          <img src={post.author.profile_picture} alt={post.author.username} className="w-full h-full object-cover" />
+                        ) : (
+                          <FiUser className="w-5 h-5 text-white" />
+                        )}
+                      </div>
+                      <VerificationBadge 
+                        isVerified={post.author.is_verified || false} 
+                        type="user" 
+                        size="sm" 
+                        className="absolute -bottom-1 -right-1"
+                      />
                     </div>
                     <div className="flex-1">
-                      <p className="font-semibold text-[rgb(var(--color-text))] text-sm">
-                        {post.author.first_name} {post.author.last_name} || @{post.author.username}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <p className="font-semibold text-[rgb(var(--color-text))] text-sm">
+                          {post.author.first_name} {post.author.last_name}
+                        </p>
+                        <span className="text-[rgb(var(--color-muted))] text-sm">@{post.author.username}</span>
+                      </div>
                       <div className="flex items-center text-xs text-[rgb(var(--color-muted))]">
                         <FiCalendar className="w-3 h-3 mr-1" />
                         {formatDate(post.created_at)}
@@ -311,14 +345,20 @@ export default function BlogPage() {
 
                   <div className="flex items-center justify-between pt-4 border-t border-[rgb(var(--color-border))]">
                     <div className="flex items-center space-x-4">
-                      <div className="flex items-center space-x-1 text-[rgb(var(--color-muted))]">
-                        <FiHeart className={`w-4 h-4 ${post.is_liked ? 'text-red-500 fill-current' : ''}`} />
+                      <button
+                        onClick={() => handleLike(post.id)}
+                        disabled={!isLoggedIn}
+                        className={`flex items-center space-x-1 transition-colors ${
+                          post.is_liked ? 'text-red-500' : 'text-[rgb(var(--color-muted))] hover:text-red-500'
+                        } ${!isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      >
+                        <FiHeart className={`w-4 h-4 ${post.is_liked ? 'fill-current' : ''}`} />
                         <span className="text-sm">{post.likes_count}</span>
-                      </div>
-                      <div className="flex items-center space-x-1 text-[rgb(var(--color-muted))]">
+                      </button>
+                      <Link href={`/blog/${post.slug}`} className="flex items-center space-x-1 text-[rgb(var(--color-muted))] hover:text-purple-600">
                         <FiMessageCircle className="w-4 h-4" />
                         <span className="text-sm">{post.comments_count}</span>
-                      </div>
+                      </Link>
                     </div>
                     <Link href={`/blog/${post.slug}`}>
                       <Button variant="outline" size="sm">Read More</Button>

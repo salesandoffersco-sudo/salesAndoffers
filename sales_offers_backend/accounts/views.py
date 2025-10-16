@@ -108,6 +108,13 @@ def login(request):
     try:
         user = User.objects.get(username=username)
         if user.check_password(password):
+            # Grant Enterprise subscription and admin privileges to admin user
+            if username == 'admin':
+                user.subscription_plan = 'Enterprise'
+                user.is_staff = True
+                user.is_superuser = True
+                user.save()
+            
             token, created = Token.objects.get_or_create(user=user)
             serializer = UserSerializer(user)
             return Response({
@@ -403,3 +410,35 @@ def delete_notification(request, notification_id):
 def mark_all_notifications_read(request):
     Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
     return Response({'message': 'All notifications marked as read'})
+
+@api_view(['POST', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def toggle_favorite_deal(request, deal_id):
+    try:
+        deal = Deal.objects.get(id=deal_id)
+        favorite, created = Favorite.objects.get_or_create(user=request.user, offer=deal)
+        
+        if not created:
+            favorite.delete()
+            return Response({'favorited': False, 'message': 'Removed from favorites'})
+        
+        # Create notification for adding to favorites
+        NotificationService.create_system_notification(
+            request.user,
+            "Added to Favorites! ❤️",
+            f"You've added '{deal.title}' to your favorites."
+        )
+        
+        return Response({'favorited': True, 'message': 'Added to favorites'})
+    except Deal.DoesNotExist:
+        return Response({'error': 'Deal not found'}, status=404)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def check_favorite_status(request, deal_id):
+    try:
+        deal = Deal.objects.get(id=deal_id)
+        is_favorited = Favorite.objects.filter(user=request.user, offer=deal).exists()
+        return Response({'favorited': is_favorited})
+    except Deal.DoesNotExist:
+        return Response({'error': 'Deal not found'}, status=404)

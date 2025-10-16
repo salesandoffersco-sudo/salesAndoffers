@@ -1,19 +1,43 @@
 from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, Avg
 from django.utils import timezone
 from .models import Seller, SubscriptionPlan, Subscription, Payment
 from .serializers import SellerSerializer, SubscriptionPlanSerializer, SubscriptionSerializer, PaymentSerializer
 from deals.models import Deal
+from accounts.models import User
 import uuid
 import requests
 from django.conf import settings
 
 class SellerListView(generics.ListCreateAPIView):
-    queryset = Seller.objects.all()
     serializer_class = SellerSerializer
+    permission_classes = [AllowAny]
+    
+    def get_queryset(self):
+        queryset = Seller.objects.select_related('user').annotate(
+            total_deals=Count('deals'),
+            avg_rating=Avg('deals__rating') or 4.5
+        )
+        
+        # Apply filters
+        search = self.request.query_params.get('search')
+        if search:
+            queryset = queryset.filter(
+                business_name__icontains=search
+            )
+        
+        rating = self.request.query_params.get('rating')
+        if rating:
+            queryset = queryset.filter(avg_rating__gte=float(rating))
+            
+        location = self.request.query_params.get('location')
+        if location:
+            queryset = queryset.filter(address__icontains=location)
+            
+        return queryset
 
 class SubscriptionPlanListView(generics.ListAPIView):
     queryset = SubscriptionPlan.objects.filter(is_active=True)

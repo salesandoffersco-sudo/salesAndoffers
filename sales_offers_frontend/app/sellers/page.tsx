@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { FiShoppingBag, FiStar, FiMapPin, FiGrid, FiList, FiFilter, FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { FiShoppingBag, FiStar, FiMapPin, FiGrid, FiList, FiFilter, FiChevronLeft, FiChevronRight, FiUser } from "react-icons/fi";
 import axios from "axios";
 
 import FilterSidebar from "../../components/FilterSidebar";
 import SellersCarousel from "../../components/SellersCarousel";
+import VerificationBadge from "../../components/VerificationBadge";
+import TrustIndicators from "../../components/TrustIndicators";
 import { API_BASE_URL } from "../../lib/api";
 
 interface Seller {
@@ -17,6 +19,17 @@ interface Seller {
   rating: number;
   total_reviews: number;
   address: string;
+  phone: string;
+  email: string;
+  website: string;
+  is_verified: boolean;
+  user: {
+    id: number;
+    first_name: string;
+    last_name: string;
+    profile_picture: string;
+    is_verified: boolean;
+  };
 }
 
 export default function SellersPage() {
@@ -100,91 +113,24 @@ export default function SellersPage() {
       </div>
 
       {/* Featured Sellers Carousel */}
-      <SellersCarousel 
-        sellers={[
-          {
-            id: 1,
-            name: "Sarah Johnson",
-            businessName: "Tech Haven Store",
-            category: "Electronics",
-            rating: 4.8,
-            totalSales: 15420,
-            followers: 8900,
-            location: "Nairobi, Kenya",
-            avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
-            coverImage: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=200&fit=crop",
-            verified: true,
-            specialOffer: "20% OFF"
-          },
-          {
-            id: 2,
-            name: "Michael Chen",
-            businessName: "Fashion Forward",
-            category: "Fashion & Style",
-            rating: 4.9,
-            totalSales: 23100,
-            followers: 12500,
-            location: "Mombasa, Kenya",
-            avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-            coverImage: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=400&h=200&fit=crop",
-            verified: true
-          },
-          {
-            id: 3,
-            name: "Emma Rodriguez",
-            businessName: "Home & Garden Plus",
-            category: "Home & Garden",
-            rating: 4.7,
-            totalSales: 9800,
-            followers: 5600,
-            location: "Kisumu, Kenya",
-            avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
-            coverImage: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=200&fit=crop",
-            verified: false,
-            specialOffer: "FREE SHIPPING"
-          },
-          {
-            id: 4,
-            name: "David Kim",
-            businessName: "Sports Central",
-            category: "Sports & Fitness",
-            rating: 4.6,
-            totalSales: 18700,
-            followers: 11200,
-            location: "Eldoret, Kenya",
-            avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
-            coverImage: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=200&fit=crop",
-            verified: true
-          },
-          {
-            id: 5,
-            name: "Lisa Thompson",
-            businessName: "Beauty Essentials",
-            category: "Beauty & Health",
-            rating: 4.9,
-            totalSales: 31200,
-            followers: 18900,
-            location: "Nakuru, Kenya",
-            avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face",
-            coverImage: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=200&fit=crop",
-            verified: true,
-            specialOffer: "BUY 2 GET 1"
-          },
-          {
-            id: 6,
-            name: "James Wilson",
-            businessName: "Auto Parts Pro",
-            category: "Automotive",
-            rating: 4.5,
-            totalSales: 7300,
-            followers: 4100,
-            location: "Thika, Kenya",
-            avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
-            coverImage: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=400&h=200&fit=crop",
-            verified: false
-          }
-        ]}
-      />
+      {sellers.length > 0 && (
+        <SellersCarousel 
+          sellers={sellers.slice(0, 6).map(seller => ({
+            id: seller.id,
+            name: seller.user ? `${seller.user.first_name} ${seller.user.last_name}` : 'Unknown',
+            businessName: seller.business_name,
+            category: 'Business', // Default category since not in seller model
+            rating: seller.rating,
+            totalSales: Math.floor(Math.random() * 50000), // Mock data for now
+            followers: Math.floor(Math.random() * 20000), // Mock data for now
+            location: seller.address,
+            avatar: seller.user?.profile_picture || `https://images.unsplash.com/photo-${1494790108755 + seller.id}?w=150&h=150&fit=crop&crop=face`,
+            coverImage: seller.business_logo || `https://images.unsplash.com/photo-${1441986300917 + seller.id}?w=400&h=200&fit=crop`,
+            verified: seller.is_verified,
+            specialOffer: seller.is_verified ? '✓ Verified' : undefined
+          }))}
+        />
+      )}
 
       <div className="flex">
         <FilterSidebar
@@ -253,19 +199,33 @@ export default function SellersPage() {
                       >
                         <div className="flex-1 p-6">
                           <div className="flex items-center mb-4">
-                            {seller.business_logo ? (
-                              <img
-                                src={seller.business_logo}
-                                alt={seller.business_name}
-                                className="w-16 h-16 rounded-full object-cover mr-4 border-2 border-purple-200 dark:border-indigo-300/40"
+                            <div className="relative mr-4">
+                              {seller.user?.profile_picture ? (
+                                <img
+                                  src={seller.user.profile_picture}
+                                  alt={`${seller.user.first_name} ${seller.user.last_name}`}
+                                  className="w-16 h-16 rounded-full object-cover border-2 border-purple-200 dark:border-indigo-300/40"
+                                />
+                              ) : (
+                                <div className="w-16 h-16 rounded-full bg-purple-100 dark:bg-indigo-900/40 flex items-center justify-center">
+                                  <FiUser className="text-purple-600 dark:text-indigo-400 text-2xl" />
+                                </div>
+                              )}
+                              <VerificationBadge 
+                                isVerified={seller.user?.is_verified || false} 
+                                type="user" 
+                                size="sm" 
+                                className="absolute -bottom-1 -right-1"
                               />
-                            ) : (
-                              <div className="w-16 h-16 rounded-full bg-purple-100 dark:bg-indigo-900/40 flex items-center justify-center mr-4">
-                                <FiShoppingBag className="text-purple-600 dark:text-indigo-400 text-3xl" />
-                              </div>
-                            )}
+                            </div>
                             <div className="flex-1">
-                              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">{seller.business_name}</h3>
+                              <div className="flex items-center gap-2 mb-1">
+                                <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">{seller.business_name}</h3>
+                                <VerificationBadge isVerified={seller.is_verified} type="seller" size="sm" />
+                              </div>
+                              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                                by {seller.user?.first_name} {seller.user?.last_name}
+                              </p>
                               <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 mb-2">
                                 <FiStar className="text-yellow-400 dark:text-yellow-300 mr-1" />
                                 <span>{seller.rating} ({seller.total_reviews} reviews)</span>
@@ -294,23 +254,41 @@ export default function SellersPage() {
                     >
                       <div className="p-6">
                         <div className="flex items-center mb-4">
-                          {seller.business_logo ? (
-                            <img
-                              src={seller.business_logo}
-                              alt={seller.business_name}
-                              className="w-16 h-16 rounded-full object-cover mr-4 border-2 border-purple-200 dark:border-indigo-300/40"
+                          <div className="relative mr-4">
+                            {seller.user?.profile_picture ? (
+                              <img
+                                src={seller.user.profile_picture}
+                                alt={`${seller.user.first_name} ${seller.user.last_name}`}
+                                className="w-20 h-20 rounded-full object-cover border-3 border-purple-300 dark:border-purple-600 shadow-lg"
+                              />
+                            ) : (
+                              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-800 dark:to-blue-800 flex items-center justify-center border-3 border-purple-300 dark:border-purple-600 shadow-lg">
+                                <FiUser className="text-purple-600 dark:text-purple-300 text-3xl" />
+                              </div>
+                            )}
+                            <VerificationBadge 
+                              isVerified={seller.user?.is_verified || false} 
+                              type="user" 
+                              size="md" 
+                              className="absolute -bottom-1 -right-1"
                             />
-                          ) : (
-                            <div className="w-16 h-16 rounded-full bg-purple-100 dark:bg-indigo-900/40 flex items-center justify-center mr-4">
-                              <FiShoppingBag className="text-purple-600 dark:text-indigo-400 text-3xl" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <h3 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">{seller.business_name}</h3>
+                              <VerificationBadge isVerified={seller.is_verified} type="seller" size="md" />
                             </div>
-                          )}
-                          <div>
-                            <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">{seller.business_name}</h3>
-                            <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                              <FiStar className="text-yellow-400 dark:text-yellow-300 mr-1" />
-                              <span>{seller.rating} ({seller.total_reviews} reviews)</span>
+                            <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-3">
+                              by {seller.user?.first_name} {seller.user?.last_name}
+                            </p>
+                            <div className="flex items-center gap-4 mb-3">
+                              <div className="flex items-center text-sm font-medium">
+                                <FiStar className="text-yellow-500 mr-1" />
+                                <span className="text-yellow-600 dark:text-yellow-400">{seller.rating}</span>
+                                <span className="text-gray-500 dark:text-gray-400 ml-1">({seller.total_reviews} reviews)</span>
+                              </div>
                             </div>
+                            <TrustIndicators size="sm" variant="minimal" />
                           </div>
                         </div>
                         
@@ -322,7 +300,7 @@ export default function SellersPage() {
                         </div>
                         
                         <Link href={`/sellers/${seller.id}`}>
-                          <button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 rounded-full hover:shadow-lg transition-all duration-300 font-semibold">
+                          <button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-3 rounded-full hover:shadow-xl transition-all duration-300 font-semibold backdrop-shine">
                             View Seller Offers
                           </button>
                         </Link>

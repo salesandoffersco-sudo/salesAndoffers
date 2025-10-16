@@ -94,9 +94,10 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold mb-4 text-[rgb(var(--color-fg))]">Selling</h4>
             <ul className="space-y-2 text-[rgb(var(--color-muted))]">
-              <li><Link href="/seller/dashboard" className="hover:text-[rgb(var(--color-primary))] transition-colors">Dashboard</Link></li>
-              <li><Link href="/subscription" className="hover:text-[rgb(var(--color-primary))] transition-colors">My Subscription</Link></li>
+              <li><Link href="/seller/dashboard" className="hover:text-[rgb(var(--color-primary))] transition-colors">Seller Dashboard</Link></li>
+              <li><Link href="/subscription" className="hover:text-[rgb(var(--color-primary))] transition-colors">Subscription Plans</Link></li>
               <li><Link href="/pricing" className="hover:text-[rgb(var(--color-primary))] transition-colors">Pricing</Link></li>
+              <li><Link href="/register" className="hover:text-[rgb(var(--color-primary))] transition-colors">Start Selling</Link></li>
             </ul>
           </div>
           <div>

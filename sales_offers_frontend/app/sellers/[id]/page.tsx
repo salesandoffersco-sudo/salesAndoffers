@@ -3,23 +3,36 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { FiMapPin, FiStar, FiTag, FiClock, FiHeart } from "react-icons/fi";
+import { FiStar, FiMapPin, FiPhone, FiMail, FiGlobe, FiShoppingBag, FiUser, FiAward } from "react-icons/fi";
 import axios from "axios";
 import Button from "../../../components/Button";
+import VerificationBadge from "../../../components/VerificationBadge";
+import TrustIndicators from "../../../components/TrustIndicators";
 import { API_BASE_URL } from "../../../lib/api";
 
 interface Seller {
   id: number;
   business_name: string;
   business_description: string;
-  business_logo?: string;
+  business_logo: string;
   rating: number;
   total_reviews: number;
   address: string;
-  created_at: string;
+  phone: string;
+  email: string;
+  website: string;
+  is_verified: boolean;
+  business_license: string;
+  user: {
+    id: number;
+    first_name: string;
+    last_name: string;
+    profile_picture: string;
+    is_verified: boolean;
+  };
 }
 
-interface Offer {
+interface Deal {
   id: number;
   title: string;
   description: string;
@@ -30,29 +43,35 @@ interface Offer {
   valid_until: string;
 }
 
-export default function SellerProfilePage() {
+export default function SellerDetailPage() {
   const params = useParams();
   const [seller, setSeller] = useState<Seller | null>(null);
-  const [offers, setOffers] = useState<Offer[]>([]);
+  const [deals, setDeals] = useState<Deal[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (params.id) {
-      fetchSellerData();
+      fetchSellerDetails();
+      fetchSellerDeals();
     }
   }, [params.id]);
 
-  const fetchSellerData = async () => {
+  const fetchSellerDetails = async () => {
     try {
-      const [sellerRes, offersRes] = await Promise.all([
-        axios.get(`${API_BASE_URL}/api/sellers/${params.id}/`),
-        axios.get(`${API_BASE_URL}/api/sellers/${params.id}/offers/`)
-      ]);
-      setSeller(sellerRes.data);
-      setOffers(offersRes.data);
+      const response = await axios.get(`${API_BASE_URL}/api/sellers/${params.id}/`);
+      setSeller(response.data);
+    } catch (error) {
+      console.error("Error fetching seller:", error);
+    }
+  };
+
+  const fetchSellerDeals = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/sellers/${params.id}/offers/`);
+      setDeals(response.data);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching seller data:", error);
+      console.error("Error fetching deals:", error);
       setLoading(false);
     }
   };
@@ -70,9 +89,8 @@ export default function SellerProfilePage() {
       <div className="min-h-screen bg-[rgb(var(--color-bg))] flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-[rgb(var(--color-text))] mb-2">Seller Not Found</h1>
-          <p className="text-[rgb(var(--color-muted))] mb-4">The seller you're looking for doesn't exist.</p>
           <Link href="/sellers">
-            <Button variant="primary">Browse Sellers</Button>
+            <Button variant="primary">Back to Sellers</Button>
           </Link>
         </div>
       </div>
@@ -81,131 +99,138 @@ export default function SellerProfilePage() {
 
   return (
     <div className="min-h-screen bg-[rgb(var(--color-bg))]">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-16">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center space-x-6">
-            <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-              {seller.business_logo ? (
-                <img src={seller.business_logo} alt={seller.business_name} className="w-full h-full rounded-full object-cover" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Seller Header */}
+        <div className="bg-[rgb(var(--color-card))] rounded-2xl shadow-lg border border-[rgb(var(--color-border))] p-8 mb-8">
+          <div className="flex flex-col md:flex-row items-start md:items-center space-y-6 md:space-y-0 md:space-x-8">
+            <div className="flex-shrink-0 relative">
+              {seller.user?.profile_picture ? (
+                <img
+                  src={seller.user.profile_picture}
+                  alt={`${seller.user.first_name} ${seller.user.last_name}`}
+                  className="w-32 h-32 rounded-full object-cover border-4 border-purple-200"
+                />
               ) : (
-                <span className="text-2xl font-bold">{seller.business_name.charAt(0)}</span>
+                <div className="w-32 h-32 rounded-full bg-purple-100 flex items-center justify-center">
+                  <FiUser className="text-purple-600 text-6xl" />
+                </div>
               )}
+              <VerificationBadge 
+                isVerified={seller.user?.is_verified || false} 
+                type="user" 
+                size="lg" 
+                className="absolute -bottom-2 -right-2"
+              />
             </div>
+            
             <div className="flex-1">
-              <h1 className="text-4xl font-bold mb-2">{seller.business_name}</h1>
-              <div className="flex items-center space-x-4 mb-2">
+              <div className="flex items-center gap-3 mb-2">
+                <h1 className="text-3xl font-bold text-[rgb(var(--color-text))]">{seller.business_name}</h1>
+                <VerificationBadge isVerified={seller.is_verified} type="seller" size="lg" showText />
+              </div>
+              <p className="text-lg text-[rgb(var(--color-muted))] mb-2">
+                by {seller.user?.first_name} {seller.user?.last_name}
+              </p>
+              {seller.business_license && (
+                <div className="flex items-center gap-2 mb-4">
+                  <FiAward className="text-green-600" />
+                  <span className="text-sm text-green-600 font-medium">Licensed Business: {seller.business_license}</span>
+                </div>
+              )}
+              <div className="flex items-center mb-4">
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
                     <FiStar
                       key={i}
-                      className={`w-5 h-5 ${i < Math.floor(seller.rating) ? "text-yellow-400 fill-current" : "text-white/40"}`}
+                      className={`w-5 h-5 ${i < Math.floor(seller.rating) ? "text-yellow-400 fill-current" : "text-gray-300"}`}
                     />
                   ))}
-                  <span className="ml-2 text-lg">{seller.rating.toFixed(1)} ({seller.total_reviews} reviews)</span>
                 </div>
+                <span className="ml-2 text-[rgb(var(--color-muted))]">
+                  {seller.rating.toFixed(1)} ({seller.total_reviews} reviews)
+                </span>
               </div>
-              <div className="flex items-center text-white/80">
-                <FiMapPin className="w-4 h-4 mr-2" />
-                {seller.address}
+              <p className="text-[rgb(var(--color-muted))] mb-4">{seller.business_description}</p>
+              
+              <TrustIndicators className="mb-6" />
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {seller.address && (
+                  <div className="flex items-center text-[rgb(var(--color-muted))]">
+                    <FiMapPin className="mr-2" />
+                    <span>{seller.address}</span>
+                  </div>
+                )}
+                {seller.phone && (
+                  <div className="flex items-center text-[rgb(var(--color-muted))]">
+                    <FiPhone className="mr-2" />
+                    <span>{seller.phone}</span>
+                  </div>
+                )}
+                {seller.email && (
+                  <div className="flex items-center text-[rgb(var(--color-muted))]">
+                    <FiMail className="mr-2" />
+                    <span>{seller.email}</span>
+                  </div>
+                )}
+                {seller.website && (
+                  <div className="flex items-center text-[rgb(var(--color-muted))]">
+                    <FiGlobe className="mr-2" />
+                    <a href={seller.website} target="_blank" rel="noopener noreferrer" className="hover:text-purple-600">
+                      {seller.website}
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="bg-[rgb(var(--color-card))] rounded-2xl p-6 border border-[rgb(var(--color-border))] mb-6">
-              <h3 className="text-lg font-semibold text-[rgb(var(--color-text))] mb-4">About</h3>
-              <p className="text-[rgb(var(--color-muted))] leading-relaxed mb-4">{seller.business_description}</p>
-              <div className="text-sm text-[rgb(var(--color-muted))]">
-                Member since {new Date(seller.created_at).toLocaleDateString()}
-              </div>
+        {/* Seller Offers */}
+        <div>
+          <h2 className="text-2xl font-bold text-[rgb(var(--color-text))] mb-6">Current Offers</h2>
+          {deals.length === 0 ? (
+            <div className="text-center py-20">
+              <FiShoppingBag className="text-6xl text-[rgb(var(--color-muted))] mx-auto mb-4" />
+              <p className="text-xl text-[rgb(var(--color-muted))]">No active offers at the moment</p>
             </div>
-
-            <div className="bg-[rgb(var(--color-card))] rounded-2xl p-6 border border-[rgb(var(--color-border))]">
-              <h3 className="text-lg font-semibold text-[rgb(var(--color-text))] mb-4">Quick Stats</h3>
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-[rgb(var(--color-muted))]">Active Offers</span>
-                  <span className="font-semibold text-[rgb(var(--color-text))]">{offers.length}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-[rgb(var(--color-muted))]">Rating</span>
-                  <span className="font-semibold text-[rgb(var(--color-text))]">{seller.rating.toFixed(1)}/5.0</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-[rgb(var(--color-muted))]">Reviews</span>
-                  <span className="font-semibold text-[rgb(var(--color-text))]">{seller.total_reviews}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Main Content */}
-          <div className="lg:col-span-2">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-[rgb(var(--color-text))]">Current Offers</h2>
-              <span className="text-[rgb(var(--color-muted))]">{offers.length} offers available</span>
-            </div>
-
-            {offers.length === 0 ? (
-              <div className="text-center py-12">
-                <FiTag className="text-6xl text-[rgb(var(--color-muted))] mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-[rgb(var(--color-text))] mb-2">No Active Offers</h3>
-                <p className="text-[rgb(var(--color-muted))]">This seller doesn't have any active offers at the moment.</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {offers.map((offer) => (
-                  <div
-                    key={offer.id}
-                    className="bg-[rgb(var(--color-card))] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-[rgb(var(--color-border))]"
-                  >
-                    <div className="p-6">
-                      <div className="flex justify-between items-start mb-4">
-                        <span className="bg-purple-100 dark:bg-indigo-900/40 text-purple-600 dark:text-indigo-300 px-3 py-1 rounded-full text-sm font-semibold">
-                          {offer.category}
-                        </span>
-                        <button className="text-gray-400 hover:text-red-500 transition-colors">
-                          <FiHeart className="text-xl" />
-                        </button>
-                      </div>
-                      
-                      <h3 className="text-lg font-bold text-[rgb(var(--color-text))] mb-2">{offer.title}</h3>
-                      <p className="text-[rgb(var(--color-muted))] mb-4 line-clamp-2">{offer.description}</p>
-                      
-                      <div className="flex items-center space-x-2 mb-4">
-                        <span className="text-xl font-bold text-purple-600 dark:text-indigo-300">
-                          KES {offer.discounted_price}
-                        </span>
-                        <span className="text-[rgb(var(--color-muted))] line-through">
-                          KES {offer.original_price}
-                        </span>
-                        <span className="bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-300 px-2 py-1 rounded text-sm font-semibold">
-                          {offer.discount_percentage}% OFF
-                        </span>
-                      </div>
-                      
-                      <div className="flex items-center text-[rgb(var(--color-muted))] text-sm mb-4">
-                        <FiClock className="mr-2" />
-                        <span>Valid until {new Date(offer.valid_until).toLocaleDateString()}</span>
-                      </div>
-                      
-                      <Link href={`/offers/${offer.id}`}>
-                        <Button variant="primary" size="sm" className="w-full">
-                          View Details
-                        </Button>
-                      </Link>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {deals.map((deal) => (
+                <div
+                  key={deal.id}
+                  className="bg-[rgb(var(--color-card))] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-[rgb(var(--color-border))]"
+                >
+                  <div className="p-6">
+                    <span className="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-sm font-semibold">
+                      {deal.category}
+                    </span>
+                    
+                    <h3 className="text-xl font-bold text-[rgb(var(--color-text))] mt-4 mb-2">{deal.title}</h3>
+                    <p className="text-[rgb(var(--color-muted))] mb-4 line-clamp-2">{deal.description}</p>
+                    
+                    <div className="flex items-center space-x-2 mb-4">
+                      <span className="text-2xl font-bold text-purple-600">
+                        KES {deal.discounted_price}
+                      </span>
+                      <span className="text-gray-400 line-through">
+                        KES {deal.original_price}
+                      </span>
+                      <span className="bg-green-100 text-green-600 px-2 py-1 rounded text-sm font-semibold">
+                        {deal.discount_percentage}% OFF
+                      </span>
                     </div>
+                    
+                    <Link href={`/offers/${deal.id}`}>
+                      <Button variant="primary" size="md" className="w-full">
+                        View Deal
+                      </Button>
+                    </Link>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -20,13 +20,13 @@ const Button = <T extends React.ElementType = 'button'>({
   ...props
 }: PolymorphicButtonProps<T>) => {
   const Component = as || 'button';
-  const baseStyles = 'font-semibold rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[rgb(var(--color-primary))]';
+  const baseStyles = 'inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transform hover:scale-105 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none';
 
   const variantStyles = {
-    primary: 'bg-[rgb(var(--color-primary))] text-[rgb(var(--color-on-primary))] hover:shadow-lg hover:opacity-90',
-    secondary: 'bg-[rgb(var(--color-secondary))] text-[rgb(var(--color-on-secondary))] hover:opacity-80',
-    outline: 'bg-transparent text-[rgb(var(--color-primary))] border-2 border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-card))]',
-    ghost: 'text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))]',
+    primary: 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl',
+    secondary: 'bg-gray-600 hover:bg-gray-700 text-white shadow-lg hover:shadow-xl',
+    outline: 'bg-transparent text-purple-600 border-2 border-purple-600 hover:bg-purple-600 hover:text-white hover:shadow-lg',
+    ghost: 'text-[rgb(var(--color-muted))] hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20',
   };
 
   const sizeStyles = {

@@ -12,6 +12,9 @@ class User(AbstractUser):
     profile_picture = models.URLField(blank=True, null=True)
     is_google_user = models.BooleanField(default=False)
     is_email_verified = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False)
+    verification_date = models.DateTimeField(null=True, blank=True)
+    bio = models.TextField(blank=True, max_length=500)
 
     def __str__(self):
         return self.username

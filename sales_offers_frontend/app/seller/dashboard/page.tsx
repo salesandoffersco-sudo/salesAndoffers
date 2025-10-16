@@ -96,7 +96,7 @@ export default function SellerDashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-[rgb(var(--color-bg))]">
       {/* Dashboard Header */}
       <div className="relative bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 text-white py-16 overflow-hidden">
         {/* Animated Background */}
@@ -143,11 +143,11 @@ export default function SellerDashboardPage() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="bg-[rgb(var(--color-card))] p-6 rounded-xl shadow-sm border border-[rgb(var(--color-border))]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Total Offers</p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-2">{stats.total_offers}</p>
+                <p className="text-[rgb(var(--color-muted))] text-sm font-medium">Total Offers</p>
+                <p className="text-3xl font-bold text-[rgb(var(--color-text))] mt-2">{stats.total_offers}</p>
               </div>
               <div className="bg-purple-100 dark:bg-purple-900/30 p-3 rounded-lg">
                 <FiPackage className="text-purple-600 dark:text-purple-400 text-xl" />
@@ -155,11 +155,11 @@ export default function SellerDashboardPage() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="bg-[rgb(var(--color-card))] p-6 rounded-xl shadow-sm border border-[rgb(var(--color-border))]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Active Offers</p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-2">{stats.active_offers}</p>
+                <p className="text-[rgb(var(--color-muted))] text-sm font-medium">Active Offers</p>
+                <p className="text-3xl font-bold text-[rgb(var(--color-text))] mt-2">{stats.active_offers}</p>
               </div>
               <div className="bg-green-100 dark:bg-green-900/30 p-3 rounded-lg">
                 <FiEye className="text-green-600 dark:text-green-400 text-xl" />
@@ -167,11 +167,11 @@ export default function SellerDashboardPage() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="bg-[rgb(var(--color-card))] p-6 rounded-xl shadow-sm border border-[rgb(var(--color-border))]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Revenue</p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-2">KES {stats.revenue.toLocaleString()}</p>
+                <p className="text-[rgb(var(--color-muted))] text-sm font-medium">Revenue</p>
+                <p className="text-3xl font-bold text-[rgb(var(--color-text))] mt-2">KES {stats.revenue.toLocaleString()}</p>
               </div>
               <div className="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-lg">
                 <FiDollarSign className="text-blue-600 dark:text-blue-400 text-xl" />
@@ -179,7 +179,17 @@ export default function SellerDashboardPage() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="bg-[rgb(var(--color-card))] p-6 rounded-xl shadow-sm border border-[rgb(var(--color-border))]">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[rgb(var(--color-muted))] text-sm font-medium">Growth</p>
+                <p className="text-3xl font-bold text-[rgb(var(--color-text))] mt-2">+{stats.growth}%</p>
+              </div>
+              <div className="bg-orange-100 dark:bg-orange-900/30 p-3 rounded-lg">
+                <FiTrendingUp className="text-orange-600 dark:text-orange-400 text-xl" />
+              </div>
+            </div>
+          </div>
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Growth</p>

@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { FiHeart, FiClock, FiTag, FiGrid, FiList, FiFilter, FiChevronLeft, FiChevronRight, FiShoppingCart } from "react-icons/fi";
+import { FiHeart, FiClock, FiTag, FiGrid, FiList, FiFilter, FiChevronLeft, FiChevronRight, FiShoppingCart, FiUser } from "react-icons/fi";
 import axios from "axios";
 import Button from "../../components/Button";
 import { useCart } from "../../contexts/CartContext";
 
 import FilterSidebar from "../../components/FilterSidebar";
 import HeroCarousel from "../../components/HeroCarousel";
+import VerificationBadge from "../../components/VerificationBadge";
+import TrustIndicators from "../../components/TrustIndicators";
 import { API_BASE_URL } from "../../lib/api";
 
 interface Offer {
@@ -20,9 +22,19 @@ interface Offer {
   discount_percentage: number;
   category: string;
   valid_until: string;
+  is_favorited?: boolean;
+  is_verified?: boolean;
+  rating?: number;
   seller: {
     id: number;
     business_name: string;
+    is_verified?: boolean;
+    user?: {
+      profile_picture?: string;
+      first_name?: string;
+      last_name?: string;
+      is_verified?: boolean;
+    };
   };
 }
 
@@ -50,6 +62,32 @@ export default function OffersPage() {
       expiresAt: offer.valid_until,
       seller: offer.seller
     });
+  };
+
+  const [favoriteLoading, setFavoriteLoading] = useState<number | null>(null);
+
+  const handleFavorite = async (offerId: number) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      
+      setFavoriteLoading(offerId);
+      const response = await axios.post(
+        `${API_BASE_URL}/api/accounts/deals/${offerId}/favorite/`,
+        {},
+        { headers: { Authorization: `Token ${token}` } }
+      );
+      
+      setOffers(offers.map(offer => 
+        offer.id === offerId 
+          ? { ...offer, is_favorited: response.data.favorited }
+          : offer
+      ));
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+    } finally {
+      setFavoriteLoading(null);
+    }
   };
 
   useEffect(() => {
@@ -305,18 +343,29 @@ export default function OffersPage() {
                       >
                         <div className="flex-1 p-6">
                           <div className="flex justify-between items-start mb-4">
-                            <div className="flex items-center space-x-3">
+                            <div className="flex items-center space-x-2 flex-wrap">
                               <span className="bg-purple-100 dark:bg-indigo-900/40 text-purple-600 dark:text-indigo-300 px-3 py-1 rounded-full text-sm font-semibold">
                                 {offer.category}
                               </span>
+                              <VerificationBadge isVerified={offer.is_verified || false} type="deal" size="sm" />
                               {isFeatured && (
                                 <span className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
                                   ⭐ Featured
                                 </span>
                               )}
                             </div>
-                            <button className="text-gray-400 hover:text-red-500 transition-colors">
-                              <FiHeart className="text-xl" />
+                            <button 
+                              onClick={() => handleFavorite(offer.id)}
+                              disabled={favoriteLoading === offer.id}
+                              className={`transition-colors relative ${
+                                offer.is_favorited ? 'text-red-500' : 'text-gray-400 hover:text-red-500'
+                              } ${favoriteLoading === offer.id ? 'opacity-50' : ''}`}
+                            >
+                              {favoriteLoading === offer.id ? (
+                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-current" />
+                              ) : (
+                                <FiHeart className={`text-xl ${offer.is_favorited ? 'fill-current' : ''}`} />
+                              )}
                             </button>
                           </div>
                           
@@ -325,13 +374,13 @@ export default function OffersPage() {
                           
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-2">
-                              <span className="text-2xl font-bold text-purple-600 dark:text-indigo-300">
+                              <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                                 KES {offer.discounted_price}
                               </span>
-                              <span className="text-gray-400 line-through">
+                              <span className="text-gray-400 line-through text-lg">
                                 KES {offer.original_price}
                               </span>
-                              <span className="bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-300 px-2 py-1 rounded text-sm font-semibold">
+                              <span className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
                                 {offer.discount_percentage}% OFF
                               </span>
                             </div>
@@ -374,8 +423,13 @@ export default function OffersPage() {
                           <span className="bg-purple-100 dark:bg-indigo-900/40 text-purple-600 dark:text-indigo-300 px-3 py-1 rounded-full text-sm font-semibold">
                             {offer.category}
                           </span>
-                          <button className="text-gray-400 hover:text-red-500 transition-colors">
-                            <FiHeart className="text-2xl" />
+                          <button 
+                            onClick={() => handleFavorite(offer.id)}
+                            className={`transition-colors ${
+                              offer.is_favorited ? 'text-red-500' : 'text-gray-400 hover:text-red-500'
+                            }`}
+                          >
+                            <FiHeart className={`text-2xl ${offer.is_favorited ? 'fill-current' : ''}`} />
                           </button>
                         </div>
                         
@@ -383,13 +437,13 @@ export default function OffersPage() {
                         <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">{offer.description}</p>
                         
                         <div className="flex items-center space-x-2 mb-4">
-                          <span className="text-2xl font-bold text-purple-600 dark:text-indigo-300">
+                          <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                             KES {offer.discounted_price}
                           </span>
-                          <span className="text-gray-400 line-through">
+                          <span className="text-gray-400 line-through text-lg">
                             KES {offer.original_price}
                           </span>
-                          <span className="bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-300 px-2 py-1 rounded text-sm font-semibold">
+                          <span className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
                             {offer.discount_percentage}% OFF
                           </span>
                         </div>
@@ -400,9 +454,24 @@ export default function OffersPage() {
                         </div>
                         
                         <div className="border-t border-gray-100 dark:border-gray-800 pt-4">
-                          <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-                            By <span className="font-semibold text-purple-600 dark:text-indigo-300">{offer.seller.business_name}</span>
-                          </p>
+                          <div className="flex items-center gap-2 mb-3">
+                            {offer.seller.user?.profile_picture ? (
+                              <img
+                                src={offer.seller.user.profile_picture}
+                                alt={offer.seller.user.first_name}
+                                className="w-6 h-6 rounded-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-6 h-6 rounded-full bg-purple-100 flex items-center justify-center">
+                                <FiUser className="w-3 h-3 text-purple-600" />
+                              </div>
+                            )}
+                            <p className="text-sm text-gray-600 dark:text-gray-300">
+                              By <span className="font-semibold text-purple-600 dark:text-indigo-300">{offer.seller.business_name}</span>
+                            </p>
+                            <VerificationBadge isVerified={offer.seller.is_verified || false} type="seller" size="sm" />
+                          </div>
+                          <TrustIndicators size="sm" className="mb-3" />
                           <div className="flex space-x-2">
                             <Button
                               variant="outline"

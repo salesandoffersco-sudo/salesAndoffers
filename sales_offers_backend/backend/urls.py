@@ -28,4 +28,5 @@ urlpatterns = [
     path('api/newsletter/', include('newsletter.urls')),
     path('api/blog/', include('blog.urls')),
     path('api/analytics/', include('analytics.urls')),
+    path('api/transactions/', include('transactions.urls')),
 ]
