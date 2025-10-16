@@ -190,25 +190,15 @@ export default function SellerDashboardPage() {
               </div>
             </div>
           </div>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Growth</p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-2">+{stats.growth}%</p>
-              </div>
-              <div className="bg-orange-100 dark:bg-orange-900/30 p-3 rounded-lg">
-                <FiTrendingUp className="text-orange-600 dark:text-orange-400 text-xl" />
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Link href="/seller/analytics" className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow">
+          <Link href="/seller/analytics" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Analytics Dashboard</h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">View detailed performance insights</p>
+                <h3 className="text-lg font-semibold text-[rgb(var(--color-fg))]">Analytics Dashboard</h3>
+                <p className="text-[rgb(var(--color-muted))] text-sm mt-1">View detailed performance insights</p>
               </div>
               <div className="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-lg">
                 <FiBarChart className="text-blue-600 dark:text-blue-400 text-xl" />
@@ -216,11 +206,11 @@ export default function SellerDashboardPage() {
             </div>
           </Link>
           
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <div className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Manage Offers</h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">Edit and update your listings</p>
+                <h3 className="text-lg font-semibold text-[rgb(var(--color-fg))]">Manage Offers</h3>
+                <p className="text-[rgb(var(--color-muted))] text-sm mt-1">Edit and update your listings</p>
               </div>
               <div className="bg-green-100 dark:bg-green-900/30 p-3 rounded-lg">
                 <FiEdit className="text-green-600 dark:text-green-400 text-xl" />
@@ -228,11 +218,11 @@ export default function SellerDashboardPage() {
             </div>
           </div>
           
-          <Link href="/pricing" className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow">
+          <Link href="/pricing" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Upgrade Plan</h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">Unlock more features</p>
+                <h3 className="text-lg font-semibold text-[rgb(var(--color-fg))]">Upgrade Plan</h3>
+                <p className="text-[rgb(var(--color-muted))] text-sm mt-1">Unlock more features</p>
               </div>
               <div className="bg-purple-100 dark:bg-purple-900/30 p-3 rounded-lg">
                 <FiTrendingUp className="text-purple-600 dark:text-purple-400 text-xl" />
@@ -242,28 +232,28 @@ export default function SellerDashboardPage() {
         </div>
 
         {/* Recent Offers */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-8">
-          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+        <div className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] mb-8">
+          <div className="p-6 border-b border-[rgb(var(--color-border))]">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Recent Offers</h2>
+              <h2 className="text-xl font-bold text-[rgb(var(--color-fg))]">Recent Offers</h2>
               <Button variant="outline" size="sm" onClick={() => alert('View all offers page coming soon!')}>View All</Button>
             </div>
           </div>
           <div className="p-6">
             {offers.length === 0 ? (
               <div className="text-center py-8">
-                <FiPackage className="text-gray-400 text-4xl mx-auto mb-4" />
-                <p className="text-gray-600 dark:text-gray-400">No offers yet. Create your first offer!</p>
+                <FiPackage className="text-[rgb(var(--color-muted))] text-4xl mx-auto mb-4" />
+                <p className="text-[rgb(var(--color-muted))]">No offers yet. Create your first offer!</p>
               </div>
             ) : (
               <div className="space-y-4">
                 {offers.slice(0, 5).map((offer) => (
-                  <div key={offer.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                  <div key={offer.id} className="flex items-center justify-between p-4 bg-[rgb(var(--color-bg))] rounded-lg">
                     <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 dark:text-gray-100">{offer.title}</h3>
+                      <h3 className="font-semibold text-[rgb(var(--color-fg))]">{offer.title}</h3>
                       <div className="flex items-center space-x-4 mt-1">
                         <span className="text-purple-600 dark:text-purple-400 font-medium">KES {offer.discounted_price}</span>
-                        <span className="text-gray-500 line-through">KES {offer.original_price}</span>
+                        <span className="text-[rgb(var(--color-muted))] line-through">KES {offer.original_price}</span>
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${offer.is_active ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'}`}>
                           {offer.is_active ? 'Active' : 'Inactive'}
                         </span>
@@ -294,8 +284,8 @@ export default function SellerDashboardPage() {
           <div className="lg:col-span-2">
             <AnalyticsWidget />
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
+          <div className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-6">
+            <h3 className="text-lg font-semibold text-[rgb(var(--color-fg))] mb-4">Quick Actions</h3>
             <div className="space-y-3">
               <Link href="/seller/analytics" className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
                 <FiBarChart className="w-5 h-5 text-blue-600 dark:text-blue-400" />
@@ -341,7 +331,7 @@ export default function SellerDashboardPage() {
           isOpen={showCreateModal}
           onClose={() => setShowCreateModal(false)}
           onSuccess={() => {
-            fetchData(); // Refresh data after creating offer
+            fetchData();
           }}
         />
       )}
