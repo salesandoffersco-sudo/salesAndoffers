@@ -21,13 +21,15 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
     discounted_price: "",
     discount_percentage: 0,
     image: "",
-    expires_at: "",
+    valid_until: "",
+    category: "Other",
+    max_vouchers: 100,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [subscription, setSubscription] = useState<any>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => {
       const updated = { ...prev, [name]: value };
@@ -65,7 +67,7 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
 
     try {
       const token = localStorage.getItem("token");
-      await axios.post(`${API_BASE_URL}/api/offers/`, formData, {
+      await axios.post(`${API_BASE_URL}/api/deals/`, formData, {
         headers: { Authorization: `Token ${token}` }
       });
       
@@ -78,7 +80,9 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
         discounted_price: "",
         discount_percentage: 0,
         image: "",
-        expires_at: "",
+        valid_until: "",
+        category: "Other",
+        max_vouchers: 100,
       });
     } catch (err: any) {
       setError(err.response?.data?.detail || "Failed to create offer");
@@ -204,6 +208,26 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Category
+            </label>
+            <select
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+            >
+              <option value="Electronics">Electronics</option>
+              <option value="Fashion">Fashion</option>
+              <option value="Food">Food & Beverages</option>
+              <option value="Home">Home & Garden</option>
+              <option value="Services">Services</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Image URL (Optional)
             </label>
             <div className="relative">
@@ -221,14 +245,14 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Expires At
+              Valid Until
             </label>
             <div className="relative">
               <FiCalendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
                 type="datetime-local"
-                name="expires_at"
-                value={formData.expires_at}
+                name="valid_until"
+                value={formData.valid_until}
                 onChange={handleChange}
                 required
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
