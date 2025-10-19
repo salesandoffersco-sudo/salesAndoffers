@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FiSave, FiEye, FiEyeOff, FiBuilding } from "react-icons/fi";
+import { FiSave, FiEye, FiEyeOff, FiHome } from "react-icons/fi";
 import axios from "axios";
 import LoadingButton from "../../../components/LoadingButton";
 import { API_BASE_URL } from "../../../lib/api";
@@ -100,7 +100,7 @@ export default function SellerProfilePage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <div className="bg-white/20 p-3 rounded-full">
-                  <FiBuilding className="w-8 h-8 text-white" />
+                  <FiHome className="w-8 h-8 text-white" />
                 </div>
                 <div>
                   <h1 className="text-3xl font-bold text-white">Seller Profile</h1>
