@@ -41,12 +41,19 @@ class Subscription(models.Model):
         ('pending', 'Pending'),
     ]
     
+    BILLING_CHOICES = [
+        ('manual', 'Manual'),
+        ('auto', 'Auto-Billing'),
+    ]
+    
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     plan = models.ForeignKey(SubscriptionPlan, on_delete=models.CASCADE)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    billing_type = models.CharField(max_length=10, choices=BILLING_CHOICES, default='manual')
     start_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField()
     payment_reference = models.CharField(max_length=100, blank=True)
+    authorization_code = models.CharField(max_length=100, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
     def save(self, *args, **kwargs):

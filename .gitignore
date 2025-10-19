@@ -44,3 +44,4 @@ logs/
 # Cache
 .cache/
 *.tsbuildinfo
+*.md

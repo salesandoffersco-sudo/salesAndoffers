@@ -167,14 +167,59 @@ def subscribe_to_plan(request, plan_id):
             payment_reference=payment_reference
         )
         
+        # Get billing preference from request
+        billing_type = request.data.get('billing_type', 'manual')  # 'auto' or 'manual'
+        
         # Initialize Paystack payment
         if plan.price_ksh > 0:
             paystack_data = {
                 'email': request.user.email,
                 'amount': int(plan.price_ksh * 100),  # Paystack expects amount in kobo
                 'reference': payment_reference,
-                'callback_url': f"{settings.FRONTEND_URL}/subscription/callback"
+                'callback_url': f"{settings.FRONTEND_URL}/subscription/callback",
+                'metadata': {
+                    'billing_type': billing_type,
+                    'plan_id': plan.id,
+                    'user_id': request.user.id
+                },
+                'channels': ['card', 'bank', 'ussd', 'qr', 'mobile_money', 'bank_transfer'],
+                'card': {
+                    'first_6digits': '',
+                    'last_4digits': '',
+                    'issuer': '',
+                    'country': 'NG',
+                    'type': 'visa',
+                    'token': ''
+                }
             }
+            
+            # For auto-billing, create subscription plan on Paystack
+            if billing_type == 'auto':
+                # Create Paystack plan for recurring billing
+                plan_data = {
+                    'name': f"{plan.name} - {request.user.email}",
+                    'interval': 'monthly',
+                    'amount': int(plan.price_ksh * 100),
+                    'currency': 'NGN',
+                    'description': f"Monthly subscription for {plan.name} plan"
+                }
+                
+                plan_response = requests.post(
+                    'https://api.paystack.co/plan',
+                    json=plan_data,
+                    headers={
+                        'Authorization': f'Bearer {settings.PAYSTACK_SECRET_KEY}',
+                        'Content-Type': 'application/json'
+                    }
+                )
+                
+                if plan_response.status_code == 201:
+                    paystack_plan = plan_response.json()['data']
+                    paystack_data['plan'] = paystack_plan['plan_code']
+                    
+                    # Store plan code for future reference
+                    subscription.payment_reference = paystack_plan['plan_code']
+                    subscription.save()
             
             headers = {
                 'Authorization': f'Bearer {settings.PAYSTACK_SECRET_KEY}',
@@ -235,12 +280,25 @@ def verify_payment(request):
         if response.status_code == 200:
             data = response.json()
             if data['data']['status'] == 'success':
+                # Check if card is prepaid (reject prepaid cards)
+                card_type = data['data'].get('authorization', {}).get('card_type', '')
+                if card_type.lower() == 'prepaid':
+                    payment.status = 'failed'
+                    payment.save()
+                    return Response({'error': 'Prepaid cards are not accepted. Please use a debit or credit card.'}, status=400)
+                
                 payment.status = 'completed'
                 payment.save()
                 
                 subscription = payment.subscription
                 subscription.status = 'active'
                 subscription.payment_reference = reference
+                
+                # Store authorization code for auto-billing
+                auth_code = data['data'].get('authorization', {}).get('authorization_code')
+                if auth_code:
+                    subscription.authorization_code = auth_code
+                
                 subscription.save()
                 
                 return Response({'message': 'Payment verified and subscription activated'})
