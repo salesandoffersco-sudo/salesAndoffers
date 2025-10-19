@@ -21,7 +21,7 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
     discounted_price: "",
     discount_percentage: 0,
     image: "",
-    valid_until: "",
+    expires_at: "",
     category: "Other",
     max_vouchers: 100,
   });
@@ -80,7 +80,7 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
         discounted_price: "",
         discount_percentage: 0,
         image: "",
-        valid_until: "",
+        expires_at: "",
         category: "Other",
         max_vouchers: 100,
       });
@@ -245,14 +245,14 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Valid Until
+              Expires At
             </label>
             <div className="relative">
               <FiCalendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
                 type="datetime-local"
-                name="valid_until"
-                value={formData.valid_until}
+                name="expires_at"
+                value={formData.expires_at}
                 onChange={handleChange}
                 required
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
