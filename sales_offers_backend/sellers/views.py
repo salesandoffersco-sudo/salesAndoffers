@@ -4,8 +4,8 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from django.db.models import Count, Sum, Avg
 from django.utils import timezone
-from .models import Seller, SubscriptionPlan, Subscription, Payment
-from .serializers import SellerSerializer, SubscriptionPlanSerializer, SubscriptionSerializer, PaymentSerializer
+from .models import Seller, SubscriptionPlan, Subscription, Payment, SellerProfile
+from .serializers import SellerSerializer, SubscriptionPlanSerializer, SubscriptionSerializer, PaymentSerializer, SellerProfileSerializer
 from deals.models import Deal
 from accounts.models import User
 import uuid
@@ -17,7 +17,9 @@ class SellerListView(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
     
     def get_queryset(self):
-        queryset = Seller.objects.select_related('user').annotate(
+        queryset = Seller.objects.select_related('user').filter(
+            profile__is_published=True
+        ).annotate(
             total_deals=Count('deals'),
             avg_rating=Avg('deals__rating') or 4.5
         )
@@ -281,3 +283,36 @@ def cancel_subscription(request):
         return Response({'message': 'Subscription cancelled successfully'})
     else:
         return Response({'error': 'No active subscription found'}, status=404)
+
+@api_view(['GET', 'POST', 'PUT'])
+@permission_classes([IsAuthenticated])
+def seller_profile(request):
+    try:
+        seller = Seller.objects.get(user=request.user)
+        profile, created = SellerProfile.objects.get_or_create(seller=seller)
+        
+        if request.method == 'GET':
+            serializer = SellerProfileSerializer(profile)
+            return Response(serializer.data)
+        
+        elif request.method in ['POST', 'PUT']:
+            serializer = SellerProfileSerializer(profile, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=400)
+            
+    except Seller.DoesNotExist:
+        return Response({'error': 'Seller not found'}, status=404)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def toggle_profile_publish(request):
+    try:
+        seller = Seller.objects.get(user=request.user)
+        profile = SellerProfile.objects.get(seller=seller)
+        profile.is_published = not profile.is_published
+        profile.save()
+        return Response({'is_published': profile.is_published})
+    except (Seller.DoesNotExist, SellerProfile.DoesNotExist):
+        return Response({'error': 'Profile not found'}, status=404)

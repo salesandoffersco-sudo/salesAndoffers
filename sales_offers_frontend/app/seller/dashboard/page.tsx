@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { FiShoppingBag, FiPlus, FiDollarSign, FiTrendingUp, FiPackage, FiEdit, FiEye, FiTrash2, FiBarChart } from "react-icons/fi";
+import { FiShoppingBag, FiPlus, FiDollarSign, FiTrendingUp, FiPackage, FiEdit, FiEye, FiTrash2, FiBarChart, FiUser } from "react-icons/fi";
 import axios from "axios";
 import Button from "../../../components/Button";
 import CreateOfferModal from "../../../components/CreateOfferModal";
@@ -193,7 +193,19 @@ export default function SellerDashboardPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Link href="/seller/profile" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-[rgb(var(--color-fg))]">Seller Profile</h3>
+                <p className="text-[rgb(var(--color-muted))] text-sm mt-1">Manage your business profile</p>
+              </div>
+              <div className="bg-purple-100 dark:bg-purple-900/30 p-3 rounded-lg">
+                <FiUser className="text-purple-600 dark:text-purple-400 text-xl" />
+              </div>
+            </div>
+          </Link>
+          
           <Link href="/seller/analytics" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div>
@@ -224,8 +236,8 @@ export default function SellerDashboardPage() {
                 <h3 className="text-lg font-semibold text-[rgb(var(--color-fg))]">Upgrade Plan</h3>
                 <p className="text-[rgb(var(--color-muted))] text-sm mt-1">Unlock more features</p>
               </div>
-              <div className="bg-purple-100 dark:bg-purple-900/30 p-3 rounded-lg">
-                <FiTrendingUp className="text-purple-600 dark:text-purple-400 text-xl" />
+              <div className="bg-orange-100 dark:bg-orange-900/30 p-3 rounded-lg">
+                <FiTrendingUp className="text-orange-600 dark:text-orange-400 text-xl" />
               </div>
             </div>
           </Link>

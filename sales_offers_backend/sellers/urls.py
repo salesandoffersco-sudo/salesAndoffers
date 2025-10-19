@@ -1,7 +1,8 @@
 from django.urls import path
 from .views import (
     SellerListView, SubscriptionPlanListView, seller_stats, seller_offers, seller_detail,
-    subscribe_to_plan, verify_payment, user_subscription, cancel_subscription
+    subscribe_to_plan, verify_payment, user_subscription, cancel_subscription,
+    seller_profile, toggle_profile_publish
 )
 
 urlpatterns = [
@@ -15,4 +16,6 @@ urlpatterns = [
     path('cancel-subscription/', cancel_subscription, name='cancel-subscription'),
     path('stats/', seller_stats, name='seller-stats'),
     path('offers/', seller_offers, name='seller-offers'),
+    path('profile/', seller_profile, name='seller-profile'),
+    path('profile/toggle-publish/', toggle_profile_publish, name='toggle-profile-publish'),
 ]

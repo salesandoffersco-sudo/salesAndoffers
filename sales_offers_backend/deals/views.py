@@ -10,7 +10,7 @@ from accounts.models import User
 from accounts.notification_service import NotificationService
 
 class DealListView(generics.ListCreateAPIView):
-    queryset = Deal.objects.filter(is_active=True, status='approved')
+    queryset = Deal.objects.filter(is_active=True, status='approved', seller__profile__is_published=True)
     serializer_class = DealSerializer
     
     def perform_create(self, serializer):
@@ -34,6 +34,10 @@ class DealListView(generics.ListCreateAPIView):
         # Get seller for current user
         try:
             seller = Seller.objects.get(user=self.request.user)
+            # Check if seller profile is published
+            if not hasattr(seller, 'profile') or not seller.profile.is_published:
+                from rest_framework.exceptions import ValidationError
+                raise ValidationError('You must publish your seller profile before creating offers.')
         except Seller.DoesNotExist:
             from rest_framework.exceptions import ValidationError
             raise ValidationError('You must have a seller profile to create deals.')
