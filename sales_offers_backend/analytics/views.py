@@ -11,10 +11,13 @@ from accounts.models import User
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def seller_analytics(request):
+def seller_analytics(request, seller_id=None):
     """Get seller analytics based on subscription plan"""
     try:
-        seller = Seller.objects.get(user=request.user)
+        if seller_id:
+            seller = Seller.objects.get(id=seller_id, user=request.user)
+        else:
+            seller = Seller.objects.get(user=request.user)
         subscription = getattr(request.user, 'current_subscription', None)
         plan_name = subscription.plan.name if subscription else 'Basic'
         

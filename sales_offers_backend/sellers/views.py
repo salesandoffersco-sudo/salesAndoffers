@@ -140,6 +140,10 @@ def seller_detail(request, seller_id):
 def subscribe_to_plan(request, plan_id):
     try:
         plan = SubscriptionPlan.objects.get(id=plan_id)
+    except SubscriptionPlan.DoesNotExist:
+        return Response({'error': f'Subscription plan with ID {plan_id} not found'}, status=404)
+    
+    try:
         
         # Check if user already has an active subscription
         existing_sub = Subscription.objects.filter(
@@ -252,9 +256,8 @@ def subscribe_to_plan(request, plan_id):
                 'message': 'Subscription activated successfully',
                 'subscription_id': subscription.id
             })
-            
-    except SubscriptionPlan.DoesNotExist:
-        return Response({'error': 'Plan not found'}, status=404)
+    except Exception as e:
+        return Response({'error': f'Subscription failed: {str(e)}'}, status=400)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
