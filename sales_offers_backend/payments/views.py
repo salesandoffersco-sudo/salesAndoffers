@@ -33,8 +33,11 @@ def initialize_payment(request):
         if quantity < deal.min_purchase or quantity > deal.max_purchase:
             return Response({'error': f'Quantity must be between {deal.min_purchase} and {deal.max_purchase}'}, status=400)
         
-        # Calculate total amount
-        total_amount = deal.discounted_price * quantity
+        # Calculate total amount with 10% platform commission
+        subtotal = deal.discounted_price * quantity
+        platform_commission = subtotal * 0.10  # 10% commission
+        total_amount = subtotal  # Customer pays full amount
+        seller_amount = subtotal - platform_commission  # Seller gets 90%
         
         # Create voucher
         voucher = Voucher.objects.create(
@@ -44,6 +47,11 @@ def initialize_payment(request):
             total_amount=total_amount,
             expires_at=deal.redemption_deadline
         )
+        
+        # Update voucher with commission after creation
+        voucher.seller_amount = seller_amount
+        voucher.platform_commission = platform_commission
+        voucher.save()
         
         # Initialize Paystack payment
         paystack_data = {

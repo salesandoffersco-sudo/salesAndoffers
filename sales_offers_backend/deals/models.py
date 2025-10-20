@@ -61,6 +61,8 @@ class Voucher(models.Model):
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='vouchers')
     quantity = models.IntegerField(default=1)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    seller_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    platform_commission = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     status = models.CharField(max_length=20, choices=VOUCHER_STATUS_CHOICES, default='pending')
     payment_reference = models.CharField(max_length=100, blank=True)
     qr_code = models.TextField(blank=True)

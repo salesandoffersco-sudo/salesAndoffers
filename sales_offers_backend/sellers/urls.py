@@ -4,6 +4,7 @@ from .views import (
     subscribe_to_plan, verify_payment, user_subscription, cancel_subscription,
     seller_profile, toggle_profile_publish
 )
+from .withdrawal_views import seller_balance, request_withdrawal, withdrawal_history, bank_list
 
 urlpatterns = [
     path('', SellerListView.as_view(), name='seller-list'),
@@ -18,4 +19,8 @@ urlpatterns = [
     path('offers/', seller_offers, name='seller-offers'),
     path('profile/', seller_profile, name='seller-profile'),
     path('profile/toggle-publish/', toggle_profile_publish, name='toggle-profile-publish'),
+    path('balance/', seller_balance, name='seller-balance'),
+    path('withdraw/', request_withdrawal, name='request-withdrawal'),
+    path('withdrawals/', withdrawal_history, name='withdrawal-history'),
+    path('banks/', bank_list, name='bank-list'),
 ]
