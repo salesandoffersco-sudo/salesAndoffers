@@ -16,6 +16,7 @@ interface Seller {
   business_logo: string;
   rating: number;
   total_reviews: number;
+  total_deals: number;
   address: string;
   phone: string;
   email: string;
