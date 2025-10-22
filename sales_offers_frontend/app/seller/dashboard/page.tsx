@@ -3,12 +3,11 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { FiShoppingBag, FiPlus, FiDollarSign, FiTrendingUp, FiPackage, FiEdit, FiEye, FiTrash2, FiBarChart, FiUser } from "react-icons/fi";
-import axios from "axios";
 import Button from "../../../components/Button";
 import CreateOfferModal from "../../../components/CreateOfferModal";
 import SubscriptionStatus from "../../../components/SubscriptionStatus";
 import AnalyticsWidget from "../../../components/AnalyticsWidget";
-import { API_BASE_URL } from "../../../lib/api";
+import { api } from "../../../lib/api";
 
 interface SubscriptionPlan {
   id: number;
@@ -80,9 +79,9 @@ export default function SellerDashboardPage() {
       const headers = { Authorization: `Token ${token}` };
 
       const [plansRes, statsRes, offersRes] = await Promise.all([
-        axios.get(`${API_BASE_URL}/api/sellers/subscription-plans/`),
-        axios.get(`${API_BASE_URL}/api/sellers/stats/`, { headers }),
-        axios.get(`${API_BASE_URL}/api/sellers/offers/`, { headers })
+        api.get('/api/sellers/subscription-plans/'),
+        api.get('/api/sellers/stats/'),
+        api.get('/api/sellers/offers/')
       ]);
 
       setPlans(plansRes.data);

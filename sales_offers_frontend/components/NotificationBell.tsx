@@ -2,8 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { FiBell, FiX, FiCheck, FiHeart, FiTag, FiTrendingUp, FiUser } from "react-icons/fi";
-import axios from "axios";
-import { API_BASE_URL } from "../lib/api";
+import { api } from "../lib/api";
 
 interface Notification {
   id: number;
@@ -63,9 +62,7 @@ export default function NotificationBell() {
         return;
       }
       
-      const response = await axios.get(`${API_BASE_URL}/api/accounts/notifications/?limit=10`, {
-        headers: { Authorization: `Token ${token}` }
-      });
+      const response = await api.get('/api/accounts/notifications/?limit=10');
       setNotifications(response.data);
       setUnreadCount(response.data.filter((n: Notification) => !n.is_read).length);
     } catch (error: any) {
@@ -80,10 +77,7 @@ export default function NotificationBell() {
   const markAsRead = async (notificationId: number) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.patch(`${API_BASE_URL}/api/accounts/notifications/${notificationId}/`, 
-        { is_read: true },
-        { headers: { Authorization: `Token ${token}` } }
-      );
+      await api.patch(`/api/accounts/notifications/${notificationId}/`, { is_read: true });
       setNotifications(notifications.map(n => 
         n.id === notificationId ? { ...n, is_read: true } : n
       ));

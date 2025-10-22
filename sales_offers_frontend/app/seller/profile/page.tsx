@@ -2,9 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { FiSave, FiEye, FiEyeOff, FiHome } from "react-icons/fi";
-import axios from "axios";
 import LoadingButton from "../../../components/LoadingButton";
-import { API_BASE_URL } from "../../../lib/api";
+import { api } from "../../../lib/api";
 
 interface SellerProfile {
   id?: number;
@@ -39,10 +38,7 @@ export default function SellerProfilePage() {
 
   const fetchProfile = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(`${API_BASE_URL}/api/sellers/profile/`, {
-        headers: { Authorization: `Token ${token}` }
-      });
+      const response = await api.get('/api/sellers/profile/');
       setProfile(response.data);
     } catch (error) {
       console.error("Error fetching profile:", error);
@@ -54,10 +50,7 @@ export default function SellerProfilePage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const token = localStorage.getItem("token");
-      await axios.put(`${API_BASE_URL}/api/sellers/profile/`, profile, {
-        headers: { Authorization: `Token ${token}` }
-      });
+      await api.put('/api/sellers/profile/', profile);
       alert("Profile saved successfully!");
     } catch (error) {
       console.error("Error saving profile:", error);
@@ -70,10 +63,7 @@ export default function SellerProfilePage() {
   const handleTogglePublish = async () => {
     setPublishing(true);
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.post(`${API_BASE_URL}/api/sellers/profile/toggle-publish/`, {}, {
-        headers: { Authorization: `Token ${token}` }
-      });
+      const response = await api.post('/api/sellers/profile/toggle-publish/', {});
       setProfile(prev => ({ ...prev, is_published: response.data.is_published }));
       alert(response.data.is_published ? "Profile published!" : "Profile unpublished!");
     } catch (error) {

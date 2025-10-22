@@ -54,7 +54,7 @@ export default function AnalyticsWidget({ className = '' }: AnalyticsWidgetProps
     const fetchAnalyticsPreview = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://salesandoffers.onrender.com'}/api/analytics/seller/`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://salesandoffers.onrender.com'}/api/sellers/stats/`, {
           headers: {
             'Authorization': `Token ${token}`,
             'Content-Type': 'application/json',
@@ -64,11 +64,11 @@ export default function AnalyticsWidget({ className = '' }: AnalyticsWidgetProps
         if (response.ok) {
           const result = await response.json();
           setData({
-            totalRevenue: result.analytics.total_revenue || 0,
-            monthlyRevenue: result.analytics.monthly_revenue || 0,
-            totalDeals: result.analytics.total_deals || 0,
-            activeDeals: result.analytics.active_deals || 0,
-            conversionRate: result.analytics.conversion_rate || 0,
+            totalRevenue: result.total_revenue || 0,
+            monthlyRevenue: result.monthly_revenue || 0,
+            totalDeals: result.total_deals || 0,
+            activeDeals: result.active_deals || 0,
+            conversionRate: result.conversion_rate || 0,
             growth: 12.5, // Mock growth data
             plan: result.plan || 'Basic'
           });

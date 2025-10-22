@@ -442,3 +442,16 @@ def check_favorite_status(request, deal_id):
         return Response({'favorited': is_favorited})
     except Deal.DoesNotExist:
         return Response({'error': 'Deal not found'}, status=404)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def auth_test(request):
+    """Debug endpoint to test authentication"""
+    return Response({
+        'authenticated': True,
+        'user_id': request.user.id,
+        'username': request.user.username,
+        'email': request.user.email,
+        'token_exists': hasattr(request.user, 'auth_token'),
+        'token_key': request.user.auth_token.key if hasattr(request.user, 'auth_token') else None
+    })
