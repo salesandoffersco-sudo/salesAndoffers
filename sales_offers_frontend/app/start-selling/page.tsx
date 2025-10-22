@@ -41,7 +41,7 @@ export default function StartSellingPage() {
     const userData = localStorage.getItem('user');
     if (userData && userData !== 'null') {
       try {
-        const user = JSON.parse(userData);
+        const user = JSON.parse(userData as string);
         setProfile(prev => ({ ...prev, email: user.email || '' }));
       } catch (e) {
         // Handle invalid JSON
