@@ -39,7 +39,7 @@ export default function StartSellingPage() {
     
     // Pre-fill email from user data if available
     const userData = localStorage.getItem('user');
-    if (userData) {
+    if (userData && userData !== 'null') {
       try {
         const user = JSON.parse(userData);
         setProfile(prev => ({ ...prev, email: user.email || '' }));
