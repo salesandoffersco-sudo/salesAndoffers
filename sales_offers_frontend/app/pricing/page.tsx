@@ -69,7 +69,10 @@ export default function PricingPage() {
         { headers: { Authorization: `Token ${token}` } }
       );
 
-      if (response.data.payment_url) {
+      if (response.data.subscription_url) {
+        // Redirect to Paystack subscription page
+        window.location.href = response.data.subscription_url;
+      } else if (response.data.payment_url) {
         // Redirect to Paystack payment page
         window.location.href = response.data.payment_url;
       } else {

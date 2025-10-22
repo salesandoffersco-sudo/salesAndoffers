@@ -54,6 +54,8 @@ class Subscription(models.Model):
     end_date = models.DateTimeField()
     payment_reference = models.CharField(max_length=100, blank=True)
     authorization_code = models.CharField(max_length=100, blank=True)
+    paystack_plan_code = models.CharField(max_length=100, blank=True)
+    paystack_subscription_code = models.CharField(max_length=100, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
     def save(self, *args, **kwargs):

@@ -197,33 +197,27 @@ def subscribe_to_plan(request, plan_id):
                 }
             }
             
-            # For auto-billing, create subscription plan on Paystack
+            # For auto-billing, use Paystack subscription page
             if billing_type == 'auto':
-                # Create Paystack plan for recurring billing
-                plan_data = {
-                    'name': f"{plan.name} - {request.user.email}",
-                    'interval': 'monthly',
-                    'amount': int(plan.price_ksh * 100),
-                    'currency': 'NGN',
-                    'description': f"Monthly subscription for {plan.name} plan"
+                # Map plan names to Paystack plan codes (created manually in Paystack)
+                plan_codes = {
+                    'Pro': 'PLN_pro_plan_code',  # Replace with actual Paystack plan code
+                    'Enterprise': 'PLN_enterprise_plan_code'  # Replace with actual Paystack plan code
                 }
                 
-                plan_response = requests.post(
-                    'https://api.paystack.co/plan',
-                    json=plan_data,
-                    headers={
-                        'Authorization': f'Bearer {settings.PAYSTACK_SECRET_KEY}',
-                        'Content-Type': 'application/json'
-                    }
-                )
-                
-                if plan_response.status_code == 201:
-                    paystack_plan = plan_response.json()['data']
-                    paystack_data['plan'] = paystack_plan['plan_code']
-                    
-                    # Store plan code for future reference
-                    subscription.payment_reference = paystack_plan['plan_code']
+                if plan.name in plan_codes:
+                    subscription.paystack_plan_code = plan_codes[plan.name]
                     subscription.save()
+                    
+                    # Return subscription page URL instead of payment URL
+                    subscription_url = f"https://paystack.com/pay/{plan_codes[plan.name]}?email={request.user.email}&reference={payment_reference}"
+                    
+                    return Response({
+                        'subscription_url': subscription_url,
+                        'reference': payment_reference,
+                        'subscription_id': subscription.id,
+                        'is_subscription': True
+                    })
             
             headers = {
                 'Authorization': f'Bearer {settings.PAYSTACK_SECRET_KEY}',
@@ -241,7 +235,8 @@ def subscribe_to_plan(request, plan_id):
                 return Response({
                     'payment_url': data['data']['authorization_url'],
                     'reference': payment_reference,
-                    'subscription_id': subscription.id
+                    'subscription_id': subscription.id,
+                    'is_subscription': False
                 })
             else:
                 return Response({'error': 'Payment initialization failed'}, status=400)
