@@ -176,15 +176,15 @@ def subscribe_to_plan(request, plan_id):
         
         # Use Paystack hosted payment pages
         if plan.price_ksh > 0:
-            # Map plan names to Paystack hosted page URLs
-            plan_urls = {
-                'Pro': settings.PAYSTACK_PRO_PLAN_URL,
-                'Enterprise': settings.PAYSTACK_ENTERPRISE_PLAN_URL
+            # Map plan names to Paystack plan codes
+            plan_codes = {
+                'Pro': settings.PAYSTACK_PRO_PLAN_CODE,
+                'Enterprise': settings.PAYSTACK_ENTERPRISE_PLAN_CODE
             }
             
-            if plan.name in plan_urls and plan_urls[plan.name]:
+            if plan.name in plan_codes and plan_codes[plan.name]:
                 # Use hosted Paystack page
-                payment_url = f"{plan_urls[plan.name]}?email={request.user.email}&reference={payment_reference}"
+                payment_url = f"https://paystack.shop/pay/{plan_codes[plan.name]}?email={request.user.email}&reference={payment_reference}"
                 
                 return Response({
                     'payment_url': payment_url,
