@@ -10,6 +10,7 @@ from deals.models import Deal
 from accounts.models import User
 import uuid
 import requests
+import json
 from django.conf import settings
 
 class SellerListView(generics.ListCreateAPIView):
@@ -174,21 +175,48 @@ def subscribe_to_plan(request, plan_id):
         # Get billing preference from request
         billing_type = request.data.get('billing_type', 'manual')  # 'auto' or 'manual'
         
-        # Use Paystack hosted payment pages
+        # Use Paystack payment initialization
         if plan.price_ksh > 0:
-            # Get plan code from database
-            if plan.paystack_plan_code:
-                # Use hosted Paystack page
-                payment_url = f"https://paystack.shop/pay/{plan.paystack_plan_code}?email={request.user.email}&reference={payment_reference}"
-                
+            # Initialize payment with Paystack API
+            headers = {
+                'Authorization': f'Bearer {settings.PAYSTACK_SECRET_KEY}',
+                'Content-Type': 'application/json'
+            }
+            
+            payload = {
+                'email': request.user.email,
+                'amount': int(plan.price_ksh * 100),  # Convert to kobo
+                'reference': payment_reference,
+                'currency': 'KES',
+                'callback_url': f'{settings.FRONTEND_URL}/subscription/callback',
+                'metadata': {
+                    'subscription_id': subscription.id,
+                    'plan_id': plan.id,
+                    'user_id': request.user.id,
+                    'billing_type': billing_type
+                }
+            }
+            
+            # Add plan code if available for subscription
+            if billing_type == 'auto' and plan.paystack_plan_code:
+                payload['plan'] = plan.paystack_plan_code
+            
+            response = requests.post(
+                'https://api.paystack.co/transaction/initialize',
+                headers=headers,
+                json=payload
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
                 return Response({
-                    'payment_url': payment_url,
+                    'payment_url': data['data']['authorization_url'],
                     'reference': payment_reference,
                     'subscription_id': subscription.id,
                     'is_subscription': billing_type == 'auto'
                 })
             else:
-                return Response({'error': f'Payment page not configured for {plan.name} plan'}, status=400)
+                return Response({'error': 'Failed to initialize payment'}, status=400)
         else:
             # Free plan - activate immediately
             subscription.status = 'active'
