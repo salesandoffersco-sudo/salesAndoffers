@@ -54,7 +54,7 @@ export default function AnalyticsWidget({ className = '' }: AnalyticsWidgetProps
     const fetchAnalyticsPreview = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:8000/api/analytics/seller/', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://salesandoffers.onrender.com'}/api/analytics/seller/`, {
           headers: {
             'Authorization': `Token ${token}`,
             'Content-Type': 'application/json',
