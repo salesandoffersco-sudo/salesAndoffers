@@ -4,11 +4,10 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { FiStar, FiMapPin, FiPhone, FiMail, FiGlobe, FiShoppingBag, FiUser, FiAward } from "react-icons/fi";
-import axios from "axios";
 import Button from "../../../components/Button";
 import VerificationBadge from "../../../components/VerificationBadge";
 import TrustIndicators from "../../../components/TrustIndicators";
-import { API_BASE_URL } from "../../../lib/api";
+import { api } from "../../../lib/api";
 
 interface Seller {
   id: number;
@@ -58,7 +57,7 @@ export default function SellerDetailPage() {
 
   const fetchSellerDetails = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/sellers/${params.id}/`);
+      const response = await api.get(`/api/sellers/${params.id}/`);
       setSeller(response.data);
     } catch (error) {
       console.error("Error fetching seller:", error);
@@ -67,7 +66,7 @@ export default function SellerDetailPage() {
 
   const fetchSellerDeals = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/sellers/${params.id}/offers/`);
+      const response = await api.get(`/api/sellers/${params.id}/offers/`);
       setDeals(response.data);
       setLoading(false);
     } catch (error) {

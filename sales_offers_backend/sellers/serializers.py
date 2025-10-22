@@ -2,9 +2,15 @@ from rest_framework import serializers
 from .models import Seller, SubscriptionPlan, Subscription, SellerProfile, Payment
 
 class SellerSerializer(serializers.ModelSerializer):
+    total_deals = serializers.SerializerMethodField()
+    
     class Meta:
         model = Seller
         fields = '__all__'
+    
+    def get_total_deals(self, obj):
+        from deals.models import Deal
+        return Deal.objects.filter(seller=obj).count()
 
 class SubscriptionPlanSerializer(serializers.ModelSerializer):
     class Meta:

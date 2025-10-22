@@ -3,13 +3,11 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { FiShoppingBag, FiStar, FiMapPin, FiGrid, FiList, FiFilter, FiChevronLeft, FiChevronRight, FiUser } from "react-icons/fi";
-import axios from "axios";
-
 import FilterSidebar from "../../components/FilterSidebar";
 import SellersCarousel from "../../components/SellersCarousel";
 import VerificationBadge from "../../components/VerificationBadge";
 import TrustIndicators from "../../components/TrustIndicators";
-import { API_BASE_URL } from "../../lib/api";
+import { api } from "../../lib/api";
 
 interface Seller {
   id: number;
@@ -47,7 +45,7 @@ export default function SellersPage() {
 
   const fetchSellers = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/sellers/`);
+      const response = await api.get('/api/sellers/');
       setSellers(response.data);
       setLoading(false);
     } catch (error) {
@@ -117,15 +115,15 @@ export default function SellersPage() {
         <SellersCarousel 
           sellers={sellers.slice(0, 6).map(seller => ({
             id: seller.id,
-            name: seller.user ? `${seller.user.first_name} ${seller.user.last_name}` : 'Unknown',
+            name: seller.user ? `${seller.user.first_name} ${seller.user.last_name}` : seller.business_name,
             businessName: seller.business_name,
-            category: 'Business', // Default category since not in seller model
+            category: 'Business',
             rating: seller.rating,
-            totalSales: Math.floor(Math.random() * 50000), // Mock data for now
-            followers: Math.floor(Math.random() * 20000), // Mock data for now
+            totalSales: seller.total_deals || 0,
+            followers: seller.total_reviews || 0,
             location: seller.address,
-            avatar: seller.user?.profile_picture || `https://images.unsplash.com/photo-${1494790108755 + seller.id}?w=150&h=150&fit=crop&crop=face`,
-            coverImage: seller.business_logo || `https://images.unsplash.com/photo-${1441986300917 + seller.id}?w=400&h=200&fit=crop`,
+            avatar: seller.user?.profile_picture || seller.business_logo || '/images/default-avatar.png',
+            coverImage: seller.business_logo || '/images/default-business.png',
             verified: seller.is_verified,
             specialOffer: seller.is_verified ? '✓ Verified' : undefined
           }))}
