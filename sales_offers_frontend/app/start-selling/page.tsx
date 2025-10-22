@@ -40,8 +40,12 @@ export default function StartSellingPage() {
     // Pre-fill email from user data if available
     const userData = localStorage.getItem('user');
     if (userData) {
-      const user = JSON.parse(userData);
-      setProfile(prev => ({ ...prev, email: user.email || '' }));
+      try {
+        const user = JSON.parse(userData);
+        setProfile(prev => ({ ...prev, email: user.email || '' }));
+      } catch (e) {
+        // Handle invalid JSON
+      }
     }
   }, [router]);
 

@@ -29,6 +29,7 @@ class SubscriptionPlan(models.Model):
     max_offers = models.IntegerField()
     features = models.JSONField(default=list)
     is_active = models.BooleanField(default=True)
+    paystack_plan_code = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return self.name
