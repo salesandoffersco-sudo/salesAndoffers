@@ -3,9 +3,8 @@
 import { useState, useEffect } from "react";
 import React from "react";
 import { FiX, FiImage, FiCalendar } from "react-icons/fi";
-import axios from "axios";
 import Button from "./Button";
-import { API_BASE_URL } from "../lib/api";
+import { api } from "../lib/api";
 
 interface CreateOfferModalProps {
   isOpen: boolean;
@@ -50,10 +49,7 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
 
   const fetchSubscription = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(`${API_BASE_URL}/api/sellers/stats/`, {
-        headers: { Authorization: `Token ${token}` }
-      });
+      const response = await api.get('/api/sellers/stats/');
       setSubscription(response.data.subscription);
     } catch (error) {
       console.error("Error fetching subscription:", error);
@@ -66,10 +62,7 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
     setError("");
 
     try {
-      const token = localStorage.getItem("token");
-      await axios.post(`${API_BASE_URL}/api/deals/`, formData, {
-        headers: { Authorization: `Token ${token}` }
-      });
+      await api.post('/api/deals/', formData);
       
       onSuccess();
       onClose();

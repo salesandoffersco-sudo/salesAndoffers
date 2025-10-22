@@ -3,8 +3,7 @@
 import { useState, useEffect } from "react";
 import { FiStar, FiTrendingUp, FiLock, FiCheck } from "react-icons/fi";
 import Link from "next/link";
-import axios from "axios";
-import { API_BASE_URL } from "../lib/api";
+import { api } from "../lib/api";
 
 interface SubscriptionStatusProps {
   showDetails?: boolean;
@@ -29,12 +28,8 @@ export default function SubscriptionStatus({ showDetails = true, compact = false
       }
 
       const [statsRes, postsRes] = await Promise.all([
-        axios.get(`${API_BASE_URL}/api/sellers/stats/`, {
-          headers: { Authorization: `Token ${token}` }
-        }),
-        axios.get(`${API_BASE_URL}/api/blog/posts/`, {
-          headers: { Authorization: `Token ${token}` }
-        }).catch(() => ({ data: [] }))
+        api.get('/api/sellers/stats/'),
+        api.get('/api/blog/posts/').catch(() => ({ data: [] }))
       ]);
 
       const userPosts = postsRes.data.filter((post: any) => 
