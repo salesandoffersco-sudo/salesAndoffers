@@ -143,14 +143,31 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS Settings
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    'https://sales-andoffers.vercel.app',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+]
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 # CSRF Settings
 CSRF_TRUSTED_ORIGINS = [
     'https://salesandoffers.onrender.com',
+    'https://sales-andoffers.vercel.app',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
+    'http://localhost:3000',
 ]
 
 # REST Framework Settings
