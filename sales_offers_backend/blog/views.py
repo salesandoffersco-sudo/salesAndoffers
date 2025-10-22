@@ -75,6 +75,9 @@ def toggle_like(request, post_id):
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticatedOrReadOnly])
 def post_comments(request, post_id):
+    if post_id <= 0:
+        return Response({'error': 'Invalid post ID'}, status=400)
+    
     try:
         post = BlogPost.objects.get(id=post_id)
         

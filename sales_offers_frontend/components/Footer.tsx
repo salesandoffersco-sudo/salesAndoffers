@@ -97,7 +97,7 @@ export default function Footer() {
               <li><Link href="/seller/dashboard" className="hover:text-[rgb(var(--color-primary))] transition-colors">Seller Dashboard</Link></li>
               <li><Link href="/subscription" className="hover:text-[rgb(var(--color-primary))] transition-colors">Subscription Plans</Link></li>
               <li><Link href="/pricing" className="hover:text-[rgb(var(--color-primary))] transition-colors">Pricing</Link></li>
-              <li><Link href="/start-selling" className="hover:text-[rgb(var(--color-primary))] transition-colors">Start Selling</Link></li>
+              <li><Link href="/seller/profile" className="hover:text-[rgb(var(--color-primary))] transition-colors">Start Selling</Link></li>
             </ul>
           </div>
           <div>

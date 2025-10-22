@@ -30,10 +30,12 @@ export default function StartSellingPage() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
-      router.push('/login?redirect=/start-selling');
+      router.push('/login?redirect=/seller/profile');
       return;
     }
-    setIsLoggedIn(true);
+    // Redirect to existing seller profile page
+    router.push('/seller/profile');
+    return;
     
     // Pre-fill email from user data if available
     const userData = localStorage.getItem('user');
