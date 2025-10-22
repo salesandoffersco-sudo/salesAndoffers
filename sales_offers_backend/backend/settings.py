@@ -184,6 +184,8 @@ REST_FRAMEWORK = {
 # Paystack Settings
 PAYSTACK_SECRET_KEY = os.environ.get('PAYSTACK_SECRET_KEY', 'sk_test_YOUR_SECRET_KEY')
 PAYSTACK_PUBLIC_KEY = os.environ.get('PAYSTACK_PUBLIC_KEY', 'pk_test_YOUR_PUBLIC_KEY')
+PAYSTACK_PRO_PLAN_URL = os.environ.get('PAYSTACK_PRO_PLAN_URL', '')
+PAYSTACK_ENTERPRISE_PLAN_URL = os.environ.get('PAYSTACK_ENTERPRISE_PLAN_URL', '')
 
 # Email Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

@@ -174,72 +174,26 @@ def subscribe_to_plan(request, plan_id):
         # Get billing preference from request
         billing_type = request.data.get('billing_type', 'manual')  # 'auto' or 'manual'
         
-        # Initialize Paystack payment
+        # Use Paystack hosted payment pages
         if plan.price_ksh > 0:
-            paystack_data = {
-                'email': request.user.email,
-                'amount': int(plan.price_ksh * 100),  # Paystack expects amount in kobo
-                'reference': payment_reference,
-                'callback_url': f"{settings.FRONTEND_URL}/subscription/callback",
-                'metadata': {
-                    'billing_type': billing_type,
-                    'plan_id': plan.id,
-                    'user_id': request.user.id
-                },
-                'channels': ['card', 'bank', 'ussd', 'qr', 'mobile_money', 'bank_transfer'],
-                'card': {
-                    'first_6digits': '',
-                    'last_4digits': '',
-                    'issuer': '',
-                    'country': 'NG',
-                    'type': 'visa',
-                    'token': ''
-                }
+            # Map plan names to Paystack hosted page URLs
+            plan_urls = {
+                'Pro': settings.PAYSTACK_PRO_PLAN_URL,
+                'Enterprise': settings.PAYSTACK_ENTERPRISE_PLAN_URL
             }
             
-            # For auto-billing, use Paystack subscription page
-            if billing_type == 'auto':
-                # Map plan names to Paystack plan codes (created manually in Paystack)
-                plan_codes = {
-                    'Pro': 'PLN_pro_plan_code',  # Replace with actual Paystack plan code
-                    'Enterprise': 'PLN_enterprise_plan_code'  # Replace with actual Paystack plan code
-                }
+            if plan.name in plan_urls and plan_urls[plan.name]:
+                # Use hosted Paystack page
+                payment_url = f"{plan_urls[plan.name]}?email={request.user.email}&reference={payment_reference}"
                 
-                if plan.name in plan_codes:
-                    subscription.paystack_plan_code = plan_codes[plan.name]
-                    subscription.save()
-                    
-                    # Return subscription page URL instead of payment URL
-                    subscription_url = f"https://paystack.com/pay/{plan_codes[plan.name]}?email={request.user.email}&reference={payment_reference}"
-                    
-                    return Response({
-                        'subscription_url': subscription_url,
-                        'reference': payment_reference,
-                        'subscription_id': subscription.id,
-                        'is_subscription': True
-                    })
-            
-            headers = {
-                'Authorization': f'Bearer {settings.PAYSTACK_SECRET_KEY}',
-                'Content-Type': 'application/json'
-            }
-            
-            response = requests.post(
-                'https://api.paystack.co/transaction/initialize',
-                json=paystack_data,
-                headers=headers
-            )
-            
-            if response.status_code == 200:
-                data = response.json()
                 return Response({
-                    'payment_url': data['data']['authorization_url'],
+                    'payment_url': payment_url,
                     'reference': payment_reference,
                     'subscription_id': subscription.id,
-                    'is_subscription': False
+                    'is_subscription': billing_type == 'auto'
                 })
             else:
-                return Response({'error': 'Payment initialization failed'}, status=400)
+                return Response({'error': f'Payment page not configured for {plan.name} plan'}, status=400)
         else:
             # Free plan - activate immediately
             subscription.status = 'active'
