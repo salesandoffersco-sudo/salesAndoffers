@@ -22,14 +22,22 @@ class DealListView(generics.ListCreateAPIView):
             # Check if seller profile exists and is published
             if hasattr(seller, 'profile'):
                 if not seller.profile.is_published:
-                    raise ValidationError('You must publish your seller profile before creating offers.')
+                    raise ValidationError({'error': 'You must publish your seller profile before creating offers.'})
             else:
                 # Create default profile if it doesn't exist
                 from sellers.models import SellerProfile
-                SellerProfile.objects.create(seller=seller, is_published=False)
-                raise ValidationError('You must publish your seller profile before creating offers.')
+                SellerProfile.objects.create(
+                    seller=seller, 
+                    company_name=seller.business_name,
+                    description=seller.business_description,
+                    phone=seller.phone or '',
+                    email=seller.email or seller.user.email,
+                    address=seller.address,
+                    is_published=False
+                )
+                raise ValidationError({'error': 'You must publish your seller profile before creating offers.'})
         except Seller.DoesNotExist:
-            raise ValidationError('You must have a seller profile to create deals.')
+            raise ValidationError({'error': 'You must have a seller profile to create deals.'})
         
         # Check subscription limits
         if self.request.user.is_authenticated:
@@ -45,12 +53,12 @@ class DealListView(generics.ListCreateAPIView):
                     max_offers = subscription.plan.max_offers
                     
                     if max_offers != -1 and current_offers >= max_offers:
-                        raise ValidationError(f'You have reached your plan limit of {max_offers} offers. Upgrade your plan to create more.')
+                        raise ValidationError({'error': f'You have reached your plan limit of {max_offers} offers. Upgrade your plan to create more.'})
                 else:
                     # No subscription - limit to 1 offer
                     current_offers = Deal.objects.filter(seller=seller, is_active=True).count()
                     if current_offers >= 1:
-                        raise ValidationError('Subscribe to a plan to create more offers.')
+                        raise ValidationError({'error': 'Subscribe to a plan to create more offers.'})
             except Exception as e:
                 # If subscription check fails, allow creation but log the error
                 pass
