@@ -292,32 +292,68 @@ def cancel_subscription(request):
 @api_view(['GET', 'POST', 'PUT'])
 @permission_classes([IsAuthenticated])
 def seller_profile(request):
-    try:
-        seller = Seller.objects.get(user=request.user)
-        profile, created = SellerProfile.objects.get_or_create(seller=seller)
-        
-        if request.method == 'GET':
-            serializer = SellerProfileSerializer(profile)
+    # Get or create seller
+    seller, seller_created = Seller.objects.get_or_create(
+        user=request.user,
+        defaults={
+            'business_name': f"{request.user.username}'s Business",
+            'business_description': 'New business on Sales & Offers',
+            'address': 'Not specified',
+            'phone': '',
+            'email': request.user.email
+        }
+    )
+    
+    # Get or create profile
+    profile, profile_created = SellerProfile.objects.get_or_create(
+        seller=seller,
+        defaults={
+            'company_name': seller.business_name,
+            'description': seller.business_description,
+            'phone': seller.phone or '',
+            'email': seller.email or request.user.email,
+            'address': seller.address
+        }
+    )
+    
+    if request.method == 'GET':
+        serializer = SellerProfileSerializer(profile)
+        return Response(serializer.data)
+    
+    elif request.method in ['POST', 'PUT']:
+        serializer = SellerProfileSerializer(profile, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
             return Response(serializer.data)
-        
-        elif request.method in ['POST', 'PUT']:
-            serializer = SellerProfileSerializer(profile, data=request.data, partial=True)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data)
-            return Response(serializer.errors, status=400)
-            
-    except Seller.DoesNotExist:
-        return Response({'error': 'Seller not found'}, status=404)
+        return Response(serializer.errors, status=400)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def toggle_profile_publish(request):
-    try:
-        seller = Seller.objects.get(user=request.user)
-        profile = SellerProfile.objects.get(seller=seller)
-        profile.is_published = not profile.is_published
-        profile.save()
-        return Response({'is_published': profile.is_published})
-    except (Seller.DoesNotExist, SellerProfile.DoesNotExist):
-        return Response({'error': 'Profile not found'}, status=404)
+    # Get or create seller
+    seller, _ = Seller.objects.get_or_create(
+        user=request.user,
+        defaults={
+            'business_name': f"{request.user.username}'s Business",
+            'business_description': 'New business on Sales & Offers',
+            'address': 'Not specified',
+            'phone': '',
+            'email': request.user.email
+        }
+    )
+    
+    # Get or create profile
+    profile, _ = SellerProfile.objects.get_or_create(
+        seller=seller,
+        defaults={
+            'company_name': seller.business_name,
+            'description': seller.business_description,
+            'phone': seller.phone or '',
+            'email': seller.email or request.user.email,
+            'address': seller.address
+        }
+    )
+    
+    profile.is_published = not profile.is_published
+    profile.save()
+    return Response({'is_published': profile.is_published})
