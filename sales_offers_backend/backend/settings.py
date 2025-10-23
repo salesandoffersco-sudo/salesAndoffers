@@ -187,6 +187,11 @@ REST_FRAMEWORK = {
     ],
 }
 
+# Session Settings - 3 hours expiry
+SESSION_COOKIE_AGE = 10800  # 3 hours in seconds
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_SAVE_EVERY_REQUEST = True
+
 # Paystack Settings
 PAYSTACK_SECRET_KEY = os.environ.get('PAYSTACK_SECRET_KEY', 'sk_test_YOUR_SECRET_KEY')
 PAYSTACK_PUBLIC_KEY = os.environ.get('PAYSTACK_PUBLIC_KEY', 'pk_test_YOUR_PUBLIC_KEY')
