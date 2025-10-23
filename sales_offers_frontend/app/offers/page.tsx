@@ -260,7 +260,7 @@ export default function OffersPage() {
         price: `KES ${offer.discounted_price}`,
         originalPrice: `KES ${offer.original_price}`,
         rating: 4.5,
-        image: offer.image || `https://images.unsplash.com/photo-${1526170375885 + offer.id}?q=80&w=400&h=600&auto=format&fit=crop`,
+        image: offer.image || `https://picsum.photos/400/600?random=${offer.id}`,
         category: offer.category,
         discount: offer.discount_percentage
       }))

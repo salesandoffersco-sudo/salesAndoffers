@@ -120,6 +120,10 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
     });
   };
 
+  const handleViewDetails = (item: CarouselItem) => {
+    window.location.href = `/offers/${item.id}`;
+  };
+
   // Animate desktop details
   const animateDetails = () => {
     const detailsElements = document.querySelectorAll('.details-content');
@@ -240,6 +244,8 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
                       setCurrentIndex(index);
                       setIsBg1Active(prev => !prev);
                       resetAutoPlay();
+                    } else {
+                      handleViewDetails(item);
                     }
                   }}
                 >
@@ -250,16 +256,17 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
                   />
                   
                   {/* Desktop CTA Overlay */}
-                  <div className={`absolute bottom-8 left-1/2 transform -translate-x-1/2 transition-opacity duration-600 ${
-                    index === currentIndex ? 'opacity-100' : 'opacity-0'
+                  <div className={`absolute bottom-8 left-1/2 transform -translate-x-1/2 transition-all duration-600 z-30 ${
+                    index === currentIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
                   } hidden lg:block`}>
                     <button 
                       onClick={(e) => {
                         e.stopPropagation();
                         handleAddToCart(item);
                       }}
-                      className="bg-white text-indigo-600 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors shadow-lg"
+                      className="bg-white text-indigo-600 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
                     >
+                      <FiShoppingCart className="w-4 h-4 mr-2 inline" />
                       Add to Cart
                     </button>
                   </div>
@@ -277,16 +284,27 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
                           <span className="text-xs sm:text-sm text-gray-400 line-through">{item.originalPrice}</span>
                         )}
                       </div>
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleAddToCart(item);
-                        }}
-                        className="bg-white text-indigo-600 px-3 py-1.5 rounded-full text-xs font-bold hover:bg-gray-100 transition-colors flex items-center gap-1"
-                      >
-                        <FiShoppingCart className="w-3 h-3" />
-                        Add to Cart
-                      </button>
+                      <div className="flex gap-1">
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleViewDetails(item);
+                          }}
+                          className="bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-bold hover:bg-blue-700 transition-colors"
+                        >
+                          View
+                        </button>
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAddToCart(item);
+                          }}
+                          className="bg-white text-indigo-600 px-2 py-1 rounded-full text-xs font-bold hover:bg-gray-100 transition-colors flex items-center gap-1"
+                        >
+                          <FiShoppingCart className="w-3 h-3" />
+                          Cart
+                        </button>
+                      </div>
                     </div>
                     <div className="flex items-center text-yellow-400 text-sm">
                       {generateStars(item.rating)}
