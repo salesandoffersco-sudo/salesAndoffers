@@ -217,7 +217,7 @@ export default function SellerDashboardPage() {
             </div>
           </Link>
           
-          <div className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-6">
+          <Link href="/seller/offers" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-semibold text-[rgb(var(--color-fg))]">Manage Offers</h3>
@@ -227,7 +227,7 @@ export default function SellerDashboardPage() {
                 <FiEdit className="text-green-600 dark:text-green-400 text-xl" />
               </div>
             </div>
-          </div>
+          </Link>
           
           <Link href="/pricing" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
@@ -247,7 +247,9 @@ export default function SellerDashboardPage() {
           <div className="p-6 border-b border-[rgb(var(--color-border))]">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-bold text-[rgb(var(--color-fg))]">Recent Offers</h2>
-              <Button variant="outline" size="sm" onClick={() => alert('View all offers page coming soon!')}>View All</Button>
+              <Link href="/seller/offers">
+                <Button variant="outline" size="sm">View All</Button>
+              </Link>
             </div>
           </div>
           <div className="p-6">
@@ -276,12 +278,16 @@ export default function SellerDashboardPage() {
                           <FiBarChart className="w-4 h-4" />
                         </Button>
                       </Link>
-                      <Button variant="outline" size="sm" onClick={() => alert('Edit offer coming soon!')}>
-                        <FiEdit className="w-4 h-4" />
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={() => alert('Delete offer coming soon!')}>
-                        <FiTrash2 className="w-4 h-4 text-red-500" />
-                      </Button>
+                      <Link href={`/seller/offers`}>
+                        <Button variant="outline" size="sm" title="Manage Offers">
+                          <FiEdit className="w-4 h-4" />
+                        </Button>
+                      </Link>
+                      <Link href={`/offers/${offer.id}`}>
+                        <Button variant="outline" size="sm" title="View Offer">
+                          <FiEye className="w-4 h-4" />
+                        </Button>
+                      </Link>
                     </div>
                   </div>
                 ))}
@@ -302,7 +308,10 @@ export default function SellerDashboardPage() {
                 <FiBarChart className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 <span className="text-blue-600 dark:text-blue-400 font-medium">View Full Analytics</span>
               </Link>
-              <button className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors w-full text-left">
+              <button 
+                onClick={() => setShowCreateModal(true)}
+                className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors w-full text-left"
+              >
                 <FiPlus className="w-5 h-5 text-green-600 dark:text-green-400" />
                 <span className="text-green-600 dark:text-green-400 font-medium">Create New Deal</span>
               </button>

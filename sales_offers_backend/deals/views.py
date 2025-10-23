@@ -80,9 +80,33 @@ class DealListView(generics.ListCreateAPIView):
             # Continue even if notification fails
             pass
 
-class DealDetailView(generics.RetrieveAPIView):
-    queryset = Deal.objects.filter(is_active=True, status='approved')
+class DealDetailView(generics.RetrieveUpdateAPIView):
     serializer_class = DealSerializer
+    
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            # For authenticated users, allow access to their own deals even if inactive
+            try:
+                seller = Seller.objects.get(user=self.request.user)
+                return Deal.objects.filter(seller=seller)
+            except Seller.DoesNotExist:
+                pass
+        # For public access, only show active approved deals
+        return Deal.objects.filter(is_active=True, status='approved')
+    
+    def perform_update(self, serializer):
+        # Only allow sellers to update their own deals
+        deal = self.get_object()
+        try:
+            seller = Seller.objects.get(user=self.request.user)
+            if deal.seller != seller:
+                from rest_framework.exceptions import PermissionDenied
+                raise PermissionDenied("You can only update your own deals")
+        except Seller.DoesNotExist:
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied("You must be a seller to update deals")
+        
+        serializer.save()
 
 @api_view(['GET'])
 def seller_detail(request, seller_id):

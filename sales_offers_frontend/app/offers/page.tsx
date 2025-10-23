@@ -21,7 +21,8 @@ interface Offer {
   discounted_price: string;
   discount_percentage: number;
   category: string;
-  valid_until: string;
+  expires_at: string;
+  image?: string;
   is_favorited?: boolean;
   is_verified?: boolean;
   rating?: number;
@@ -59,7 +60,7 @@ export default function OffersPage() {
       maxPurchase: 10, // Default values since not in offer interface
       minPurchase: 1,
       availableVouchers: 100,
-      expiresAt: offer.valid_until,
+      expiresAt: offer.expires_at,
       seller: offer.seller
     });
   };
@@ -259,7 +260,7 @@ export default function OffersPage() {
         price: `KES ${offer.discounted_price}`,
         originalPrice: `KES ${offer.original_price}`,
         rating: 4.5,
-        image: `https://images.unsplash.com/photo-${1526170375885 + offer.id}?q=80&w=400&h=600&auto=format&fit=crop`,
+        image: offer.image || `https://images.unsplash.com/photo-${1526170375885 + offer.id}?q=80&w=400&h=600&auto=format&fit=crop`,
         category: offer.category,
         discount: offer.discount_percentage
       }))
@@ -418,6 +419,20 @@ export default function OffersPage() {
                           ⭐ Featured Listing
                         </div>
                       )}
+                      {/* Offer Image */}
+                      {offer.image && (
+                        <div className="aspect-video bg-gray-100 dark:bg-gray-800">
+                          <img 
+                            src={offer.image} 
+                            alt={offer.title}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = 'none';
+                            }}
+                          />
+                        </div>
+                      )}
                       <div className="p-6">
                         <div className="flex justify-between items-start mb-4">
                           <span className="bg-purple-100 dark:bg-indigo-900/40 text-purple-600 dark:text-indigo-300 px-3 py-1 rounded-full text-sm font-semibold">
@@ -450,7 +465,7 @@ export default function OffersPage() {
                         
                         <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm mb-4">
                           <FiClock className="mr-2" />
-                          <span>Valid until {new Date(offer.valid_until).toLocaleDateString()}</span>
+                          <span>Valid until {new Date(offer.expires_at).toLocaleDateString()}</span>
                         </div>
                         
                         <div className="border-t border-gray-100 dark:border-gray-800 pt-4">

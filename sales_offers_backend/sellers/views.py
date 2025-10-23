@@ -120,12 +120,40 @@ def seller_offers(request, seller_id=None):
         # Authenticated seller's own offers
         try:
             seller = Seller.objects.get(user=request.user)
-            offers = Deal.objects.filter(seller=seller)
+            offers = Deal.objects.filter(seller=seller).order_by('-created_at')
             from deals.serializers import DealSerializer
             serializer = DealSerializer(offers, many=True)
             return Response(serializer.data)
         except Seller.DoesNotExist:
             return Response([])
+
+@api_view(['PATCH', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def manage_seller_offer(request, offer_id):
+    try:
+        seller = Seller.objects.get(user=request.user)
+        offer = Deal.objects.get(id=offer_id, seller=seller)
+        
+        if request.method == 'PATCH':
+            # Update offer (toggle active status, etc.)
+            is_active = request.data.get('is_active')
+            if is_active is not None:
+                offer.is_active = is_active
+                offer.save()
+            
+            from deals.serializers import DealSerializer
+            serializer = DealSerializer(offer)
+            return Response(serializer.data)
+            
+        elif request.method == 'DELETE':
+            # Delete offer
+            offer.delete()
+            return Response({'message': 'Offer deleted successfully'})
+            
+    except Seller.DoesNotExist:
+        return Response({'error': 'Seller profile not found'}, status=404)
+    except Deal.DoesNotExist:
+        return Response({'error': 'Offer not found or not owned by you'}, status=404)
 
 @api_view(['GET'])
 def seller_detail(request, seller_id):
