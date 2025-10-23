@@ -34,8 +34,9 @@ def initialize_payment(request):
             return Response({'error': f'Quantity must be between {deal.min_purchase} and {deal.max_purchase}'}, status=400)
         
         # Calculate total amount with 10% platform commission
+        from decimal import Decimal
         subtotal = deal.discounted_price * quantity
-        platform_commission = subtotal * 0.10  # 10% commission
+        platform_commission = subtotal * Decimal('0.10')  # 10% commission
         total_amount = subtotal  # Customer pays full amount
         seller_amount = subtotal - platform_commission  # Seller gets 90%
         
