@@ -101,7 +101,7 @@ class SellerProfile(models.Model):
     phone = models.CharField(max_length=20)
     email = models.EmailField()
     address = models.TextField()
-    is_published = models.BooleanField(default=False)
+    is_published = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

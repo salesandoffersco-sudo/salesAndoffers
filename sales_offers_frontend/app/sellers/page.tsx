@@ -236,7 +236,7 @@ export default function SellersPage() {
                             </div>
                             <Link href={`/sellers/${seller.id}`}>
                               <button className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-2 rounded-full hover:shadow-lg transition-all duration-300 font-semibold">
-                                View Offers
+                                View Store
                               </button>
                             </Link>
                           </div>
@@ -300,7 +300,7 @@ export default function SellersPage() {
                         
                         <Link href={`/sellers/${seller.id}`}>
                           <button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-3 rounded-full hover:shadow-xl transition-all duration-300 font-semibold backdrop-shine">
-                            View Seller Offers
+                            View Store
                           </button>
                         </Link>
                       </div>

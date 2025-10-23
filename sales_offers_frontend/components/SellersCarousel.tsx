@@ -237,9 +237,11 @@ export default function SellersCarousel({ sellers, className = '' }: SellersCaro
                     </div>
 
                     {/* CTA Button */}
-                    <button className="w-full mt-4 bg-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-secondary))] text-[rgb(var(--color-on-primary))] py-2 px-4 rounded-xl font-medium transition-all duration-300 transform group-hover:scale-105">
-                      View Store
-                    </button>
+                    <a href={`/sellers/${seller.id}`} className="block w-full mt-4">
+                      <button className="w-full bg-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-secondary))] text-[rgb(var(--color-on-primary))] py-2 px-4 rounded-xl font-medium transition-all duration-300 transform group-hover:scale-105">
+                        View Store
+                      </button>
+                    </a>
                   </div>
                 </div>
               </div>

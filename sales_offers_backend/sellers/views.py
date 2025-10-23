@@ -346,7 +346,7 @@ def seller_profile(request):
             phone=seller.phone or '',
             email=seller.email or request.user.email,
             address=seller.address,
-            is_published=False
+            is_published=True
         )
     
     if request.method == 'GET':
@@ -387,9 +387,17 @@ def toggle_profile_publish(request):
             phone=seller.phone or '',
             email=seller.email or request.user.email,
             address=seller.address,
-            is_published=False
+            is_published=True  # Default to published instead of False
         )
     
-    profile.is_published = not profile.is_published
+    # Only toggle if explicitly requested, don't auto-unpublish
+    action = request.data.get('action', 'toggle')
+    if action == 'publish':
+        profile.is_published = True
+    elif action == 'unpublish':
+        profile.is_published = False
+    else:
+        profile.is_published = not profile.is_published
+    
     profile.save()
     return Response({'is_published': profile.is_published})
