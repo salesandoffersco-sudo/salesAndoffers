@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { FiShoppingBag, FiPlus, FiDollarSign, FiTrendingUp, FiPackage, FiEdit, FiEye, FiTrash2, FiBarChart, FiUser } from "react-icons/fi";
+import { FiShoppingBag, FiPlus, FiDollarSign, FiTrendingUp, FiPackage, FiEdit, FiEye, FiTrash2, FiBarChart, FiUser, FiStar, FiBell, FiSettings } from "react-icons/fi";
 import Button from "../../../components/Button";
 import CreateOfferModal from "../../../components/CreateOfferModal";
 import SubscriptionStatus from "../../../components/SubscriptionStatus";
@@ -192,7 +192,7 @@ export default function SellerDashboardPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Link href="/seller/profile" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div>
@@ -225,6 +225,54 @@ export default function SellerDashboardPage() {
               </div>
               <div className="bg-green-100 dark:bg-green-900/30 p-3 rounded-lg">
                 <FiEdit className="text-green-600 dark:text-green-400 text-xl" />
+              </div>
+            </div>
+          </Link>
+          
+          <Link href="/seller/reviews" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-[rgb(var(--color-fg))]">Customer Reviews</h3>
+                <p className="text-[rgb(var(--color-muted))] text-sm mt-1">View and respond to feedback</p>
+              </div>
+              <div className="bg-yellow-100 dark:bg-yellow-900/30 p-3 rounded-lg">
+                <FiStar className="text-yellow-600 dark:text-yellow-400 text-xl" />
+              </div>
+            </div>
+          </Link>
+          
+          <Link href="/seller/withdrawals" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-[rgb(var(--color-fg))]">Withdrawals</h3>
+                <p className="text-[rgb(var(--color-muted))] text-sm mt-1">Manage your earnings</p>
+              </div>
+              <div className="bg-green-100 dark:bg-green-900/30 p-3 rounded-lg">
+                <FiDollarSign className="text-green-600 dark:text-green-400 text-xl" />
+              </div>
+            </div>
+          </Link>
+          
+          <Link href="/seller/notifications" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-[rgb(var(--color-fg))]">Notifications</h3>
+                <p className="text-[rgb(var(--color-muted))] text-sm mt-1">Stay updated with alerts</p>
+              </div>
+              <div className="bg-indigo-100 dark:bg-indigo-900/30 p-3 rounded-lg">
+                <FiBell className="text-indigo-600 dark:text-indigo-400 text-xl" />
+              </div>
+            </div>
+          </Link>
+          
+          <Link href="/seller/settings" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-[rgb(var(--color-fg))]">Settings</h3>
+                <p className="text-[rgb(var(--color-muted))] text-sm mt-1">Configure preferences</p>
+              </div>
+              <div className="bg-gray-100 dark:bg-gray-900/30 p-3 rounded-lg">
+                <FiSettings className="text-gray-600 dark:text-gray-400 text-xl" />
               </div>
             </div>
           </Link>

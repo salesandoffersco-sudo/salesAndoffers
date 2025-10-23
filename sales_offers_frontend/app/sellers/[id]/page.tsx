@@ -39,7 +39,7 @@ interface Deal {
   discounted_price: string;
   discount_percentage: number;
   category: string;
-  valid_until: string;
+  expires_at: string;
 }
 
 export default function SellerDetailPage() {
