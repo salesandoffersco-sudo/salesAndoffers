@@ -115,9 +115,9 @@ export default function Navbar() {
 
   const canAccessAdmin = () => {
     if (typeof window === 'undefined') return false;
-    const isStaff = localStorage.getItem("is_staff") === "true" || localStorage.getItem("is_superuser") === "true";
-    const hasEnterprise = subscription?.plan_name === "Enterprise";
-    return isStaff || hasEnterprise;
+    const isStaff = localStorage.getItem("is_staff") === "true";
+    const isSuperuser = localStorage.getItem("is_superuser") === "true";
+    return isStaff && isSuperuser;
   };
 
   const toggleMenu = () => {
