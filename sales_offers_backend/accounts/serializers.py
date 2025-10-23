@@ -36,7 +36,7 @@ class UserLoginSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'phone_number', 'phone', 'address', 'is_seller', 'is_buyer', 'profile_picture', 'is_google_user')
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'phone_number', 'phone', 'address', 'is_seller', 'is_buyer', 'profile_picture', 'is_google_user', 'is_staff', 'is_superuser')
         read_only_fields = ('id',)
 
 class FavoriteSerializer(serializers.ModelSerializer):

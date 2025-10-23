@@ -54,8 +54,13 @@ def seller_stats(request):
         total_offers = Deal.objects.filter(seller=seller).count()
         active_offers = Deal.objects.filter(seller=seller, is_active=True).count()
         
-        # Get subscription info
-        subscription = getattr(request.user, 'current_subscription', None)
+        # Get active subscription info
+        subscription = Subscription.objects.filter(
+            user=request.user,
+            status='active',
+            end_date__gt=timezone.now()
+        ).first()
+        
         if subscription:
             features = subscription.plan.features if isinstance(subscription.plan.features, dict) else {}
             plan_info = {
@@ -173,7 +178,6 @@ def subscribe_to_plan(request, plan_id):
         return Response({'error': f'Subscription plan with ID {plan_id} not found'}, status=404)
     
     try:
-        
         # Check if user already has an active subscription
         existing_sub = Subscription.objects.filter(
             user=request.user, 
