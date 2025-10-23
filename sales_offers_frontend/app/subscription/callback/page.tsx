@@ -4,9 +4,8 @@ import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { FiCheckCircle, FiXCircle, FiLoader } from "react-icons/fi";
-import axios from "axios";
 import Button from "../../../components/Button";
-import { API_BASE_URL } from "../../../lib/api";
+import { api } from "../../../lib/api";
 
 export default function SubscriptionCallbackPage() {
   return (
@@ -33,12 +32,7 @@ function SubscriptionCallbackPageContent() {
 
   const verifyPayment = async (reference: string) => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.post(
-        `${API_BASE_URL}/api/sellers/verify-payment/`,
-        { reference },
-        { headers: { Authorization: `Token ${token}` } }
-      );
+      const response = await api.post('/api/sellers/verify-payment/', { reference });
 
       setStatus('success');
       setMessage('Payment verified successfully! Your subscription is now active.');
