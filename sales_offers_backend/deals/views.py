@@ -63,7 +63,7 @@ class DealListView(generics.ListCreateAPIView):
                 # If subscription check fails, allow creation but log the error
                 pass
         
-        deal = serializer.save(seller=seller)
+        deal = serializer.save(seller=seller, status='approved')  # Auto-approve deals
         
         # Notify users about new offer (with error handling)
         try:
