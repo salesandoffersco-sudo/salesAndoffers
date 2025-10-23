@@ -114,19 +114,19 @@ export default function SellersPage() {
       {/* Featured Sellers Carousel */}
       {sellers.length > 0 && (
         <SellersCarousel 
-          sellers={sellers.slice(0, 6).map(seller => ({
+          sellers={sellers.map(seller => ({
             id: seller.id,
             name: seller.user ? `${seller.user.first_name} ${seller.user.last_name}` : seller.business_name,
             businessName: seller.business_name,
-            category: 'Business',
+            category: seller.total_deals > 10 ? 'Top Seller' : seller.total_deals > 5 ? 'Active Seller' : 'New Seller',
             rating: seller.rating,
             totalSales: seller.total_deals || 0,
             followers: seller.total_reviews || 0,
             location: seller.address,
-            avatar: seller.user?.profile_picture || seller.business_logo || '/images/default-avatar.png',
-            coverImage: seller.business_logo || '/images/default-business.png',
+            avatar: seller.user?.profile_picture || seller.business_logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(seller.business_name)}&background=6366f1&color=fff`,
+            coverImage: seller.business_logo || `https://picsum.photos/320/128?random=${seller.id}`,
             verified: seller.is_verified,
-            specialOffer: seller.is_verified ? '✓ Verified' : undefined
+            specialOffer: seller.is_verified ? '✓ Verified' : seller.total_deals > 20 ? '🔥 Hot Deals' : undefined
           }))}
         />
       )}
@@ -199,10 +199,10 @@ export default function SellersPage() {
                         <div className="flex-1 p-6">
                           <div className="flex items-center mb-4">
                             <div className="relative mr-4">
-                              {seller.user?.profile_picture ? (
+                              {seller.user?.profile_picture || seller.business_logo ? (
                                 <img
-                                  src={seller.user.profile_picture}
-                                  alt={`${seller.user.first_name} ${seller.user.last_name}`}
+                                  src={seller.user?.profile_picture || seller.business_logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(seller.business_name)}&background=6366f1&color=fff`}
+                                  alt={seller.user ? `${seller.user.first_name} ${seller.user.last_name}` : seller.business_name}
                                   className="w-16 h-16 rounded-full object-cover border-2 border-purple-200 dark:border-indigo-300/40"
                                 />
                               ) : (
@@ -254,10 +254,10 @@ export default function SellersPage() {
                       <div className="p-6">
                         <div className="flex items-center mb-4">
                           <div className="relative mr-4">
-                            {seller.user?.profile_picture ? (
+                            {seller.user?.profile_picture || seller.business_logo ? (
                               <img
-                                src={seller.user.profile_picture}
-                                alt={`${seller.user.first_name} ${seller.user.last_name}`}
+                                src={seller.user?.profile_picture || seller.business_logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(seller.business_name)}&background=6366f1&color=fff`}
+                                alt={seller.user ? `${seller.user.first_name} ${seller.user.last_name}` : seller.business_name}
                                 className="w-20 h-20 rounded-full object-cover border-3 border-purple-300 dark:border-purple-600 shadow-lg"
                               />
                             ) : (

@@ -29,8 +29,8 @@ export default function SellersCarousel({ sellers, className = '' }: SellersCaro
   const carouselRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number | null>(null);
 
-  // Duplicate sellers for seamless loop
-  const duplicatedSellers = [...sellers, ...sellers, ...sellers];
+  // Duplicate sellers for seamless loop only if we have enough sellers
+  const duplicatedSellers = sellers.length >= 3 ? [...sellers, ...sellers] : sellers;
 
   const generateStars = (rating: number) => {
     const stars = [];
@@ -144,7 +144,7 @@ export default function SellersCarousel({ sellers, className = '' }: SellersCaro
           >
             {duplicatedSellers.map((seller, index) => (
               <div
-                key={`${seller.id}-${index}`}
+                key={sellers.length >= 3 ? `${seller.id}-${Math.floor(index / sellers.length)}` : seller.id}
                 className="seller-card flex-shrink-0 w-80 group cursor-pointer"
               >
                 {/* Card Container */}
