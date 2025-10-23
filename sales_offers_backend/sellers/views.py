@@ -312,7 +312,8 @@ def seller_profile(request):
             'description': seller.business_description,
             'phone': seller.phone or '',
             'email': seller.email or request.user.email,
-            'address': seller.address
+            'address': seller.address,
+            'is_published': False  # Only set to False for new profiles
         }
     )
     
@@ -350,7 +351,8 @@ def toggle_profile_publish(request):
             'description': seller.business_description,
             'phone': seller.phone or '',
             'email': seller.email or request.user.email,
-            'address': seller.address
+            'address': seller.address,
+            'is_published': False  # Only set to False for new profiles
         }
     )
     
