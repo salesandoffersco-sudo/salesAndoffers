@@ -292,30 +292,34 @@ def cancel_subscription(request):
 @api_view(['GET', 'POST', 'PUT'])
 @permission_classes([IsAuthenticated])
 def seller_profile(request):
-    # Get or create seller
-    seller, seller_created = Seller.objects.get_or_create(
-        user=request.user,
-        defaults={
-            'business_name': f"{request.user.username}'s Business",
-            'business_description': 'New business on Sales & Offers',
-            'address': 'Not specified',
-            'phone': '',
-            'email': request.user.email
-        }
-    )
+    # Try to get existing seller first
+    try:
+        seller = Seller.objects.get(user=request.user)
+    except Seller.DoesNotExist:
+        # Only create if doesn't exist
+        seller = Seller.objects.create(
+            user=request.user,
+            business_name=f"{request.user.username}'s Business",
+            business_description='New business on Sales & Offers',
+            address='Not specified',
+            phone='',
+            email=request.user.email
+        )
     
-    # Get or create profile
-    profile, profile_created = SellerProfile.objects.get_or_create(
-        seller=seller,
-        defaults={
-            'company_name': seller.business_name,
-            'description': seller.business_description,
-            'phone': seller.phone or '',
-            'email': seller.email or request.user.email,
-            'address': seller.address,
-            'is_published': False  # Only set to False for new profiles
-        }
-    )
+    # Try to get existing profile first
+    try:
+        profile = SellerProfile.objects.get(seller=seller)
+    except SellerProfile.DoesNotExist:
+        # Only create if doesn't exist
+        profile = SellerProfile.objects.create(
+            seller=seller,
+            company_name=seller.business_name,
+            description=seller.business_description,
+            phone=seller.phone or '',
+            email=seller.email or request.user.email,
+            address=seller.address,
+            is_published=False
+        )
     
     if request.method == 'GET':
         serializer = SellerProfileSerializer(profile)
@@ -331,30 +335,32 @@ def seller_profile(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def toggle_profile_publish(request):
-    # Get or create seller
-    seller, _ = Seller.objects.get_or_create(
-        user=request.user,
-        defaults={
-            'business_name': f"{request.user.username}'s Business",
-            'business_description': 'New business on Sales & Offers',
-            'address': 'Not specified',
-            'phone': '',
-            'email': request.user.email
-        }
-    )
+    # Try to get existing seller first
+    try:
+        seller = Seller.objects.get(user=request.user)
+    except Seller.DoesNotExist:
+        seller = Seller.objects.create(
+            user=request.user,
+            business_name=f"{request.user.username}'s Business",
+            business_description='New business on Sales & Offers',
+            address='Not specified',
+            phone='',
+            email=request.user.email
+        )
     
-    # Get or create profile
-    profile, _ = SellerProfile.objects.get_or_create(
-        seller=seller,
-        defaults={
-            'company_name': seller.business_name,
-            'description': seller.business_description,
-            'phone': seller.phone or '',
-            'email': seller.email or request.user.email,
-            'address': seller.address,
-            'is_published': False  # Only set to False for new profiles
-        }
-    )
+    # Try to get existing profile first
+    try:
+        profile = SellerProfile.objects.get(seller=seller)
+    except SellerProfile.DoesNotExist:
+        profile = SellerProfile.objects.create(
+            seller=seller,
+            company_name=seller.business_name,
+            description=seller.business_description,
+            phone=seller.phone or '',
+            email=seller.email or request.user.email,
+            address=seller.address,
+            is_published=False
+        )
     
     profile.is_published = not profile.is_published
     profile.save()

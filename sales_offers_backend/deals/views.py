@@ -10,8 +10,15 @@ from accounts.models import User
 from accounts.notification_service import NotificationService
 
 class DealListView(generics.ListCreateAPIView):
-    queryset = Deal.objects.filter(is_active=True, status='approved', seller__profile__is_published=True)
     serializer_class = DealSerializer
+    
+    def get_queryset(self):
+        # Show deals but filter based on seller profile status
+        return Deal.objects.filter(
+            status='approved',
+            seller__profile__is_published=True,
+            is_active=True
+        ).select_related('seller__profile')
     
     def perform_create(self, serializer):
         from rest_framework.exceptions import ValidationError
