@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import AdminLayout from "../../../components/AdminLayout";
 import { FiCreditCard, FiUsers, FiTrendingUp, FiDollarSign, FiSearch, FiFilter, FiDownload } from "react-icons/fi";
-import api from "../../../lib/api";
+import { api } from "../../../lib/api";
 
 interface Subscription {
   id: number;
