@@ -7,7 +7,7 @@ import {
   FiHome, FiUsers, FiTag, FiShoppingBag, FiMail, FiBarChart, 
   FiSettings, FiFileText, FiActivity, FiServer, FiMenu, FiX,
   FiLogOut, FiShield, FiUser, FiCreditCard, FiDollarSign, FiEdit3, FiLock, FiShoppingCart,
-  FiCheckCircle, FiMessageCircle, FiBell
+  FiCheckCircle, FiMessageCircle, FiBell, FiChevronUp, FiChevronDown
 } from "react-icons/fi";
 import ThemeToggle from "./ThemeToggle";
 
@@ -38,6 +38,7 @@ const menuItems = [
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [topNavHidden, setTopNavHidden] = useState(false);
   const [userRole, setUserRole] = useState<"admin" | "staff" | null>(null);
   const [username, setUsername] = useState("");
   const pathname = usePathname();
@@ -158,7 +159,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       {/* Main Content */}
       <div className="flex-1 flex flex-col lg:ml-0">
         {/* Top Bar */}
-        <header className="bg-[rgb(var(--color-card))] border-b border-[rgb(var(--color-border))] px-4 py-3">
+        <header className={`bg-[rgb(var(--color-card))] border-b border-[rgb(var(--color-border))] px-4 py-3 transition-all duration-300 ${topNavHidden ? '-translate-y-full opacity-0 h-0 py-0' : 'translate-y-0 opacity-100'}`}>
           <div className="flex items-center justify-between">
             <button
               onClick={() => setSidebarOpen(true)}
@@ -172,6 +173,21 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             </div>
           </div>
         </header>
+
+        {/* Chevron Toggle Button */}
+        <div className="flex justify-center">
+          <button
+            onClick={() => setTopNavHidden(!topNavHidden)}
+            className="bg-[rgb(var(--color-card))] border border-[rgb(var(--color-border))] rounded-b-lg px-3 py-1 text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-fg))] hover:bg-[rgb(var(--color-ui))] transition-all duration-200 shadow-sm"
+            title={topNavHidden ? 'Show top navigation' : 'Hide top navigation'}
+          >
+            {topNavHidden ? (
+              <FiChevronDown className="w-4 h-4" />
+            ) : (
+              <FiChevronUp className="w-4 h-4" />
+            )}
+          </button>
+        </div>
 
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">
