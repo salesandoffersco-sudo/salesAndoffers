@@ -19,10 +19,17 @@ class SubscriptionPlanSerializer(serializers.ModelSerializer):
 
 class SubscriptionSerializer(serializers.ModelSerializer):
     plan = SubscriptionPlanSerializer(read_only=True)
+    user = serializers.SerializerMethodField()
     
     class Meta:
         model = Subscription
-        fields = ['id', 'plan', 'status', 'start_date', 'end_date', 'is_active']
+        fields = ['id', 'user', 'plan', 'status', 'billing_type', 'start_date', 'end_date', 'is_active']
+    
+    def get_user(self, obj):
+        return {
+            'username': obj.user.username,
+            'email': obj.user.email
+        }
 
 class SellerProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -30,6 +37,23 @@ class SellerProfileSerializer(serializers.ModelSerializer):
         fields = ['id', 'company_name', 'company_logo', 'description', 'website', 'phone', 'email', 'address', 'is_published', 'created_at', 'updated_at']
 
 class PaymentSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+    subscription = serializers.SerializerMethodField()
+    reference = serializers.CharField(source='payment_reference')
+    
     class Meta:
         model = Payment
-        fields = ['id', 'amount', 'currency', 'payment_reference', 'status', 'created_at']
+        fields = ['id', 'user', 'amount', 'currency', 'payment_method', 'reference', 'status', 'created_at', 'subscription']
+    
+    def get_user(self, obj):
+        return {
+            'username': obj.user.username,
+            'email': obj.user.email
+        }
+    
+    def get_subscription(self, obj):
+        if obj.subscription and obj.subscription.plan:
+            return {
+                'plan_name': obj.subscription.plan.name
+            }
+        return None

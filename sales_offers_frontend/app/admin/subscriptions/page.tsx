@@ -46,7 +46,7 @@ export default function AdminSubscriptions() {
       setStats({
         total: data.length,
         active: data.filter((s: any) => s.status === 'active').length,
-        revenue: data.reduce((sum: number, s: any) => sum + s.plan.price_ksh, 0),
+        revenue: data.reduce((sum: number, s: any) => sum + (s.plan?.price_ksh || 0), 0),
         growth: 15.2
       });
       setLoading(false);
@@ -57,8 +57,8 @@ export default function AdminSubscriptions() {
   };
 
   const filteredSubscriptions = subscriptions.filter(sub => {
-    const matchesSearch = sub.user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         sub.user.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = (sub.user?.username || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (sub.user?.email || '').toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === "all" || sub.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -198,13 +198,13 @@ export default function AdminSubscriptions() {
                     <tr key={subscription.id} className="hover:bg-[rgb(var(--color-ui))] transition-colors">
                       <td className="px-6 py-4">
                         <div>
-                          <div className="text-sm font-medium text-[rgb(var(--color-fg))]">{subscription.user.username}</div>
-                          <div className="text-sm text-[rgb(var(--color-muted))]">{subscription.user.email}</div>
+                          <div className="text-sm font-medium text-[rgb(var(--color-fg))]">{subscription.user?.username || 'N/A'}</div>
+                          <div className="text-sm text-[rgb(var(--color-muted))]">{subscription.user?.email || 'N/A'}</div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm font-medium text-[rgb(var(--color-fg))]">{subscription.plan.name}</div>
-                        <div className="text-sm text-[rgb(var(--color-muted))]">KES {subscription.plan.price_ksh}/month</div>
+                        <div className="text-sm font-medium text-[rgb(var(--color-fg))]">{subscription.plan?.name || 'N/A'}</div>
+                        <div className="text-sm text-[rgb(var(--color-muted))]">KES {subscription.plan?.price_ksh || 0}/month</div>
                       </td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(subscription.status)}`}>
@@ -220,7 +220,7 @@ export default function AdminSubscriptions() {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm font-medium text-[rgb(var(--color-fg))]">KES {subscription.plan.price_ksh.toLocaleString()}</div>
+                        <div className="text-sm font-medium text-[rgb(var(--color-fg))]">KES {(subscription.plan?.price_ksh || 0).toLocaleString()}</div>
                       </td>
                     </tr>
                   ))

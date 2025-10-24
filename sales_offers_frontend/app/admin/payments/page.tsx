@@ -58,8 +58,8 @@ export default function AdminPayments() {
   };
 
   const filteredPayments = payments.filter(payment => {
-    const matchesSearch = payment.user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         payment.reference.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = (payment.user?.username || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (payment.reference || '').toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === "all" || payment.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -208,12 +208,12 @@ export default function AdminPayments() {
                   filteredPayments.map((payment) => (
                     <tr key={payment.id} className="hover:bg-[rgb(var(--color-ui))] transition-colors">
                       <td className="px-6 py-4">
-                        <div className="text-sm font-mono text-[rgb(var(--color-fg))]">{payment.reference}</div>
+                        <div className="text-sm font-mono text-[rgb(var(--color-fg))]">{payment.reference || 'N/A'}</div>
                       </td>
                       <td className="px-6 py-4">
                         <div>
-                          <div className="text-sm font-medium text-[rgb(var(--color-fg))]">{payment.user.username}</div>
-                          <div className="text-sm text-[rgb(var(--color-muted))]">{payment.user.email}</div>
+                          <div className="text-sm font-medium text-[rgb(var(--color-fg))]">{payment.user?.username || 'N/A'}</div>
+                          <div className="text-sm text-[rgb(var(--color-muted))]">{payment.user?.email || 'N/A'}</div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -222,7 +222,7 @@ export default function AdminPayments() {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-sm text-[rgb(var(--color-fg))] capitalize">{payment.payment_method.replace('_', ' ')}</span>
+                        <span className="text-sm text-[rgb(var(--color-fg))] capitalize">{(payment.payment_method || '').replace('_', ' ') || 'N/A'}</span>
                       </td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(payment.status)}`}>
