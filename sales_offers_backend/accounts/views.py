@@ -15,6 +15,16 @@ from .serializers import UserSerializer, FavoriteSerializer, NotificationSeriali
 from .notification_service import NotificationService
 from deals.models import Deal
 import os
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def admin_users(request):
+    if not request.user.is_staff:
+        return Response({'error': 'Permission denied'}, status=403)
+    
+    users = User.objects.all().order_by('-date_joined')
+    serializer = UserSerializer(users, many=True)
+    return Response(serializer.data)
 try:
     import firebase_admin
     from firebase_admin import auth as firebase_auth, credentials

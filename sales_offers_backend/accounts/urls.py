@@ -3,7 +3,7 @@ from .views import (
     register, login, google_auth, logout, forgot_password, reset_password, verify_email,
     profile, dashboard_stats, favorites, remove_favorite, notifications, 
     update_notification, delete_notification, mark_all_notifications_read,
-    toggle_favorite_deal, check_favorite_status, auth_test
+    toggle_favorite_deal, check_favorite_status, auth_test, admin_users
 )
 
 urlpatterns = [
@@ -25,4 +25,5 @@ urlpatterns = [
     path('deals/<int:deal_id>/favorite/', toggle_favorite_deal, name='toggle_favorite_deal'),
     path('deals/<int:deal_id>/favorite/status/', check_favorite_status, name='check_favorite_status'),
     path('auth-test/', auth_test, name='auth_test'),
+    path('admin/users/', admin_users, name='admin-users'),
 ]

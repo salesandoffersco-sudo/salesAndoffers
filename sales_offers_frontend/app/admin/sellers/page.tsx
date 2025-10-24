@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import AdminLayout from "../../../components/AdminLayout";
 import { FiSearch, FiFilter, FiStar, FiPackage, FiDollarSign, FiEye, FiMail } from "react-icons/fi";
+import { API_BASE_URL } from "../../../lib/api";
 
 interface Seller {
   id: number;
@@ -26,54 +27,40 @@ export default function SellersManagement() {
   const [filterStatus, setFilterStatus] = useState("all");
 
   useEffect(() => {
-    setTimeout(() => {
-      setSellers([
-        {
-          id: 1,
-          businessName: "TechStore Kenya",
-          ownerName: "John Kamau",
-          email: "john@techstore.co.ke",
-          phone: "+254712345678",
-          rating: 4.8,
-          totalDeals: 45,
-          activeDeals: 12,
-          revenue: 2500000,
-          joinedAt: "2023-08-15",
-          status: "active",
-          verified: true
-        },
-        {
-          id: 2,
-          businessName: "Fashion Hub",
-          ownerName: "Mary Wanjiku",
-          email: "mary@fashionhub.co.ke",
-          phone: "+254723456789",
-          rating: 4.5,
-          totalDeals: 32,
-          activeDeals: 8,
-          revenue: 1800000,
-          joinedAt: "2023-09-20",
-          status: "active",
-          verified: true
-        },
-        {
-          id: 3,
-          businessName: "Home Essentials",
-          ownerName: "Peter Ochieng",
-          email: "peter@homeessentials.co.ke",
-          phone: "+254734567890",
-          rating: 3.9,
-          totalDeals: 18,
-          activeDeals: 3,
-          revenue: 950000,
-          joinedAt: "2023-11-10",
-          status: "pending",
-          verified: false
-        }
-      ]);
-      setLoading(false);
-    }, 1000);
+    fetchSellers();
   }, []);
+
+  const fetchSellers = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/sellers/`, {
+        headers: {
+          'Authorization': `Token ${localStorage.getItem('token')}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setSellers(data.map((seller: any) => ({
+          id: seller.id,
+          businessName: seller.business_name,
+          ownerName: seller.user?.username || 'Unknown',
+          email: seller.email || seller.user?.email,
+          phone: seller.phone,
+          rating: parseFloat(seller.rating) || 0,
+          totalDeals: seller.total_deals || 0,
+          activeDeals: seller.total_deals || 0,
+          revenue: 0, // Would need to calculate from transactions
+          joinedAt: seller.created_at,
+          status: seller.is_verified ? 'active' : 'pending',
+          verified: seller.is_verified
+        })));
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching sellers:', error);
+      setLoading(false);
+    }
+  };
 
   const filteredSellers = sellers.filter(seller => {
     const matchesSearch = seller.businessName.toLowerCase().includes(searchTerm.toLowerCase()) ||

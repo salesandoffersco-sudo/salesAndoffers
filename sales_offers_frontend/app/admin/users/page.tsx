@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import AdminLayout from "../../../components/AdminLayout";
 import { FiSearch, FiFilter, FiMoreVertical, FiEdit, FiTrash2, FiMail, FiShield } from "react-icons/fi";
+import { API_BASE_URL } from "../../../lib/api";
 
 interface User {
   id: number;
@@ -23,46 +24,37 @@ export default function UsersManagement() {
   const [filterStatus, setFilterStatus] = useState("all");
 
   useEffect(() => {
-    // Mock data - replace with actual API call
-    setTimeout(() => {
-      setUsers([
-        {
-          id: 1,
-          username: "john_doe",
-          email: "john@example.com",
-          isActive: true,
-          isEmailVerified: true,
-          isSeller: true,
-          isBuyer: true,
-          joinedAt: "2024-01-15",
-          lastLogin: "2024-01-20"
-        },
-        {
-          id: 2,
-          username: "jane_smith",
-          email: "jane@example.com",
-          isActive: false,
-          isEmailVerified: false,
-          isSeller: false,
-          isBuyer: true,
-          joinedAt: "2024-01-10",
-          lastLogin: "2024-01-18"
-        },
-        {
-          id: 3,
-          username: "mike_wilson",
-          email: "mike@example.com",
-          isActive: true,
-          isEmailVerified: true,
-          isSeller: true,
-          isBuyer: true,
-          joinedAt: "2024-01-05",
-          lastLogin: "2024-01-19"
-        }
-      ]);
-      setLoading(false);
-    }, 1000);
+    fetchUsers();
   }, []);
+
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/accounts/admin/users/`, {
+        headers: {
+          'Authorization': `Token ${localStorage.getItem('token')}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setUsers(data.map((user: any) => ({
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          isActive: user.is_active,
+          isEmailVerified: user.is_email_verified,
+          isSeller: user.is_seller,
+          isBuyer: user.is_buyer,
+          joinedAt: user.date_joined,
+          lastLogin: user.last_login || user.date_joined
+        })));
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      setLoading(false);
+    }
+  };
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import AdminLayout from "../../../components/AdminLayout";
 import { FiSearch, FiFilter, FiEye, FiEdit, FiTrash2, FiCheck, FiX } from "react-icons/fi";
+import { API_BASE_URL } from "../../../lib/api";
 
 interface Deal {
   id: number;
@@ -23,45 +24,37 @@ export default function DealsManagement() {
   const [filterStatus, setFilterStatus] = useState("all");
 
   useEffect(() => {
-    setTimeout(() => {
-      setDeals([
-        {
-          id: 1,
-          title: "iPhone 15 Pro Max - Limited Time Offer",
-          seller: "TechStore Kenya",
-          originalPrice: 180000,
-          discountedPrice: 150000,
-          discount: 17,
-          status: "pending",
-          createdAt: "2024-01-20",
-          expiresAt: "2024-02-20"
-        },
-        {
-          id: 2,
-          title: "Samsung Galaxy S24 Ultra Deal",
-          seller: "MobileHub",
-          originalPrice: 160000,
-          discountedPrice: 135000,
-          discount: 16,
-          status: "approved",
-          createdAt: "2024-01-18",
-          expiresAt: "2024-02-18"
-        },
-        {
-          id: 3,
-          title: "MacBook Air M2 Special Price",
-          seller: "ComputerWorld",
-          originalPrice: 220000,
-          discountedPrice: 195000,
-          discount: 11,
-          status: "rejected",
-          createdAt: "2024-01-15",
-          expiresAt: "2024-02-15"
-        }
-      ]);
-      setLoading(false);
-    }, 1000);
+    fetchDeals();
   }, []);
+
+  const fetchDeals = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/deals/admin/`, {
+        headers: {
+          'Authorization': `Token ${localStorage.getItem('token')}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setDeals(data.map((deal: any) => ({
+          id: deal.id,
+          title: deal.title,
+          seller: deal.seller?.business_name || 'Unknown Seller',
+          originalPrice: parseFloat(deal.original_price),
+          discountedPrice: parseFloat(deal.discounted_price),
+          discount: deal.discount_percentage,
+          status: deal.is_active ? 'approved' : 'pending',
+          createdAt: deal.created_at,
+          expiresAt: deal.expires_at
+        })));
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching deals:', error);
+      setLoading(false);
+    }
+  };
 
   const filteredDeals = deals.filter(deal => {
     const matchesSearch = deal.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -70,16 +63,42 @@ export default function DealsManagement() {
     return matchesSearch && matchesFilter;
   });
 
-  const handleApprove = (id: number) => {
-    setDeals(prev => prev.map(deal => 
-      deal.id === id ? { ...deal, status: "approved" as const } : deal
-    ));
+  const handleApprove = async (id: number) => {
+    try {
+      await fetch(`${API_BASE_URL}/api/deals/${id}/`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Token ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ is_active: true })
+      });
+      
+      setDeals(prev => prev.map(deal => 
+        deal.id === id ? { ...deal, status: "approved" as const } : deal
+      ));
+    } catch (error) {
+      console.error('Error approving deal:', error);
+    }
   };
 
-  const handleReject = (id: number) => {
-    setDeals(prev => prev.map(deal => 
-      deal.id === id ? { ...deal, status: "rejected" as const } : deal
-    ));
+  const handleReject = async (id: number) => {
+    try {
+      await fetch(`${API_BASE_URL}/api/deals/${id}/`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Token ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ is_active: false })
+      });
+      
+      setDeals(prev => prev.map(deal => 
+        deal.id === id ? { ...deal, status: "rejected" as const } : deal
+      ));
+    } catch (error) {
+      console.error('Error rejecting deal:', error);
+    }
   };
 
   return (
