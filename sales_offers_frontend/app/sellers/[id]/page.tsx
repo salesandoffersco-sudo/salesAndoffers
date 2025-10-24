@@ -128,7 +128,7 @@ export default function SellerDetailPage() {
                 <VerificationBadge isVerified={seller.is_verified} type="seller" size="lg" showText />
               </div>
               <p className="text-lg text-[rgb(var(--color-muted))] mb-2">
-                by {seller.user?.first_name} {seller.user?.last_name}
+                by {seller.user?.first_name || 'Unknown'} {seller.user?.last_name || 'User'}
               </p>
               {seller.business_license && (
                 <div className="flex items-center gap-2 mb-4">
@@ -141,12 +141,12 @@ export default function SellerDetailPage() {
                   {[...Array(5)].map((_, i) => (
                     <FiStar
                       key={i}
-                      className={`w-5 h-5 ${i < Math.floor(seller.rating) ? "text-yellow-400 fill-current" : "text-gray-300"}`}
+                      className={`w-5 h-5 ${i < Math.floor(Number(seller.rating || 0)) ? "text-yellow-400 fill-current" : "text-gray-300"}`}
                     />
                   ))}
                 </div>
                 <span className="ml-2 text-[rgb(var(--color-muted))]">
-                  {seller.rating.toFixed(1)} ({seller.total_reviews} reviews)
+                  {Number(seller.rating || 0).toFixed(1)} ({seller.total_reviews || 0} reviews)
                 </span>
               </div>
               <p className="text-[rgb(var(--color-muted))] mb-4">{seller.business_description}</p>

@@ -56,9 +56,9 @@ export default function SellersPage() {
   };
 
   const filteredSellers = sellers.filter(seller => {
-    if (filters.search && !seller.business_name.toLowerCase().includes(filters.search.toLowerCase())) return false;
-    if (filters.rating && seller.rating < parseFloat(filters.rating)) return false;
-    if (filters.location && !seller.address.toLowerCase().includes(filters.location.toLowerCase())) return false;
+    if (filters.search && !(seller.business_name || '').toLowerCase().includes(filters.search.toLowerCase())) return false;
+    if (filters.rating && Number(seller.rating || 0) < parseFloat(filters.rating)) return false;
+    if (filters.location && !(seller.address || '').toLowerCase().includes(filters.location.toLowerCase())) return false;
     return true;
   });
 
@@ -119,7 +119,7 @@ export default function SellersPage() {
             name: seller.user ? `${seller.user.first_name} ${seller.user.last_name}` : seller.business_name,
             businessName: seller.business_name,
             category: seller.total_deals > 10 ? 'Top Seller' : seller.total_deals > 5 ? 'Active Seller' : 'New Seller',
-            rating: seller.rating,
+            rating: Number(seller.rating || 0),
             totalSales: seller.total_deals || 0,
             followers: seller.total_reviews || 0,
             location: seller.address,
@@ -223,11 +223,11 @@ export default function SellersPage() {
                                 <VerificationBadge isVerified={seller.is_verified} type="seller" size="sm" />
                               </div>
                               <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                                by {seller.user?.first_name} {seller.user?.last_name}
+                                by {seller.user?.first_name || 'Unknown'} {seller.user?.last_name || 'User'}
                               </p>
                               <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 mb-2">
                                 <FiStar className="text-yellow-400 dark:text-yellow-300 mr-1" />
-                                <span>{seller.rating} ({seller.total_reviews} reviews)</span>
+                                <span>{Number(seller.rating || 0).toFixed(1)} ({seller.total_reviews || 0} reviews)</span>
                               </div>
                               <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm">
                                 <FiMapPin className="mr-2" />
@@ -278,13 +278,13 @@ export default function SellersPage() {
                               <VerificationBadge isVerified={seller.is_verified} type="seller" size="md" />
                             </div>
                             <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-3">
-                              by {seller.user?.first_name} {seller.user?.last_name}
+                              by {seller.user?.first_name || 'Unknown'} {seller.user?.last_name || 'User'}
                             </p>
                             <div className="flex items-center gap-4 mb-3">
                               <div className="flex items-center text-sm font-medium">
                                 <FiStar className="text-yellow-500 mr-1" />
-                                <span className="text-yellow-600 dark:text-yellow-400">{seller.rating}</span>
-                                <span className="text-gray-500 dark:text-gray-400 ml-1">({seller.total_reviews} reviews)</span>
+                                <span className="text-yellow-600 dark:text-yellow-400">{Number(seller.rating || 0).toFixed(1)}</span>
+                                <span className="text-gray-500 dark:text-gray-400 ml-1">({seller.total_reviews || 0} reviews)</span>
                               </div>
                             </div>
                             <TrustIndicators size="sm" variant="minimal" />

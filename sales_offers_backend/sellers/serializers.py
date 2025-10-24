@@ -3,6 +3,7 @@ from .models import Seller, SubscriptionPlan, Subscription, SellerProfile, Payme
 
 class SellerSerializer(serializers.ModelSerializer):
     total_deals = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
     
     class Meta:
         model = Seller
@@ -11,6 +12,17 @@ class SellerSerializer(serializers.ModelSerializer):
     def get_total_deals(self, obj):
         from deals.models import Deal
         return Deal.objects.filter(seller=obj).count()
+    
+    def get_user(self, obj):
+        if obj.user:
+            return {
+                'id': obj.user.id,
+                'first_name': obj.user.first_name or 'Unknown',
+                'last_name': obj.user.last_name or 'User',
+                'profile_picture': getattr(obj.user, 'profile_picture', None),
+                'is_verified': getattr(obj.user, 'is_verified', False)
+            }
+        return None
 
 class SubscriptionPlanSerializer(serializers.ModelSerializer):
     class Meta:
