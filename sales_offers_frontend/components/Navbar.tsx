@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { FiMenu, FiX, FiUser, FiLogOut, FiChevronDown } from "react-icons/fi";
+import { FiMenu, FiX, FiUser, FiLogOut, FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { useState, useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import ThemeToggle from "./ThemeToggle";
 import NotificationBell from "./NotificationBell";
 import CartIcon from "./CartIcon";
@@ -17,7 +18,11 @@ export default function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [subscription, setSubscription] = useState<any>(null);
+  const [navHidden, setNavHidden] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+  
+  const isAdminPage = pathname?.startsWith('/admin');
 
   useEffect(() => {
     // Check theme
@@ -125,7 +130,8 @@ export default function Navbar() {
   };
 
   return (
-<nav className="fixed top-0 left-0 right-0 z-50 bg-[rgb(var(--color-card))] shadow-sm border-b border-[rgb(var(--color-border))] bg-opacity-95">
+    <>
+      <nav className={`fixed top-0 left-0 right-0 z-50 bg-[rgb(var(--color-card))] shadow-sm border-b border-[rgb(var(--color-border))] bg-opacity-95 transition-all duration-300 ${navHidden ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'}`}>
       <div className="max-w-7xl mx-auto overflow-visible" style={{ paddingLeft: '16px', paddingRight: '16px' }}>
         <div className="flex justify-between items-center h-16 w-full overflow-visible">
           <div className="flex-shrink-0">
@@ -438,5 +444,23 @@ export default function Navbar() {
         </>
       )}
     </nav>
+    
+    {/* Chevron Toggle Button - Only show on admin pages */}
+    {isAdminPage && (
+      <div className={`fixed top-0 left-1/2 transform -translate-x-1/2 z-40 transition-all duration-300 ${navHidden ? 'translate-y-2' : 'translate-y-16'}`}>
+        <button
+          onClick={() => setNavHidden(!navHidden)}
+          className="bg-[rgb(var(--color-card))] border border-[rgb(var(--color-border))] rounded-b-lg px-3 py-1 text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-fg))] hover:bg-[rgb(var(--color-ui))] transition-all duration-200 shadow-sm"
+          title={navHidden ? 'Show main navigation' : 'Hide main navigation'}
+        >
+          {navHidden ? (
+            <FiChevronDown className="w-4 h-4" />
+          ) : (
+            <FiChevronUp className="w-4 h-4" />
+          )}
+        </button>
+      </div>
+    )}
+    </>
   );
 }
