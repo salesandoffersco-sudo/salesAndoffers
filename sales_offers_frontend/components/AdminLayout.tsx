@@ -6,7 +6,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { 
   FiHome, FiUsers, FiTag, FiShoppingBag, FiMail, FiBarChart, 
   FiSettings, FiFileText, FiActivity, FiServer, FiMenu, FiX,
-  FiLogOut, FiShield, FiUser, FiCreditCard, FiDollarSign, FiEdit3, FiLock, FiShoppingCart
+  FiLogOut, FiShield, FiUser, FiCreditCard, FiDollarSign, FiEdit3, FiLock, FiShoppingCart,
+  FiCheckCircle, FiMessageCircle, FiBell
 } from "react-icons/fi";
 import ThemeToggle from "./ThemeToggle";
 
@@ -19,10 +20,13 @@ const menuItems = [
   { icon: FiUsers, label: "Users", href: "/admin/users", adminOnly: false },
   { icon: FiTag, label: "Deals", href: "/admin/deals", adminOnly: false },
   { icon: FiShoppingBag, label: "Sellers", href: "/admin/sellers", adminOnly: false },
+  { icon: FiCheckCircle, label: "Verification", href: "/admin/verification", adminOnly: false },
+  { icon: FiMessageCircle, label: "Support Tickets", href: "/admin/tickets", adminOnly: false },
   { icon: FiShoppingCart, label: "Transactions", href: "/admin/transactions", adminOnly: false },
   { icon: FiCreditCard, label: "Subscriptions", href: "/admin/subscriptions", adminOnly: false },
   { icon: FiDollarSign, label: "Payments", href: "/admin/payments", adminOnly: false },
   { icon: FiEdit3, label: "Content", href: "/admin/content", adminOnly: false },
+  { icon: FiBell, label: "Notifications", href: "/admin/notifications", adminOnly: false },
   { icon: FiMail, label: "Newsletter", href: "/admin/newsletter", adminOnly: false },
   { icon: FiBarChart, label: "Analytics", href: "/admin/analytics", adminOnly: false },
   { icon: FiFileText, label: "Reports", href: "/admin/reports", adminOnly: true },
@@ -103,7 +107,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </div>
 
         <div className="flex-1 flex flex-col overflow-y-auto">
-          <nav className="flex-1 px-2 py-4 space-y-1 max-h-[calc(100vh-200px)] overflow-y-auto">
+          <nav className="flex-1 px-2 py-4 space-y-1 max-h-[calc(100vh-180px)] overflow-y-auto">
             {filteredMenuItems.map((item) => {
               const isActive = pathname === item.href;
               return (
