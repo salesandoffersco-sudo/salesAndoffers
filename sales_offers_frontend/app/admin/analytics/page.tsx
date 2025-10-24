@@ -3,24 +3,54 @@
 import { useState, useEffect } from "react";
 import AdminLayout from "../../../components/AdminLayout";
 import { FiTrendingUp, FiUsers, FiShoppingBag, FiDollarSign, FiCalendar } from "react-icons/fi";
+import { api } from "../../../lib/api";
 
 export default function AnalyticsPage() {
   const [timeRange, setTimeRange] = useState("7d");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setTimeout(() => setLoading(false), 1000);
+    fetchAnalytics();
   }, []);
 
-  const metrics = {
-    totalRevenue: 2450000,
-    totalUsers: 1247,
-    totalDeals: 89,
-    conversionRate: 3.2,
-    revenueGrowth: 18.5,
-    userGrowth: 12.3,
-    dealGrowth: 8.7
+  const fetchAnalytics = async () => {
+    try {
+      const [usersRes, dealsRes, sellersRes] = await Promise.all([
+        api.get('/api/accounts/admin/users/'),
+        api.get('/api/deals/admin/deals/'),
+        api.get('/api/sellers/admin/sellers/')
+      ]);
+      
+      const users = usersRes.data;
+      const deals = dealsRes.data;
+      const sellers = sellersRes.data;
+      
+      setMetrics({
+        totalRevenue: deals.reduce((sum: number, deal: any) => sum + (deal.price || 0), 0),
+        totalUsers: users.length,
+        totalDeals: deals.filter((deal: any) => deal.is_active).length,
+        conversionRate: 3.2,
+        revenueGrowth: 18.5,
+        userGrowth: 12.3,
+        dealGrowth: 8.7
+      });
+      
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching analytics:', error);
+      setLoading(false);
+    }
   };
+
+  const [metrics, setMetrics] = useState({
+    totalRevenue: 0,
+    totalUsers: 0,
+    totalDeals: 0,
+    conversionRate: 0,
+    revenueGrowth: 0,
+    userGrowth: 0,
+    dealGrowth: 0
+  });
 
   const chartData = [
     { date: "Jan 15", users: 120, revenue: 180000, deals: 8 },

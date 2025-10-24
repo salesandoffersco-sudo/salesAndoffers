@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import AdminLayout from "../../../components/AdminLayout";
 import { FiMail, FiUsers, FiSend, FiEdit, FiTrash2, FiPlus } from "react-icons/fi";
+import { api } from "../../../lib/api";
 
 interface Subscriber {
   id: number;
@@ -28,20 +29,37 @@ export default function NewsletterManagement() {
   const [activeTab, setActiveTab] = useState<"subscribers" | "campaigns">("subscribers");
 
   useEffect(() => {
-    setTimeout(() => {
-      setSubscribers([
-        { id: 1, email: "john@example.com", subscribedAt: "2024-01-15", isActive: true },
-        { id: 2, email: "jane@example.com", subscribedAt: "2024-01-18", isActive: true },
-        { id: 3, email: "mike@example.com", subscribedAt: "2024-01-20", isActive: false }
-      ]);
-      setCampaigns([
-        { id: 1, subject: "Weekly Deals Update", status: "sent", recipients: 892, openRate: 24.5, clickRate: 3.2, sentAt: "2024-01-20" },
-        { id: 2, subject: "New Year Special Offers", status: "sent", recipients: 856, openRate: 31.2, clickRate: 5.8, sentAt: "2024-01-01" },
-        { id: 3, subject: "Valentine's Day Deals", status: "draft", recipients: 0, openRate: 0, clickRate: 0 }
-      ]);
-      setLoading(false);
-    }, 1000);
+    fetchNewsletterData();
   }, []);
+
+  const fetchNewsletterData = async () => {
+    try {
+      const usersResponse = await api.get('/api/accounts/admin/users/');
+      const users = usersResponse.data;
+      
+      // Transform users into subscribers format
+      const subscribersData = users.slice(0, 20).map((user: any, index: number) => ({
+        id: user.id,
+        email: user.email,
+        subscribedAt: user.date_joined?.split('T')[0] || '2024-01-01',
+        isActive: user.is_active
+      }));
+      
+      // Mock campaigns data (would come from a campaigns API)
+      const campaignsData = [
+        { id: 1, subject: "Weekly Deals Update", status: "sent" as const, recipients: subscribersData.length, openRate: 24.5, clickRate: 3.2, sentAt: "2024-01-20" },
+        { id: 2, subject: "New Year Special Offers", status: "sent" as const, recipients: subscribersData.length - 10, openRate: 31.2, clickRate: 5.8, sentAt: "2024-01-01" },
+        { id: 3, subject: "Valentine's Day Deals", status: "draft" as const, recipients: 0, openRate: 0, clickRate: 0 }
+      ];
+      
+      setSubscribers(subscribersData);
+      setCampaigns(campaignsData);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching newsletter data:', error);
+      setLoading(false);
+    }
+  };
 
   const stats = {
     totalSubscribers: subscribers.length,
