@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 import ThemeToggle from "./ThemeToggle";
 import NotificationBell from "./NotificationBell";
 import CartIcon from "./CartIcon";
+import { useNavbar } from "../contexts/NavbarContext";
 import { API_BASE_URL } from "../lib/api";
 
 export default function Navbar() {
@@ -18,7 +19,7 @@ export default function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [subscription, setSubscription] = useState<any>(null);
-  const [navHidden, setNavHidden] = useState(false);
+  const { navHidden, setNavHidden } = useNavbar();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   
