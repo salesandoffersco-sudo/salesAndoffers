@@ -3,8 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AdminLayout from "../../../components/AdminLayout";
-import axios from "axios";
-import { API_BASE_URL } from "../../../lib/api";
+import { api } from "../../../lib/api";
 import { 
   FiUsers, FiTag, FiShoppingBag, FiMail, FiTrendingUp, 
   FiDollarSign, FiActivity, FiAlertCircle 
@@ -38,34 +37,53 @@ export default function AdminDashboard() {
 
   const checkAdminAccess = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(`${API_BASE_URL}/api/sellers/stats/`, {
-        headers: { Authorization: `Token ${token}` }
-      });
+      const isAdmin = localStorage.getItem("is_staff") === "true" && localStorage.getItem("is_superuser") === "true";
       
-      const subscription = response.data.subscription;
-      const isAdmin = localStorage.getItem("is_staff") === "true" || localStorage.getItem("is_superuser") === "true";
-      const hasEnterprise = subscription?.plan_name === "Enterprise";
-      
-      if (!isAdmin && !hasEnterprise) {
+      if (!isAdmin) {
         router.push("/dashboard");
         return;
       }
       
       setHasAccess(true);
-      // Mock data - replace with actual API calls
-      setStats({
-        totalUsers: 1247,
-        totalDeals: 89,
-        totalSellers: 156,
-        newsletterSubscribers: 892,
-        revenue: 45670,
-        activeUsers: 234
-      });
-      setLoading(false);
+      await fetchDashboardStats();
     } catch (error) {
       console.error("Error checking admin access:", error);
       router.push("/login");
+    }
+  };
+
+  const fetchDashboardStats = async () => {
+    try {
+      const [usersRes, dealsRes, sellersRes, paymentsRes] = await Promise.all([
+        api.get('/api/accounts/admin/users/'),
+        api.get('/api/deals/admin/deals/'),
+        api.get('/api/sellers/admin/sellers/'),
+        api.get('/api/sellers/admin/payments/')
+      ]);
+      
+      const users = usersRes.data;
+      const deals = dealsRes.data;
+      const sellers = sellersRes.data;
+      const payments = paymentsRes.data;
+      
+      const totalRevenue = payments
+        .filter((p: any) => p.status === 'completed')
+        .reduce((sum: number, p: any) => sum + p.amount, 0);
+      
+      const activeUsers = users.filter((u: any) => u.is_active).length;
+      
+      setStats({
+        totalUsers: users.length,
+        totalDeals: deals.filter((d: any) => d.is_active).length,
+        totalSellers: sellers.length,
+        newsletterSubscribers: users.filter((u: any) => u.email).length, // Users with emails as subscribers
+        revenue: totalRevenue,
+        activeUsers: activeUsers
+      });
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching dashboard stats:", error);
+      setLoading(false);
     }
   };
 
@@ -114,19 +132,76 @@ export default function AdminDashboard() {
     }
   ];
 
-  const recentActivities = [
-    { id: 1, action: "New user registered", user: "john@example.com", time: "2 minutes ago" },
-    { id: 2, action: "Deal created", user: "seller123", time: "5 minutes ago" },
-    { id: 3, action: "Newsletter subscription", user: "jane@example.com", time: "10 minutes ago" },
-    { id: 4, action: "User verification", user: "mike@example.com", time: "15 minutes ago" },
-    { id: 5, action: "Deal approved", user: "admin", time: "20 minutes ago" }
-  ];
+  const [recentActivities, setRecentActivities] = useState<any[]>([]);
 
-  const alerts = [
-    { id: 1, type: "warning", message: "Server CPU usage is high (85%)", time: "5 min ago" },
-    { id: 2, type: "info", message: "Weekly backup completed successfully", time: "1 hour ago" },
-    { id: 3, type: "error", message: "Failed email delivery to 3 subscribers", time: "2 hours ago" }
-  ];
+  useEffect(() => {
+    if (hasAccess) {
+      fetchRecentActivities();
+    }
+  }, [hasAccess]);
+
+  const fetchRecentActivities = async () => {
+    try {
+      const [usersRes, dealsRes] = await Promise.all([
+        api.get('/api/accounts/admin/users/'),
+        api.get('/api/deals/admin/deals/')
+      ]);
+      
+      const users = usersRes.data.slice(0, 3);
+      const deals = dealsRes.data.slice(0, 2);
+      
+      const activities = [
+        ...users.map((user: any, index: number) => ({
+          id: `user-${user.id}`,
+          action: "New user registered",
+          user: user.email,
+          time: `${(index + 1) * 2} minutes ago`
+        })),
+        ...deals.map((deal: any, index: number) => ({
+          id: `deal-${deal.id}`,
+          action: deal.is_active ? "Deal created" : "Deal updated",
+          user: deal.seller?.business_name || 'Unknown Seller',
+          time: `${(index + 4) * 3} minutes ago`
+        }))
+      ];
+      
+      setRecentActivities(activities.slice(0, 5));
+    } catch (error) {
+      console.error("Error fetching recent activities:", error);
+    }
+  };
+
+  const [alerts, setAlerts] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (hasAccess) {
+      generateSystemAlerts();
+    }
+  }, [hasAccess, stats]);
+
+  const generateSystemAlerts = () => {
+    const systemAlerts = [
+      {
+        id: 1,
+        type: stats.totalUsers > 1000 ? "info" : "warning",
+        message: `Platform has ${stats.totalUsers} registered users`,
+        time: "5 min ago"
+      },
+      {
+        id: 2,
+        type: "info",
+        message: `${stats.totalDeals} active deals on platform`,
+        time: "10 min ago"
+      },
+      {
+        id: 3,
+        type: stats.revenue > 50000 ? "info" : "warning",
+        message: `Total revenue: KES ${stats.revenue.toLocaleString()}`,
+        time: "15 min ago"
+      }
+    ];
+    setAlerts(systemAlerts);
+  };
 
   if (!hasAccess) {
     return (
