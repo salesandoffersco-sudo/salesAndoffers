@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import AdminLayout from "../../../components/AdminLayout";
 import { FiCheck, FiX, FiEye, FiDownload, FiSearch, FiFilter, FiClock, FiUser } from "react-icons/fi";
+import { api } from "../../../lib/api";
 
 interface VerificationRequest {
   id: number;
@@ -39,26 +40,8 @@ export default function AdminVerification() {
 
   const fetchRequests = async () => {
     try {
-      const mockData = [
-        {
-          id: 1,
-          seller: {
-            business_name: "Tech Solutions Ltd",
-            user: { username: "techsolutions", email: "tech@example.com" }
-          },
-          status: "pending",
-          submitted_at: "2024-01-15T10:30:00Z",
-          business_description: "We provide IT solutions and software development services",
-          years_in_business: 5,
-          documents: {
-            business_license: "license.pdf",
-            id_document: "id.pdf",
-            tax_certificate: "tax.pdf"
-          }
-        }
-      ];
-      
-      setRequests(mockData);
+      const response = await api.get('/api/verification/admin/requests/');
+      setRequests(response.data);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching verification requests:", error);
@@ -67,12 +50,21 @@ export default function AdminVerification() {
   };
 
   const handleStatusUpdate = async (requestId: number, status: string, notes?: string) => {
-    setRequests(requests.map(req => 
-      req.id === requestId 
-        ? { ...req, status, reviewed_at: new Date().toISOString() }
-        : req
-    ));
-    setSelectedRequest(null);
+    try {
+      await api.patch(`/api/verification/admin/requests/${requestId}/`, {
+        status,
+        admin_notes: notes || ''
+      });
+      
+      setRequests(requests.map(req => 
+        req.id === requestId 
+          ? { ...req, status, reviewed_at: new Date().toISOString() }
+          : req
+      ));
+      setSelectedRequest(null);
+    } catch (error) {
+      console.error("Error updating verification status:", error);
+    }
   };
 
   const getStatusColor = (status: string) => {

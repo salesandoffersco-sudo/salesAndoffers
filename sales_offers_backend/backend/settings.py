@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'newsletter',
     'blog',
     'analytics',
+    'verification',
 ]
 
 MIDDLEWARE = [

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import AdminLayout from "../../../components/AdminLayout";
 import { FiMessageCircle, FiUser, FiClock, FiCheck, FiX, FiSearch, FiFilter, FiSend } from "react-icons/fi";
+import { api } from "../../../lib/api";
 
 interface Ticket {
   id: number;
@@ -42,30 +43,8 @@ export default function AdminTickets() {
 
   const fetchTickets = async () => {
     try {
-      const mockData = [
-        {
-          id: 1,
-          user: { username: "john_doe", email: "john@example.com" },
-          title: "Payment not processed",
-          description: "My payment was deducted but subscription not activated",
-          category: "billing",
-          priority: "high",
-          status: "open",
-          created_at: "2024-01-15T10:30:00Z",
-          updated_at: "2024-01-15T10:30:00Z",
-          messages: [
-            {
-              id: 1,
-              user: "john_doe",
-              message: "My payment was deducted but subscription not activated",
-              is_internal: false,
-              created_at: "2024-01-15T10:30:00Z"
-            }
-          ]
-        }
-      ];
-      
-      setTickets(mockData);
+      const response = await api.get('/api/verification/admin/tickets/');
+      setTickets(response.data);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching tickets:", error);
@@ -73,37 +52,46 @@ export default function AdminTickets() {
     }
   };
 
-  const handleStatusUpdate = (ticketId: number, status: string) => {
-    setTickets(tickets.map(ticket => 
-      ticket.id === ticketId 
-        ? { ...ticket, status, updated_at: new Date().toISOString() }
-        : ticket
-    ));
+  const handleStatusUpdate = async (ticketId: number, status: string) => {
+    try {
+      await api.patch(`/api/verification/admin/tickets/${ticketId}/`, { status });
+      
+      setTickets(tickets.map(ticket => 
+        ticket.id === ticketId 
+          ? { ...ticket, status, updated_at: new Date().toISOString() }
+          : ticket
+      ));
+    } catch (error) {
+      console.error("Error updating ticket status:", error);
+    }
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!selectedTicket || !newMessage.trim()) return;
 
-    const message = {
-      id: Date.now(),
-      user: "admin",
-      message: newMessage,
-      is_internal: false,
-      created_at: new Date().toISOString()
-    };
+    try {
+      const response = await api.post(`/api/verification/tickets/${selectedTicket.id}/messages/`, {
+        message: newMessage,
+        is_internal: false
+      });
 
-    setTickets(tickets.map(ticket => 
-      ticket.id === selectedTicket.id 
-        ? { ...ticket, messages: [...ticket.messages, message] }
-        : ticket
-    ));
+      const message = response.data;
 
-    setSelectedTicket({
-      ...selectedTicket,
-      messages: [...selectedTicket.messages, message]
-    });
+      setTickets(tickets.map(ticket => 
+        ticket.id === selectedTicket.id 
+          ? { ...ticket, messages: [...ticket.messages, message] }
+          : ticket
+      ));
 
-    setNewMessage("");
+      setSelectedTicket({
+        ...selectedTicket,
+        messages: [...selectedTicket.messages, message]
+      });
+
+      setNewMessage("");
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
   };
 
   const getPriorityColor = (priority: string) => {

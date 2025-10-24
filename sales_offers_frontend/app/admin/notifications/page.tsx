@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import AdminLayout from "../../../components/AdminLayout";
 import { FiBell, FiSend, FiUsers, FiEye, FiEdit, FiTrash2, FiPlus } from "react-icons/fi";
+import { api } from "../../../lib/api";
 
 interface AdminNotification {
   id: number;
@@ -34,21 +35,11 @@ export default function AdminNotifications() {
 
   const fetchNotifications = async () => {
     try {
-      const mockData = [
-        {
-          id: 1,
-          title: "System Maintenance",
-          message: "Scheduled maintenance on Sunday 2-4 AM",
-          notification_type: "popup" as const,
-          target_audience: "all",
-          is_active: true,
-          expires_at: "2024-01-20T00:00:00Z",
-          created_at: "2024-01-15T10:30:00Z",
-          sent_count: 1247
-        }
-      ];
-      
-      setNotifications(mockData);
+      const response = await api.get('/api/verification/admin/notifications/');
+      setNotifications(response.data.map((notif: any) => ({
+        ...notif,
+        sent_count: 0 // This would be calculated based on target audience
+      })));
     } catch (error) {
       console.error("Error fetching notifications:", error);
     }
@@ -57,35 +48,52 @@ export default function AdminNotifications() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const newNotification = {
-      id: notifications.length + 1,
-      ...formData,
-      is_active: true,
-      created_at: new Date().toISOString(),
-      sent_count: 0
-    };
-    
-    setNotifications([newNotification, ...notifications]);
-    setFormData({
-      title: "",
-      message: "",
-      notification_type: "notification",
-      target_audience: "all",
-      expires_at: "",
-      specific_users: []
-    });
-    setShowCreateForm(false);
+    try {
+      const response = await api.post('/api/verification/admin/notifications/', {
+        ...formData,
+        expires_at: formData.expires_at || null
+      });
+      
+      setNotifications([{ ...response.data, sent_count: 0 }, ...notifications]);
+      setFormData({
+        title: "",
+        message: "",
+        notification_type: "notification",
+        target_audience: "all",
+        expires_at: "",
+        specific_users: []
+      });
+      setShowCreateForm(false);
+    } catch (error) {
+      console.error("Error creating notification:", error);
+    }
   };
 
-  const handleToggleActive = (id: number) => {
-    setNotifications(notifications.map(notif => 
-      notif.id === id ? { ...notif, is_active: !notif.is_active } : notif
-    ));
+  const handleToggleActive = async (id: number) => {
+    try {
+      const notification = notifications.find(n => n.id === id);
+      if (!notification) return;
+      
+      await api.patch(`/api/verification/admin/notifications/${id}/`, {
+        is_active: !notification.is_active
+      });
+      
+      setNotifications(notifications.map(notif => 
+        notif.id === id ? { ...notif, is_active: !notif.is_active } : notif
+      ));
+    } catch (error) {
+      console.error("Error toggling notification:", error);
+    }
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     if (confirm("Are you sure you want to delete this notification?")) {
-      setNotifications(notifications.filter(notif => notif.id !== id));
+      try {
+        await api.delete(`/api/verification/admin/notifications/${id}/`);
+        setNotifications(notifications.filter(notif => notif.id !== id));
+      } catch (error) {
+        console.error("Error deleting notification:", error);
+      }
     }
   };
 

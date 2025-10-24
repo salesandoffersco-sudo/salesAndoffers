@@ -38,32 +38,14 @@ export default function AdminSubscriptions() {
 
   const fetchSubscriptions = async () => {
     try {
-      const mockData = [
-        {
-          id: 1,
-          user: { username: "john_doe", email: "john@example.com" },
-          plan: { name: "Pro", price_ksh: 2500 },
-          status: "active",
-          start_date: "2024-01-15",
-          end_date: "2024-02-15",
-          billing_type: "auto"
-        },
-        {
-          id: 2,
-          user: { username: "jane_smith", email: "jane@example.com" },
-          plan: { name: "Enterprise", price_ksh: 5000 },
-          status: "active",
-          start_date: "2024-01-10",
-          end_date: "2024-02-10",
-          billing_type: "manual"
-        }
-      ];
+      const response = await api.get('/api/sellers/admin/subscriptions/');
+      const data = response.data;
       
-      setSubscriptions(mockData);
+      setSubscriptions(data);
       setStats({
-        total: mockData.length,
-        active: mockData.filter(s => s.status === 'active').length,
-        revenue: mockData.reduce((sum, s) => sum + s.plan.price_ksh, 0),
+        total: data.length,
+        active: data.filter((s: any) => s.status === 'active').length,
+        revenue: data.reduce((sum: number, s: any) => sum + s.plan.price_ksh, 0),
         growth: 15.2
       });
       setLoading(false);

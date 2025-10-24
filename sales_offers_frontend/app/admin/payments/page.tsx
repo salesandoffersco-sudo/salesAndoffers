@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import AdminLayout from "../../../components/AdminLayout";
 import { FiCreditCard, FiDollarSign, FiTrendingUp, FiAlertCircle, FiSearch, FiFilter, FiDownload, FiRefreshCw } from "react-icons/fi";
+import { api } from "../../../lib/api";
 
 interface Payment {
   id: number;
@@ -39,37 +40,15 @@ export default function AdminPayments() {
 
   const fetchPayments = async () => {
     try {
-      const mockData = [
-        {
-          id: 1,
-          user: { username: "john_doe", email: "john@example.com" },
-          amount: 2500,
-          currency: "KES",
-          status: "completed",
-          payment_method: "card",
-          reference: "PAY_123456789",
-          created_at: "2024-01-15T10:30:00Z",
-          subscription: { plan_name: "Pro" }
-        },
-        {
-          id: 2,
-          user: { username: "jane_smith", email: "jane@example.com" },
-          amount: 5000,
-          currency: "KES",
-          status: "failed",
-          payment_method: "bank_transfer",
-          reference: "PAY_987654321",
-          created_at: "2024-01-14T15:45:00Z",
-          subscription: { plan_name: "Enterprise" }
-        }
-      ];
+      const response = await api.get('/api/sellers/admin/payments/');
+      const data = response.data;
       
-      setPayments(mockData);
+      setPayments(data);
       setStats({
-        totalRevenue: mockData.filter(p => p.status === 'completed').reduce((sum, p) => sum + p.amount, 0),
-        successfulPayments: mockData.filter(p => p.status === 'completed').length,
-        failedPayments: mockData.filter(p => p.status === 'failed').length,
-        pendingPayments: mockData.filter(p => p.status === 'pending').length
+        totalRevenue: data.filter((p: any) => p.status === 'completed').reduce((sum: number, p: any) => sum + p.amount, 0),
+        successfulPayments: data.filter((p: any) => p.status === 'completed').length,
+        failedPayments: data.filter((p: any) => p.status === 'failed').length,
+        pendingPayments: data.filter((p: any) => p.status === 'pending').length
       });
       setLoading(false);
     } catch (error) {

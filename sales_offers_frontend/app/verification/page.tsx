@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { FiUpload, FiFile, FiCheck, FiX, FiInfo } from "react-icons/fi";
+import { API_BASE_URL } from "../../lib/api";
 
 export default function VerificationPage() {
   const [formData, setFormData] = useState({
@@ -43,11 +44,40 @@ export default function VerificationPage() {
     e.preventDefault();
     setLoading(true);
     
-    // Mock submission
-    setTimeout(() => {
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append('business_description', formData.businessDescription);
+      formDataToSend.append('years_in_business', formData.yearsInBusiness);
+      formDataToSend.append('number_of_employees', formData.numberOfEmployees);
+      formDataToSend.append('annual_revenue', formData.annualRevenue);
+      
+      if (files.businessLicense) formDataToSend.append('business_license', files.businessLicense);
+      if (files.idDocument) formDataToSend.append('id_document', files.idDocument);
+      if (files.taxCertificate) formDataToSend.append('tax_certificate', files.taxCertificate);
+      if (files.businessRegistration) formDataToSend.append('business_registration', files.businessRegistration);
+      
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/api/verification/request/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Token ${token}`
+        },
+        body: formDataToSend
+      });
+      
+      if (response.ok) {
+        alert("Verification request submitted successfully!");
+        window.location.href = '/seller/dashboard';
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Submission failed');
+      }
+    } catch (error) {
+      console.error('Error submitting verification:', error);
+      alert('Submission failed. Please try again.');
+    } finally {
       setLoading(false);
-      alert("Verification request submitted successfully!");
-    }, 2000);
+    }
   };
 
   return (
