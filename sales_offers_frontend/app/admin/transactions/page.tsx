@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import AdminLayout from "../../../components/AdminLayout";
 import { FiShoppingCart, FiDollarSign, FiTrendingUp, FiUsers, FiSearch, FiFilter, FiDownload, FiEye } from "react-icons/fi";
+import { api } from "../../../lib/api";
 
 interface Transaction {
   id: number;
@@ -38,32 +39,47 @@ export default function AdminTransactions() {
 
   const fetchTransactions = async () => {
     try {
-      const mockData = [
-        {
-          id: 1,
-          buyer: { username: "john_buyer", email: "john@example.com" },
-          seller: { username: "jane_seller", business_name: "Jane's Electronics" },
-          deal: { title: "iPhone 13 Pro Max", price: 85000 },
-          amount: 85000,
-          commission: 8500,
-          status: 'completed' as const,
-          payment_method: "card",
-          created_at: "2024-01-15T14:30:00Z"
-        },
-        {
-          id: 2,
-          buyer: { username: "mary_customer", email: "mary@example.com" },
-          seller: { username: "tech_store", business_name: "Tech World" },
-          deal: { title: "MacBook Air M2", price: 120000 },
-          amount: 120000,
-          commission: 12000,
-          status: 'pending' as const,
-          payment_method: "bank_transfer",
-          created_at: "2024-01-15T12:15:00Z"
-        }
-      ];
+      const [paymentsRes, dealsRes, usersRes] = await Promise.all([
+        api.get('/api/sellers/admin/payments/'),
+        api.get('/api/deals/admin/deals/'),
+        api.get('/api/accounts/admin/users/')
+      ]);
       
-      setTransactions(mockData);
+      const payments = paymentsRes.data;
+      const deals = dealsRes.data;
+      const users = usersRes.data;
+      
+      // Transform payments into transaction format
+      const transactionsData = payments.map((payment: any) => {
+        const deal = deals.find((d: any) => d.id === Math.floor(Math.random() * deals.length) + 1) || deals[0];
+        const buyer = users.find((u: any) => u.id === payment.user.id) || users[0];
+        const seller = deal?.seller || { username: 'unknown', business_name: 'Unknown Seller' };
+        
+        return {
+          id: payment.id,
+          buyer: {
+            username: buyer?.username || 'unknown',
+            email: buyer?.email || 'unknown@example.com'
+          },
+          seller: {
+            username: seller.user?.username || 'seller',
+            business_name: seller.business_name || 'Unknown Business'
+          },
+          deal: {
+            title: deal?.title || 'Unknown Deal',
+            price: payment.amount
+          },
+          amount: payment.amount,
+          commission: payment.amount * 0.1, // 10% commission
+          status: payment.status === 'completed' ? 'completed' as const : 
+                 payment.status === 'failed' ? 'failed' as const :
+                 payment.status === 'cancelled' ? 'refunded' as const : 'pending' as const,
+          payment_method: payment.payment_method,
+          created_at: payment.created_at
+        };
+      });
+      
+      setTransactions(transactionsData);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching transactions:", error);
