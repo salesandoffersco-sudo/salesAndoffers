@@ -7,7 +7,7 @@ from .serializers import SubscriptionSerializer, PaymentSerializer
 from .views import (
     SellerListView, SubscriptionPlanListView, seller_stats, seller_offers, seller_detail,
     subscribe_to_plan, verify_payment, user_subscription, cancel_subscription,
-    seller_profile, toggle_profile_publish, manage_seller_offer
+    seller_profile, toggle_profile_publish, manage_seller_offer, admin_sellers
 )
 from .withdrawal_views import seller_balance, request_withdrawal, withdrawal_history, bank_list
 
@@ -51,4 +51,5 @@ urlpatterns = [
     path('banks/', bank_list, name='bank-list'),
     path('admin/subscriptions/', admin_subscriptions, name='admin-subscriptions'),
     path('admin/payments/', admin_payments, name='admin-payments'),
+    path('admin/sellers/', admin_sellers, name='admin-sellers'),
 ]

@@ -364,6 +364,36 @@ def seller_profile(request):
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def admin_sellers(request):
+    if not (request.user.is_staff and request.user.is_superuser):
+        return Response({'error': 'Permission denied'}, status=403)
+    
+    sellers = Seller.objects.select_related('user').all().order_by('-created_at')
+    serializer = SellerSerializer(sellers, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def admin_subscriptions(request):
+    if not (request.user.is_staff and request.user.is_superuser):
+        return Response({'error': 'Permission denied'}, status=403)
+    
+    subscriptions = Subscription.objects.select_related('user', 'plan').all().order_by('-created_at')
+    serializer = SubscriptionSerializer(subscriptions, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def admin_payments(request):
+    if not (request.user.is_staff and request.user.is_superuser):
+        return Response({'error': 'Permission denied'}, status=403)
+    
+    payments = Payment.objects.select_related('user', 'subscription__plan').all().order_by('-created_at')
+    serializer = PaymentSerializer(payments, many=True)
+    return Response(serializer.data)
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def toggle_profile_publish(request):
