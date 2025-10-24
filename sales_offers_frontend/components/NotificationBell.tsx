@@ -62,9 +62,34 @@ export default function NotificationBell() {
         return;
       }
       
-      const response = await api.get('/api/accounts/notifications/?limit=10');
-      setNotifications(response.data);
-      setUnreadCount(response.data.filter((n: Notification) => !n.is_read).length);
+      // Fetch regular notifications
+      const [regularRes, adminRes] = await Promise.all([
+        api.get('/api/accounts/notifications/?limit=10'),
+        api.get('/api/verification/notifications/')
+      ]);
+      
+      const regularNotifications = regularRes.data;
+      const adminData = adminRes.data;
+      
+      // Combine regular notifications with admin notifications
+      const allNotifications = [
+        ...adminData.notifications.map((n: any) => ({
+          ...n,
+          type: 'admin_notification',
+          is_read: false
+        })),
+        ...regularNotifications
+      ];
+      
+      setNotifications(allNotifications);
+      setUnreadCount(allNotifications.filter((n: Notification) => !n.is_read).length);
+      
+      // Show popups if any
+      if (adminData.popups && adminData.popups.length > 0) {
+        adminData.popups.forEach((popup: any) => {
+          showPopup(popup);
+        });
+      }
     } catch (error: any) {
       console.error("Error fetching notifications:", error);
       if (error.response?.status === 401) {
@@ -72,6 +97,40 @@ export default function NotificationBell() {
         setUnreadCount(0);
       }
     }
+  };
+
+  const showPopup = (popup: any) => {
+    // Create and show popup modal
+    const popupDiv = document.createElement('div');
+    popupDiv.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]';
+    popupDiv.innerHTML = `
+      <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-4 shadow-xl">
+        <div class="flex justify-between items-start mb-4">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">${popup.title}</h3>
+          <button class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" onclick="this.closest('.fixed').remove()">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        <p class="text-gray-600 dark:text-gray-300 mb-4">${popup.message}</p>
+        <button 
+          class="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors"
+          onclick="this.closest('.fixed').remove()"
+        >
+          Got it
+        </button>
+      </div>
+    `;
+    
+    document.body.appendChild(popupDiv);
+    
+    // Auto-remove after 10 seconds
+    setTimeout(() => {
+      if (document.body.contains(popupDiv)) {
+        document.body.removeChild(popupDiv);
+      }
+    }, 10000);
   };
 
   const markAsRead = async (notificationId: number) => {
@@ -93,6 +152,7 @@ export default function NotificationBell() {
       case 'favorite': return <FiHeart className="text-red-500" />;
       case 'promotion': return <FiTrendingUp className="text-green-500" />;
       case 'welcome': return <FiUser className="text-purple-500" />;
+      case 'admin_notification': return <FiBell className="text-orange-500" />;
       default: return <FiBell className="text-gray-500" />;
     }
   };

@@ -182,8 +182,113 @@ def admin_notifications(request):
             users = User.objects.filter(email__in=[email.strip() for email in user_emails])
             notification.specific_users.set(users)
         
+        # Deliver notifications to users
+        target_users = []
+        audience = notification.target_audience
+        
+        if audience == 'all':
+            target_users = User.objects.filter(is_active=True)
+        elif audience == 'sellers':
+            from sellers.models import Seller
+            seller_user_ids = Seller.objects.values_list('user_id', flat=True)
+            target_users = User.objects.filter(id__in=seller_user_ids, is_active=True)
+        elif audience == 'buyers':
+            target_users = User.objects.filter(is_buyer=True, is_active=True)
+        elif audience == 'verified_sellers':
+            from sellers.models import Seller
+            verified_seller_ids = Seller.objects.filter(is_verified=True).values_list('user_id', flat=True)
+            target_users = User.objects.filter(id__in=verified_seller_ids, is_active=True)
+        elif audience == 'unverified_sellers':
+            from sellers.models import Seller
+            unverified_seller_ids = Seller.objects.filter(is_verified=False).values_list('user_id', flat=True)
+            target_users = User.objects.filter(id__in=unverified_seller_ids, is_active=True)
+        elif audience == 'premium_users':
+            from sellers.models import Subscription
+            premium_user_ids = Subscription.objects.filter(status='active').values_list('user_id', flat=True)
+            target_users = User.objects.filter(id__in=premium_user_ids, is_active=True)
+        elif audience == 'specific_users':
+            target_users = notification.specific_users.all()
+        
+        # Create individual notifications for each target user
+        from accounts.models import Notification
+        for user in target_users:
+            Notification.objects.create(
+                user=user,
+                title=notification.title,
+                message=notification.message,
+                type='admin_notification'
+            )
+        
         serializer = AdminNotificationSerializer(notification)
         return Response(serializer.data, status=201)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_admin_notifications(request):
+    """Get active admin notifications for current user (for popups)"""
+    from accounts.models import Notification
+    
+    # Get user's regular notifications
+    notifications = Notification.objects.filter(
+        user=request.user,
+        type='admin_notification',
+        is_read=False
+    ).order_by('-created_at')[:5]
+    
+    # Get active admin notifications that should show as popups
+    active_popups = AdminNotification.objects.filter(
+        notification_type='popup',
+        is_active=True
+    )
+    
+    # Filter popups based on target audience
+    popup_data = []
+    for popup in active_popups:
+        should_show = False
+        audience = popup.target_audience
+        
+        if audience == 'all':
+            should_show = True
+        elif audience == 'sellers':
+            from sellers.models import Seller
+            should_show = Seller.objects.filter(user=request.user).exists()
+        elif audience == 'buyers':
+            should_show = request.user.is_buyer
+        elif audience == 'verified_sellers':
+            from sellers.models import Seller
+            should_show = Seller.objects.filter(user=request.user, is_verified=True).exists()
+        elif audience == 'unverified_sellers':
+            from sellers.models import Seller
+            should_show = Seller.objects.filter(user=request.user, is_verified=False).exists()
+        elif audience == 'premium_users':
+            from sellers.models import Subscription
+            should_show = Subscription.objects.filter(user=request.user, status='active').exists()
+        elif audience == 'specific_users':
+            should_show = popup.specific_users.filter(id=request.user.id).exists()
+        
+        if should_show:
+            popup_data.append({
+                'id': popup.id,
+                'title': popup.title,
+                'message': popup.message,
+                'type': 'popup'
+            })
+    
+    # Regular notifications
+    notification_data = []
+    for notif in notifications:
+        notification_data.append({
+            'id': notif.id,
+            'title': notif.title,
+            'message': notif.message,
+            'type': 'notification',
+            'created_at': notif.created_at
+        })
+    
+    return Response({
+        'notifications': notification_data,
+        'popups': popup_data
+    })
 
 @api_view(['PATCH', 'DELETE'])
 @permission_classes([IsAdminUser])
