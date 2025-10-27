@@ -90,7 +90,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <div className="min-h-screen bg-[rgb(var(--color-bg))] flex">
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-40 w-64 bg-[rgb(var(--color-card))] border-r border-[rgb(var(--color-border))] transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0`}>
+      <div className={`fixed inset-y-0 left-0 z-30 w-64 bg-[rgb(var(--color-card))] border-r border-[rgb(var(--color-border))] transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0`}>
         <div className="flex items-center justify-between h-16 px-4 border-b border-[rgb(var(--color-border))]">
           <div className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center">
@@ -182,7 +182,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       {/* Mobile Overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}

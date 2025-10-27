@@ -297,7 +297,7 @@ export default function Navbar() {
       {isOpen && (
         <>
 <div className="fixed inset-0 bg-black/50 z-[9998] md:hidden" onClick={toggleMenu}></div>
-<div className="fixed top-0 right-0 h-full w-80 bg-white dark:bg-gray-800 shadow-xl z-[9999] transform translate-x-0 transition-transform duration-300 md:hidden isolate border-l border-gray-200 dark:border-gray-700">
+<div className="fixed top-0 right-0 h-full w-80 bg-white dark:bg-gray-800 shadow-xl z-[9999] transform translate-x-0 transition-transform duration-300 md:hidden isolate border-l border-gray-200 dark:border-gray-700" style={{position: 'fixed', top: 0, right: 0, height: '100vh', zIndex: 9999}}>
             <div className="p-6">
               <div className="flex items-center justify-between mb-8">
                 <div style={{ overflow: 'visible', width: '100%', maxWidth: 'none' }}>
