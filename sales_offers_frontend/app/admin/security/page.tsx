@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import AdminLayout from "../../../components/AdminLayout";
 import { FiShield, FiAlertTriangle, FiLock, FiEye, FiUserX, FiActivity, FiRefreshCw, FiDownload } from "react-icons/fi";
 import { api } from "../../../lib/api";
-import { api } from "../../../lib/api";
 
 interface SecurityEvent {
   id: number;
