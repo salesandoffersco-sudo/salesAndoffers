@@ -19,7 +19,7 @@ export default function CartSidebar() {
       />
       
       {/* Sidebar */}
-      <div className="fixed right-0 top-16 h-[calc(100vh-4rem)] w-96 bg-[rgb(var(--color-card))] shadow-2xl z-40 transform transition-transform duration-300 ease-in-out">
+      <div className="fixed right-0 top-16 h-[calc(100vh-4rem)] w-96 bg-[rgb(var(--color-card))] shadow-2xl z-40 transform transition-transform duration-300 ease-in-out overflow-hidden">
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-[rgb(var(--color-border))]">
@@ -35,7 +35,7 @@ export default function CartSidebar() {
           </div>
 
           {/* Cart Items */}
-          <div className="flex-1 overflow-y-auto p-6">
+          <div className="flex-1 overflow-y-auto p-6 max-h-[calc(100vh-12rem)]">
             {state.items.length === 0 ? (
               <div className="text-center py-12">
                 <FiShoppingCart className="w-16 h-16 text-[rgb(var(--color-muted))] mx-auto mb-4" />
