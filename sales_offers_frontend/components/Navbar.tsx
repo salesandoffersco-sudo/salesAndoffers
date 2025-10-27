@@ -197,7 +197,7 @@ export default function Navbar() {
                   <FiChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                 </button>
                 {dropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-[100]">
                     <Link
                       href="/dashboard"
                       className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -296,8 +296,8 @@ export default function Navbar() {
       {/* Mobile Side Menu */}
       {isOpen && (
         <>
-<div className="fixed inset-0 bg-black bg-opacity-50 z-[60] md:hidden" onClick={toggleMenu}></div>
-<div className="fixed top-0 right-0 h-full w-80 bg-[rgb(var(--color-card))] shadow-xl z-[70] transform transition-transform duration-300 md:hidden">
+<div className="fixed inset-0 bg-black bg-opacity-50 z-[80] md:hidden" onClick={toggleMenu}></div>
+<div className="fixed top-0 right-0 h-full w-80 bg-[rgb(var(--color-card))] shadow-xl z-[90] transform transition-transform duration-300 md:hidden">
             <div className="p-6">
               <div className="flex items-center justify-between mb-8">
                 <div style={{ overflow: 'visible', width: '100%', maxWidth: 'none' }}>
