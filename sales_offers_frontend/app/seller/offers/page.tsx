@@ -86,12 +86,12 @@ export default function SellerOffersPage() {
   return (
     <div className="min-h-screen bg-[rgb(var(--color-bg))]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-[rgb(var(--color-text))]">My Offers</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--color-text))]">My Offers</h1>
             <p className="text-[rgb(var(--color-muted))] mt-2">Manage all your listings and deals</p>
           </div>
-          <Button variant="primary" onClick={() => setShowCreateModal(true)}>
+          <Button variant="primary" onClick={() => setShowCreateModal(true)} className="w-full sm:w-auto">
             <FiPlus className="w-4 h-4 mr-2" />
             Create New Offer
           </Button>
@@ -148,47 +148,49 @@ export default function SellerOffersPage() {
         ) : (
           <div className="space-y-4">
             {filteredOffers.map((offer) => (
-              <div key={offer.id} className="bg-[rgb(var(--color-card))] rounded-xl p-6 border border-[rgb(var(--color-border))] hover:shadow-lg transition-shadow">
-                <div className="flex items-start justify-between">
+              <div key={offer.id} className="bg-[rgb(var(--color-card))] rounded-xl p-4 sm:p-6 border border-[rgb(var(--color-border))] hover:shadow-lg transition-shadow">
+                <div className="flex flex-col lg:flex-row lg:items-start gap-4">
                   <div className="flex-1">
-                    <div className="flex items-center gap-4 mb-3">
+                    <div className="flex items-center gap-3 sm:gap-4 mb-3">
                       {offer.image && (
                         <img 
                           src={offer.image} 
                           alt={offer.title}
-                          className="w-16 h-16 object-cover rounded-lg"
+                          className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-lg flex-shrink-0"
                         />
                       )}
-                      <div>
-                        <h3 className="text-xl font-semibold text-[rgb(var(--color-text))]">{offer.title}</h3>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-lg sm:text-xl font-semibold text-[rgb(var(--color-text))] truncate">{offer.title}</h3>
                         <p className="text-[rgb(var(--color-muted))] text-sm mt-1">{offer.category}</p>
                       </div>
                     </div>
                     
-                    <p className="text-[rgb(var(--color-muted))] mb-4 line-clamp-2">{offer.description}</p>
+                    <p className="text-[rgb(var(--color-muted))] mb-4 line-clamp-2 text-sm sm:text-base">{offer.description}</p>
                     
-                    <div className="flex items-center gap-6 text-sm">
-                      <div className="flex items-center gap-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 text-sm">
+                      <div className="flex flex-wrap items-center gap-2">
                         <span className="text-[rgb(var(--color-muted))]">Price:</span>
                         <span className="font-semibold text-purple-600">KES {offer.discounted_price}</span>
                         <span className="text-[rgb(var(--color-muted))] line-through">KES {offer.original_price}</span>
-                        <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
+                        <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs whitespace-nowrap">
                           {offer.discount_percentage}% OFF
                         </span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[rgb(var(--color-muted))]">Sold:</span>
-                        <span className="font-semibold">{offer.vouchers_sold}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[rgb(var(--color-muted))]">Available:</span>
-                        <span className="font-semibold">{offer.vouchers_available}</span>
+                      <div className="flex items-center gap-4 sm:gap-6">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[rgb(var(--color-muted))]">Sold:</span>
+                          <span className="font-semibold">{offer.vouchers_sold}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[rgb(var(--color-muted))]">Available:</span>
+                          <span className="font-semibold">{offer.vouchers_available}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-2 ml-4">
-                    <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                  <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-start sm:items-center gap-3 lg:ml-4">
+                    <div className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
                       offer.is_active 
                         ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
                         : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
@@ -196,51 +198,53 @@ export default function SellerOffersPage() {
                       {offer.is_active ? 'Active' : 'Inactive'}
                     </div>
                     
-                    <button
-                      onClick={() => toggleOfferStatus(offer.id, offer.is_active)}
-                      className="p-2 hover:bg-[rgb(var(--color-ui))] rounded-lg transition-colors"
-                      title={offer.is_active ? 'Deactivate offer' : 'Activate offer'}
-                    >
-                      {offer.is_active ? (
-                        <FiToggleRight className="w-5 h-5 text-green-600" />
-                      ) : (
-                        <FiToggleLeft className="w-5 h-5 text-gray-400" />
-                      )}
-                    </button>
-                    
-                    <Link href={`/seller/analytics/deal/${offer.id}`}>
-                      <Button variant="outline" size="sm" title="View Analytics">
-                        <FiBarChart className="w-4 h-4" />
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <button
+                        onClick={() => toggleOfferStatus(offer.id, offer.is_active)}
+                        className="p-2 hover:bg-[rgb(var(--color-ui))] rounded-lg transition-colors"
+                        title={offer.is_active ? 'Deactivate offer' : 'Activate offer'}
+                      >
+                        {offer.is_active ? (
+                          <FiToggleRight className="w-5 h-5 text-green-600" />
+                        ) : (
+                          <FiToggleLeft className="w-5 h-5 text-gray-400" />
+                        )}
+                      </button>
+                      
+                      <Link href={`/seller/analytics/deal/${offer.id}`}>
+                        <Button variant="outline" size="sm" title="View Analytics">
+                          <FiBarChart className="w-4 h-4" />
+                        </Button>
+                      </Link>
+                      
+                      <Link href={`/offers/${offer.id}`}>
+                        <Button variant="outline" size="sm" title="View Offer">
+                          <FiEye className="w-4 h-4" />
+                        </Button>
+                      </Link>
+                      
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => {
+                          setEditingOfferId(offer.id);
+                          setShowEditModal(true);
+                        }}
+                        title="Edit Offer"
+                      >
+                        <FiEdit className="w-4 h-4" />
                       </Button>
-                    </Link>
-                    
-                    <Link href={`/offers/${offer.id}`}>
-                      <Button variant="outline" size="sm" title="View Offer">
-                        <FiEye className="w-4 h-4" />
+                      
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => deleteOffer(offer.id)}
+                        title="Delete Offer"
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <FiTrash2 className="w-4 h-4" />
                       </Button>
-                    </Link>
-                    
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => {
-                        setEditingOfferId(offer.id);
-                        setShowEditModal(true);
-                      }}
-                      title="Edit Offer"
-                    >
-                      <FiEdit className="w-4 h-4" />
-                    </Button>
-                    
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => deleteOffer(offer.id)}
-                      title="Delete Offer"
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      <FiTrash2 className="w-4 h-4" />
-                    </Button>
+                    </div>
                   </div>
                 </div>
               </div>
