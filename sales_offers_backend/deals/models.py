@@ -39,6 +39,10 @@ class Deal(models.Model):
     def __str__(self):
         return self.title
     
+    class Meta:
+        verbose_name = "Offer"
+        verbose_name_plural = "Offers"
+    
     @property
     def vouchers_sold(self):
         return self.vouchers.filter(status='paid').count()

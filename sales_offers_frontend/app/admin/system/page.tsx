@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import AdminLayout from "../../../components/AdminLayout";
 import { FiServer, FiDatabase, FiCpu, FiHardDrive, FiWifi, FiRefreshCw } from "react-icons/fi";
+import { api } from "../../../lib/api";
 
 interface SystemMetrics {
   cpu: number;
@@ -25,21 +26,19 @@ export default function SystemPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchMetrics = () => {
-      // Mock data - replace with actual system metrics API
-      setMetrics({
-        cpu: Math.floor(Math.random() * 30) + 20, // 20-50%
-        memory: Math.floor(Math.random() * 20) + 60, // 60-80%
-        disk: Math.floor(Math.random() * 15) + 45, // 45-60%
-        network: Math.floor(Math.random() * 40) + 10, // 10-50%
-        uptime: "15d 8h 32m",
-        activeUsers: Math.floor(Math.random() * 50) + 150 // 150-200
-      });
-      setLoading(false);
+    const fetchMetrics = async () => {
+      try {
+        const response = await api.get('/api/admin/system/');
+        setMetrics(response.data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching system metrics:', error);
+        setLoading(false);
+      }
     };
 
     fetchMetrics();
-    const interval = setInterval(fetchMetrics, 5000); // Update every 5 seconds
+    const interval = setInterval(fetchMetrics, 5000);
 
     return () => clearInterval(interval);
   }, []);

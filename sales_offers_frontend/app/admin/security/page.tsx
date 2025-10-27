@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import AdminLayout from "../../../components/AdminLayout";
 import { FiShield, FiAlertTriangle, FiLock, FiEye, FiUserX, FiActivity, FiRefreshCw, FiDownload } from "react-icons/fi";
+import { api } from "../../../lib/api";
+import { api } from "../../../lib/api";
 
 interface SecurityEvent {
   id: number;
@@ -27,40 +29,8 @@ export default function AdminSecurity() {
 
   const fetchSecurityEvents = async () => {
     try {
-      const mockData = [
-        {
-          id: 1,
-          type: 'failed_login' as const,
-          user: 'unknown',
-          ip_address: '192.168.1.100',
-          location: 'Nairobi, Kenya',
-          timestamp: '2024-01-15T14:30:00Z',
-          severity: 'medium' as const,
-          details: 'Multiple failed login attempts from same IP'
-        },
-        {
-          id: 2,
-          type: 'suspicious_activity' as const,
-          user: 'john_doe',
-          ip_address: '10.0.0.50',
-          location: 'Lagos, Nigeria',
-          timestamp: '2024-01-15T12:15:00Z',
-          severity: 'high' as const,
-          details: 'Unusual login location detected'
-        },
-        {
-          id: 3,
-          type: 'account_locked' as const,
-          user: 'jane_smith',
-          ip_address: '172.16.0.25',
-          location: 'Kampala, Uganda',
-          timestamp: '2024-01-15T10:45:00Z',
-          severity: 'critical' as const,
-          details: 'Account locked due to brute force attempt'
-        }
-      ];
-      
-      setEvents(mockData);
+      const response = await api.get('/api/admin/security/');
+      setEvents(response.data);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching security events:", error);

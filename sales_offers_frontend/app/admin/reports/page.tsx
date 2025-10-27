@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AdminLayout from "../../../components/AdminLayout";
 import { FiDownload, FiCalendar, FiFileText, FiBarChart, FiUsers, FiDollarSign } from "react-icons/fi";
+import { api } from "../../../lib/api";
 
 export default function ReportsPage() {
   const [selectedReport, setSelectedReport] = useState("revenue");
@@ -39,8 +40,38 @@ export default function ReportsPage() {
     }
   ];
 
-  const generateReport = () => {
-    alert(`Generating ${reports.find(r => r.id === selectedReport)?.title} for ${dateRange}...`);
+  const [recentReports, setRecentReports] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchRecentReports();
+  }, []);
+
+  const fetchRecentReports = async () => {
+    try {
+      const response = await api.get('/api/admin/reports/');
+      setRecentReports(response.data);
+    } catch (error) {
+      console.error('Error fetching reports:', error);
+    }
+  };
+
+  const generateReport = async () => {
+    setLoading(true);
+    try {
+      const response = await api.post('/api/admin/reports/', {
+        report_type: selectedReport,
+        date_range: dateRange,
+        format: 'PDF'
+      });
+      
+      alert(`Report generated successfully! ${response.data.message}`);
+      fetchRecentReports(); // Refresh the list
+    } catch (error) {
+      console.error('Error generating report:', error);
+      alert('Error generating report. Please try again.');
+    }
+    setLoading(false);
   };
 
   return (
@@ -140,10 +171,11 @@ export default function ReportsPage() {
                 <div className="border-t border-[rgb(var(--color-border))] pt-6">
                   <button
                     onClick={generateReport}
-                    className="flex items-center space-x-2 w-full sm:w-auto px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                    disabled={loading}
+                    className="flex items-center space-x-2 w-full sm:w-auto px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
                   >
                     <FiDownload className="w-4 h-4" />
-                    <span>Generate Report</span>
+                    <span>{loading ? 'Generating...' : 'Generate Report'}</span>
                   </button>
                 </div>
               </div>
@@ -153,24 +185,26 @@ export default function ReportsPage() {
             <div className="bg-[rgb(var(--color-card))] rounded-xl p-6 border border-[rgb(var(--color-border))] mt-6">
               <h3 className="text-lg font-semibold text-[rgb(var(--color-fg))] mb-4">Recent Reports</h3>
               <div className="space-y-3">
-                {[
-                  { name: "Revenue Report - January 2024", date: "2024-01-20", size: "2.4 MB", format: "PDF" },
-                  { name: "User Activity Report - December 2023", date: "2024-01-01", size: "1.8 MB", format: "Excel" },
-                  { name: "Deals Performance - Q4 2023", date: "2023-12-31", size: "3.1 MB", format: "PDF" }
-                ].map((report, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-[rgb(var(--color-ui))]">
-                    <div className="flex items-center space-x-3">
-                      <FiFileText className="w-5 h-5 text-[rgb(var(--color-muted))]" />
-                      <div>
-                        <p className="text-sm font-medium text-[rgb(var(--color-fg))]">{report.name}</p>
-                        <p className="text-xs text-[rgb(var(--color-muted))]">{report.date} • {report.size} • {report.format}</p>
+                {recentReports.length === 0 ? (
+                  <p className="text-[rgb(var(--color-muted))] text-center py-4">No reports generated yet</p>
+                ) : (
+                  recentReports.map((report: any) => (
+                    <div key={report.id} className="flex items-center justify-between p-3 rounded-lg bg-[rgb(var(--color-ui))]">
+                      <div className="flex items-center space-x-3">
+                        <FiFileText className="w-5 h-5 text-[rgb(var(--color-muted))]" />
+                        <div>
+                          <p className="text-sm font-medium text-[rgb(var(--color-fg))]">{report.name}</p>
+                          <p className="text-xs text-[rgb(var(--color-muted))]">
+                            {new Date(report.created_at).toLocaleDateString()} • {report.file_size} • {report.format}
+                          </p>
+                        </div>
                       </div>
+                      <button className="p-2 text-[rgb(var(--color-muted))] hover:text-red-600 transition-colors">
+                        <FiDownload className="w-4 h-4" />
+                      </button>
                     </div>
-                    <button className="p-2 text-[rgb(var(--color-muted))] hover:text-red-600 transition-colors">
-                      <FiDownload className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
+                  ))
+                )
               </div>
             </div>
           </div>

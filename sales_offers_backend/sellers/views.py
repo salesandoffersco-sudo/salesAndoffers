@@ -424,14 +424,16 @@ def toggle_profile_publish(request):
             is_published=True  # Default to published instead of False
         )
     
-    # Only toggle if explicitly requested, don't auto-unpublish
-    action = request.data.get('action', 'toggle')
+    # Only allow explicit publish/unpublish actions, no automatic toggling
+    action = request.data.get('action')
     if action == 'publish':
         profile.is_published = True
+        profile.save()
     elif action == 'unpublish':
         profile.is_published = False
+        profile.save()
     else:
-        profile.is_published = not profile.is_published
+        # If no explicit action, just return current status without changing
+        pass
     
-    profile.save()
     return Response({'is_published': profile.is_published})

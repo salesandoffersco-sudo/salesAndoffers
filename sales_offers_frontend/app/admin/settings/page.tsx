@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AdminLayout from "../../../components/AdminLayout";
 import { FiSave, FiMail, FiServer, FiShield, FiDatabase, FiGlobe } from "react-icons/fi";
+import { api } from "../../../lib/api";
 
 export default function AdminSettings() {
   const [settings, setSettings] = useState({
@@ -19,10 +20,46 @@ export default function AdminSettings() {
     backupFrequency: "daily",
     logLevel: "info"
   });
+  const [loading, setLoading] = useState(true);
 
-  const handleSave = () => {
-    // Save settings logic
-    alert("Settings saved successfully!");
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const response = await api.get('/api/admin/settings/');
+      const data = response.data;
+      
+      setSettings({
+        siteName: data.siteName || "Sales & Offers",
+        siteDescription: data.siteDescription || "Your trusted marketplace for amazing deals and offers",
+        adminEmail: data.adminEmail || "admin@salesandoffers.com",
+        supportEmail: data.supportEmail || "support@salesandoffers.com",
+        maintenanceMode: data.maintenanceMode === 'true',
+        userRegistration: data.userRegistration === 'true',
+        emailVerification: data.emailVerification === 'true',
+        newsletterEnabled: data.newsletterEnabled === 'true',
+        maxFileSize: data.maxFileSize || "10",
+        sessionTimeout: data.sessionTimeout || "30",
+        backupFrequency: data.backupFrequency || "daily",
+        logLevel: data.logLevel || "info"
+      });
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching settings:', error);
+      setLoading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      await api.post('/api/admin/settings/', settings);
+      alert("Settings saved successfully!");
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      alert("Error saving settings. Please try again.");
+    }
   };
 
   const handleInputChange = (key: string, value: string | boolean) => {
