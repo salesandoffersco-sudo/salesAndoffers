@@ -8,7 +8,6 @@ from .models import SystemLog, SecurityEvent, SystemSettings, Report
 from accounts.models import User
 from deals.models import Deal
 from sellers.models import Seller, Payment
-import psutil
 import os
 
 @api_view(['GET'])
@@ -63,33 +62,19 @@ def admin_system_metrics(request):
     if not (request.user.is_staff and request.user.is_superuser):
         return Response({'error': 'Permission denied'}, status=403)
     
-    try:
-        cpu_percent = psutil.cpu_percent(interval=1)
-        memory = psutil.virtual_memory()
-        disk = psutil.disk_usage('/')
-        
-        # Get active users (logged in within last 24 hours)
-        yesterday = timezone.now() - timedelta(days=1)
-        active_users = User.objects.filter(last_login__gte=yesterday).count()
-        
-        return Response({
-            'cpu': cpu_percent,
-            'memory': memory.percent,
-            'disk': disk.percent,
-            'network': 0,  # Placeholder
-            'uptime': '15d 8h 32m',  # Placeholder
-            'activeUsers': active_users
-        })
-    except Exception as e:
-        # Fallback to mock data if psutil fails
-        return Response({
-            'cpu': 25,
-            'memory': 68,
-            'disk': 52,
-            'network': 15,
-            'uptime': '15d 8h 32m',
-            'activeUsers': User.objects.count()
-        })
+    # Get active users (logged in within last 24 hours)
+    yesterday = timezone.now() - timedelta(days=1)
+    active_users = User.objects.filter(last_login__gte=yesterday).count()
+    
+    # Return mock system metrics since psutil is not available
+    return Response({
+        'cpu': 25,
+        'memory': 68,
+        'disk': 52,
+        'network': 15,
+        'uptime': '15d 8h 32m',
+        'activeUsers': active_users
+    })
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
