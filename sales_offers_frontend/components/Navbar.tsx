@@ -132,7 +132,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 right-0 z-50 bg-[rgb(var(--color-card))] shadow-sm border-b border-[rgb(var(--color-border))] bg-opacity-95 transition-all duration-300 ${navHidden ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'}`}>
+      <nav className={`fixed top-0 left-0 right-0 z-50 bg-[rgb(var(--color-card))]/95 shadow-sm border-b border-[rgb(var(--color-border))] transition-all duration-300 ${navHidden ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'}`}>
       <div className="max-w-7xl mx-auto overflow-visible" style={{ paddingLeft: '16px', paddingRight: '16px' }}>
         <div className="flex justify-between items-center h-16 w-full overflow-visible">
           <div className="flex-shrink-0">
@@ -297,7 +297,7 @@ export default function Navbar() {
       {isOpen && (
         <>
 <div className="fixed inset-0 bg-black bg-opacity-50 z-[60] md:hidden" onClick={toggleMenu}></div>
-<div className="fixed top-0 right-0 h-full w-80 bg-[rgb(var(--color-card))] shadow-xl z-[70] transform transition-transform duration-300 md:hidden">
+<div className="fixed top-0 right-0 h-full w-80 bg-[rgb(var(--color-card))] shadow-xl z-[70] transform translate-x-0 transition-transform duration-300 md:hidden isolate">
             <div className="p-6">
               <div className="flex items-center justify-between mb-8">
                 <div style={{ overflow: 'visible', width: '100%', maxWidth: 'none' }}>
