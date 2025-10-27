@@ -280,7 +280,7 @@ export default function OffersPage() {
         />
 
         <div className="flex-1">
-          <div className="sticky top-16 z-30 bg-[rgb(var(--color-bg))] border-b border-[rgb(var(--color-border))] py-4">
+          <div className="sticky top-16 z-10 bg-[rgb(var(--color-bg))] border-b border-[rgb(var(--color-border))] py-4">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
