@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'blog',
     'analytics',
     'verification',
+    'admin_system',
 ]
 
 MIDDLEWARE = [
