@@ -204,7 +204,7 @@ export default function ReportsPage() {
                       </button>
                     </div>
                   ))
-                )
+                )}
               </div>
             </div>
           </div>
