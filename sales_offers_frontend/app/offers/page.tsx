@@ -336,68 +336,97 @@ export default function OffersPage() {
                     return (
                       <div
                         key={offer.id}
-                        className={`bg-[rgb(var(--color-card))] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border flex ${
+                        className={`bg-[rgb(var(--color-card))] rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border ${
                           isFeatured 
                             ? 'border-purple-500 ring-2 ring-purple-200 dark:ring-purple-800' 
                             : 'border-[rgb(var(--color-border))]'
                         }`}
                       >
-                        <div className="flex-1 p-6">
-                          <div className="flex justify-between items-start mb-4">
-                            <div className="flex items-center space-x-2 flex-wrap">
-                              <span className="bg-purple-100 dark:bg-indigo-900/40 text-purple-600 dark:text-indigo-300 px-3 py-1 rounded-full text-sm font-semibold">
-                                {offer.category}
-                              </span>
-                              <VerificationBadge isVerified={offer.is_verified || false} type="deal" size="sm" />
-                              {isFeatured && (
-                                <span className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                                  ⭐ Featured
-                                </span>
-                              )}
+                        <div className="flex flex-col sm:flex-row">
+                          {/* Image Section */}
+                          {offer.image && (
+                            <div className="w-full sm:w-48 h-32 sm:h-auto flex-shrink-0">
+                              <img 
+                                src={offer.image} 
+                                alt={offer.title}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.style.display = 'none';
+                                }}
+                              />
                             </div>
-                            <button 
-                              onClick={() => handleFavorite(offer.id)}
-                              disabled={favoriteLoading === offer.id}
-                              className={`transition-colors relative ${
-                                offer.is_favorited ? 'text-red-500' : 'text-gray-400 hover:text-red-500'
-                              } ${favoriteLoading === offer.id ? 'opacity-50' : ''}`}
-                            >
-                              {favoriteLoading === offer.id ? (
-                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-current" />
-                              ) : (
-                                <FiHeart className={`text-xl ${offer.is_favorited ? 'fill-current' : ''}`} />
-                              )}
-                            </button>
-                          </div>
+                          )}
                           
-                          <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">{offer.title}</h3>
-                          <p className="text-gray-600 dark:text-gray-300 mb-4">{offer.description}</p>
-                          
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-2">
-                              <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                                KES {offer.discounted_price}
-                              </span>
-                              <span className="text-gray-400 line-through text-lg">
-                                KES {offer.original_price}
-                              </span>
-                              <span className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
-                                {offer.discount_percentage}% OFF
-                              </span>
-                            </div>
-                            <div className="flex space-x-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleAddToCart(offer)}
-                              >
-                                <FiShoppingCart className="w-4 h-4" />
-                              </Button>
-                              <Link href={`/offers/${offer.id}`}>
-                                <Button variant="primary" size="md">
-                                  View Details
-                                </Button>
-                              </Link>
+                          {/* Content Section */}
+                          <div className="flex-1 p-4 sm:p-6">
+                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-2 flex-wrap">
+                                  <span className="bg-purple-100 dark:bg-indigo-900/40 text-purple-600 dark:text-indigo-300 px-2 py-1 rounded-full text-xs font-semibold">
+                                    {offer.category}
+                                  </span>
+                                  <VerificationBadge isVerified={offer.is_verified || false} type="deal" size="sm" />
+                                  {isFeatured && (
+                                    <span className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-2 py-1 rounded-full text-xs font-semibold">
+                                      ⭐ Featured
+                                    </span>
+                                  )}
+                                </div>
+                                
+                                <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 mb-2 line-clamp-1">{offer.title}</h3>
+                                <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm line-clamp-2">{offer.description}</p>
+                                
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                                      KES {offer.discounted_price}
+                                    </span>
+                                    <span className="text-gray-400 line-through text-sm">
+                                      KES {offer.original_price}
+                                    </span>
+                                    <span className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                                      {offer.discount_percentage}% OFF
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center text-gray-500 dark:text-gray-400 text-xs">
+                                    <FiClock className="mr-1" />
+                                    <span>Until {new Date(offer.expires_at).toLocaleDateString()}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {/* Actions Section */}
+                              <div className="flex sm:flex-col items-center gap-2">
+                                <button 
+                                  onClick={() => handleFavorite(offer.id)}
+                                  disabled={favoriteLoading === offer.id}
+                                  className={`transition-colors p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 ${
+                                    offer.is_favorited ? 'text-red-500' : 'text-gray-400 hover:text-red-500'
+                                  } ${favoriteLoading === offer.id ? 'opacity-50' : ''}`}
+                                >
+                                  {favoriteLoading === offer.id ? (
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current" />
+                                  ) : (
+                                    <FiHeart className={`text-lg ${offer.is_favorited ? 'fill-current' : ''}`} />
+                                  )}
+                                </button>
+                                
+                                <div className="flex gap-2">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleAddToCart(offer)}
+                                  >
+                                    <FiShoppingCart className="w-4 h-4" />
+                                  </Button>
+                                  <Link href={`/offers/${offer.id}`}>
+                                    <Button variant="primary" size="sm">
+                                      View
+                                    </Button>
+                                  </Link>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
