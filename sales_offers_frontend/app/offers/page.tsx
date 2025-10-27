@@ -377,7 +377,7 @@ export default function OffersPage() {
                                 <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 mb-2 line-clamp-1">{offer.title}</h3>
                                 <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm line-clamp-2">{offer.description}</p>
                                 
-                                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-3">
                                   <div className="flex items-center gap-2 flex-wrap">
                                     <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                                       KES {offer.discounted_price}
@@ -393,6 +393,25 @@ export default function OffersPage() {
                                     <FiClock className="mr-1" />
                                     <span>Until {new Date(offer.expires_at).toLocaleDateString()}</span>
                                   </div>
+                                </div>
+                                
+                                {/* Seller Info */}
+                                <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300">
+                                  {offer.seller.user?.profile_picture ? (
+                                    <img
+                                      src={offer.seller.user.profile_picture}
+                                      alt={offer.seller.user.first_name}
+                                      className="w-4 h-4 rounded-full object-cover"
+                                    />
+                                  ) : (
+                                    <div className="w-4 h-4 rounded-full bg-purple-100 flex items-center justify-center">
+                                      <FiUser className="w-2 h-2 text-purple-600" />
+                                    </div>
+                                  )}
+                                  <span>
+                                    By <span className="font-semibold text-purple-600 dark:text-indigo-300">{offer.seller.business_name}</span>
+                                  </span>
+                                  <VerificationBadge isVerified={offer.seller.is_verified || false} type="seller" size="sm" />
                                 </div>
                               </div>
                               
