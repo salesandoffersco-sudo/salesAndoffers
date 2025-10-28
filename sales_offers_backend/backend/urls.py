@@ -31,4 +31,5 @@ urlpatterns = [
     path('api/transactions/', include('transactions.urls')),
     path('api/verification/', include('verification.urls')),
     path('api/admin/', include('admin_system.urls')),
+    path('api/categories/', include('categories.urls')),
 ]

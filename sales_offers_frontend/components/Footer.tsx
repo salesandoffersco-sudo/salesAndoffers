@@ -4,10 +4,12 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import NewsletterSubscription from "./NewsletterSubscription";
+import { API_BASE_URL } from "../lib/api";
 
 export default function Footer() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [sellerProfile, setSellerProfile] = useState<any>(null);
 
   useEffect(() => {
     // Check theme
@@ -45,6 +47,26 @@ export default function Footer() {
     const checkAuth = () => {
       const token = localStorage.getItem("token");
       setIsLoggedIn(!!token);
+      if (token) {
+        fetchSellerProfile();
+      }
+    };
+
+    const fetchSellerProfile = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (token) {
+          const response = await fetch(`${API_BASE_URL}/api/sellers/profile/`, {
+            headers: { Authorization: `Token ${token}` }
+          });
+          if (response.ok) {
+            const data = await response.json();
+            setSellerProfile(data);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching seller profile:", error);
+      }
     };
 
     checkAuth();
@@ -97,7 +119,9 @@ export default function Footer() {
               <li><Link href="/seller/dashboard" className="hover:text-[rgb(var(--color-primary))] transition-colors">Seller Dashboard</Link></li>
               <li><Link href="/subscription" className="hover:text-[rgb(var(--color-primary))] transition-colors">Subscription Plans</Link></li>
               <li><Link href="/pricing" className="hover:text-[rgb(var(--color-primary))] transition-colors">Pricing</Link></li>
-              <li><Link href="/seller/profile" className="hover:text-[rgb(var(--color-primary))] transition-colors">Start Selling</Link></li>
+              {(!sellerProfile || !sellerProfile.is_published) && (
+                <li><Link href="/seller/profile" className="hover:text-[rgb(var(--color-primary))] transition-colors">Start Selling</Link></li>
+              )}
             </ul>
           </div>
           <div>

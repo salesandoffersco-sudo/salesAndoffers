@@ -348,6 +348,27 @@ export default function Navbar() {
                 >
                   About
                 </Link>
+                <Link
+                  href="/help"
+                  className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                  onClick={toggleMenu}
+                >
+                  Help Center
+                </Link>
+                <Link
+                  href="/contact"
+                  className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                  onClick={toggleMenu}
+                >
+                  Contact
+                </Link>
+                <Link
+                  href="/pricing"
+                  className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                  onClick={toggleMenu}
+                >
+                  Pricing
+                </Link>
                 
                 <div className="border-t border-[rgb(var(--color-border))] pt-4 mt-6">
                   <div className="flex items-center justify-between mb-4">
@@ -395,6 +416,41 @@ export default function Navbar() {
                         onClick={toggleMenu}
                       >
                         Subscription ({subscription?.plan_name || 'No Plan'})
+                      </Link>
+                      <Link
+                        href="/seller/dashboard"
+                        className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                        onClick={toggleMenu}
+                      >
+                        Seller Dashboard
+                      </Link>
+                      <Link
+                        href="/seller/profile"
+                        className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                        onClick={toggleMenu}
+                      >
+                        Seller Profile
+                      </Link>
+                      <Link
+                        href="/seller/offers"
+                        className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                        onClick={toggleMenu}
+                      >
+                        My Offers
+                      </Link>
+                      <Link
+                        href="/seller/withdrawals"
+                        className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                        onClick={toggleMenu}
+                      >
+                        Withdrawals
+                      </Link>
+                      <Link
+                        href="/transactions"
+                        className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                        onClick={toggleMenu}
+                      >
+                        Purchase History
                       </Link>
                       {canAccessAdmin() && (
                         <Link

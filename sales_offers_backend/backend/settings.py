@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'analytics',
     'verification',
     'admin_system',
+    'categories',
 ]
 
 MIDDLEWARE = [
