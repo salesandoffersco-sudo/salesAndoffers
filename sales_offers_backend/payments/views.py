@@ -26,6 +26,9 @@ def initialize_payment(request):
         if not deal_id:
             return Response({'error': 'Deal ID is required'}, status=400)
         
+        if not request.user.email:
+            return Response({'error': 'User email is required for payment'}, status=400)
+        
         deal = Deal.objects.get(id=deal_id, is_active=True)
         
         # Check availability
