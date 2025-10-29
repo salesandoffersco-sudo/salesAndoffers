@@ -220,6 +220,13 @@ export default function Navbar() {
                       Favorites
                     </Link>
                     <Link
+                      href="/orders"
+                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      My Orders
+                    </Link>
+                    <Link
                       href="/transactions"
                       className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                       onClick={() => setDropdownOpen(false)}
@@ -445,6 +452,13 @@ export default function Navbar() {
                         onClick={toggleMenu}
                       >
                         Withdrawals
+                      </Link>
+                      <Link
+                        href="/orders"
+                        className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                        onClick={toggleMenu}
+                      >
+                        My Orders
                       </Link>
                       <Link
                         href="/transactions"
