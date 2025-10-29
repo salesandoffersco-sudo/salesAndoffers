@@ -23,7 +23,10 @@ def initialize_payment(request):
         deal_id = request.data.get('deal_id')
         quantity = int(request.data.get('quantity', 1))
         
-        deal = Deal.objects.get(id=deal_id, status='approved', is_active=True)
+        if not deal_id:
+            return Response({'error': 'Deal ID is required'}, status=400)
+        
+        deal = Deal.objects.get(id=deal_id, is_active=True)
         
         # Check availability
         if deal.vouchers_available < quantity:
@@ -105,9 +108,14 @@ def initialize_payment(request):
             return Response({'error': 'Payment initialization failed'}, status=400)
             
     except Deal.DoesNotExist:
-        return Response({'error': 'Deal not found'}, status=404)
+        return Response({'error': 'Deal not found or not active'}, status=404)
+    except ValueError as e:
+        return Response({'error': 'Invalid quantity value'}, status=400)
     except Exception as e:
-        return Response({'error': str(e)}, status=500)
+        import traceback
+        print(f"Payment initialization error: {str(e)}")
+        print(traceback.format_exc())
+        return Response({'error': f'Payment initialization failed: {str(e)}'}, status=500)
 
 @csrf_exempt
 @require_http_methods(["POST"])
