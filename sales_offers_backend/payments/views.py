@@ -63,6 +63,28 @@ def initialize_payment(request):
         voucher.platform_commission = platform_commission
         voucher.save()
         
+        # For testing, return mock response if using test key
+        if settings.PAYSTACK_SECRET_KEY == 'sk_test_YOUR_SECRET_KEY':
+            # Mock response for testing
+            reference = f"voucher_{voucher.id}_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+            
+            # Create payment record
+            Payment.objects.create(
+                voucher=voucher,
+                customer=request.user,
+                amount=total_amount,
+                paystack_reference=reference,
+                paystack_access_code='test_access_code'
+            )
+            
+            return Response({
+                'authorization_url': f'https://checkout.paystack.com/test_access_code',
+                'access_code': 'test_access_code',
+                'reference': reference,
+                'voucher_id': voucher.id,
+                'message': 'Test mode - payment initialized successfully'
+            })
+        
         # Initialize Paystack payment
         paystack_data = {
             'email': request.user.email,
@@ -107,8 +129,9 @@ def initialize_payment(request):
                 'voucher_id': voucher.id
             })
         else:
+            print(f"Paystack error: {response.status_code} - {response.text}")
             voucher.delete()
-            return Response({'error': 'Payment initialization failed'}, status=400)
+            return Response({'error': f'Payment initialization failed: {response.text}'}, status=400)
             
     except Deal.DoesNotExist:
         return Response({'error': 'Deal not found or not active'}, status=404)
