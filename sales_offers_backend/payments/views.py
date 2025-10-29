@@ -40,13 +40,16 @@ def initialize_payment(request):
         total_amount = subtotal  # Customer pays full amount
         seller_amount = subtotal - platform_commission  # Seller gets 90%
         
-        # Create voucher
+        # Create voucher with fallback expiration date
+        from django.utils import timezone
+        expires_at = deal.redemption_deadline or deal.expires_at or (timezone.now() + timedelta(days=30))
+        
         voucher = Voucher.objects.create(
             deal=deal,
             customer=request.user,
             quantity=quantity,
             total_amount=total_amount,
-            expires_at=deal.redemption_deadline or deal.expires_at
+            expires_at=expires_at
         )
         
         # Update voucher with commission after creation
