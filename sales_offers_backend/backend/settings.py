@@ -198,6 +198,7 @@ SESSION_SAVE_EVERY_REQUEST = True
 # Paystack Settings
 PAYSTACK_SECRET_KEY = os.environ.get('PAYSTACK_SECRET_KEY', 'sk_test_YOUR_SECRET_KEY')
 PAYSTACK_PUBLIC_KEY = os.environ.get('PAYSTACK_PUBLIC_KEY', 'pk_test_YOUR_PUBLIC_KEY')
+# Payment system updated with test mode support
 PAYSTACK_PRO_PLAN_CODE = os.environ.get('PAYSTACK_PRO_PLAN_CODE', '')
 PAYSTACK_ENTERPRISE_PLAN_CODE = os.environ.get('PAYSTACK_ENTERPRISE_PLAN_CODE', '')
 
