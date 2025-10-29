@@ -77,8 +77,13 @@ def initialize_payment(request):
                 paystack_access_code='test_access_code'
             )
             
+            # Auto-complete payment in test mode
+            voucher.status = 'paid'
+            voucher.payment_reference = reference
+            voucher.save()
+            
             return Response({
-                'authorization_url': f'https://checkout.paystack.com/test_access_code',
+                'authorization_url': f'{settings.FRONTEND_URL}/payment/callback?reference={reference}&trxref={reference}',
                 'access_code': 'test_access_code',
                 'reference': reference,
                 'voucher_id': voucher.id,
@@ -241,7 +246,7 @@ def verify_payment(request):
 @permission_classes([IsAuthenticated])
 def my_vouchers(request):
     """Get user's vouchers"""
-    vouchers = Voucher.objects.filter(customer=request.user).select_related('deal')
+    vouchers = Voucher.objects.filter(customer=request.user).select_related('deal', 'deal__seller')
     
     voucher_data = []
     for voucher in vouchers:
@@ -256,7 +261,17 @@ def my_vouchers(request):
             'qr_code': voucher.qr_code,
             'purchased_at': voucher.purchased_at,
             'expires_at': voucher.expires_at,
-            'redemption_instructions': voucher.deal.redemption_instructions
+            'redemption_instructions': voucher.deal.redemption_instructions,
+            'deal': {
+                'id': voucher.deal.id,
+                'category': voucher.deal.category,
+                'location': voucher.deal.location,
+                'seller': {
+                    'business_name': voucher.deal.seller.business_name,
+                    'phone': voucher.deal.seller.phone,
+                    'address': voucher.deal.seller.address
+                }
+            }
         })
     
     return Response(voucher_data)
