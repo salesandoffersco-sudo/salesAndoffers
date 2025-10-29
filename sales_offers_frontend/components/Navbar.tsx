@@ -297,9 +297,9 @@ export default function Navbar() {
       {isOpen && (
         <>
 <div className="fixed inset-0 bg-black/50 z-[9998] md:hidden" onClick={toggleMenu}></div>
-<div className="fixed top-0 right-0 h-full w-80 bg-[rgb(var(--color-card))]/95 shadow-xl z-[9999] transform translate-x-0 transition-transform duration-300 md:hidden isolate border-l border-[rgb(var(--color-border))]" style={{position: 'fixed', top: 0, right: 0, height: '100vh', zIndex: 9999}}>
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-8">
+<div className="fixed top-0 right-0 h-full w-80 bg-[rgb(var(--color-card))]/95 shadow-xl z-[9999] transform translate-x-0 transition-transform duration-300 md:hidden isolate border-l border-[rgb(var(--color-border))] overflow-hidden" style={{position: 'fixed', top: 0, right: 0, height: '100vh', zIndex: 9999}}>
+            <div className="h-full flex flex-col">
+              <div className="flex items-center justify-between p-6 pb-4 flex-shrink-0">
                 <div style={{ overflow: 'visible', width: '100%', maxWidth: 'none' }}>
                   <Image
                     src="/images/sales_and_offers_logo.svg"
@@ -319,7 +319,8 @@ export default function Navbar() {
                 </button>
               </div>
               
-              <div className="space-y-4">
+              <div className="flex-1 overflow-y-auto px-6 pb-6">
+                <div className="space-y-4">
                 <Link
                   href="/offers"
                   className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
@@ -494,6 +495,7 @@ export default function Navbar() {
                       </Link>
                     </div>
                   )}
+                </div>
                 </div>
               </div>
             </div>
