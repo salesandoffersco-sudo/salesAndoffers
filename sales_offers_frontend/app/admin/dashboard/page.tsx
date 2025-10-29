@@ -233,7 +233,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {statCards.map((stat, index) => (
             <div key={index} className="bg-[rgb(var(--color-card))] rounded-xl p-6 border border-[rgb(var(--color-border))] hover:shadow-lg transition-shadow">
               <div className="flex items-center justify-between">
@@ -297,22 +297,22 @@ export default function AdminDashboard() {
         {/* Quick Actions */}
         <div className="bg-[rgb(var(--color-card))] rounded-xl p-6 border border-[rgb(var(--color-border))]">
           <h3 className="text-lg font-semibold text-[rgb(var(--color-fg))] mb-4">Quick Actions</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <button className="p-4 text-center rounded-lg bg-[rgb(var(--color-ui))] hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors group">
-              <FiUsers className="w-6 h-6 mx-auto mb-2 text-[rgb(var(--color-muted))] group-hover:text-red-600" />
-              <span className="text-sm font-medium text-[rgb(var(--color-fg))]">Manage Users</span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <button className="p-3 sm:p-4 text-center rounded-lg bg-[rgb(var(--color-ui))] hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors group">
+              <FiUsers className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-2 text-[rgb(var(--color-muted))] group-hover:text-red-600" />
+              <span className="text-xs sm:text-sm font-medium text-[rgb(var(--color-fg))]">Manage Users</span>
             </button>
-            <button className="p-4 text-center rounded-lg bg-[rgb(var(--color-ui))] hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors group">
-              <FiTag className="w-6 h-6 mx-auto mb-2 text-[rgb(var(--color-muted))] group-hover:text-red-600" />
-              <span className="text-sm font-medium text-[rgb(var(--color-fg))]">Review Deals</span>
+            <button className="p-3 sm:p-4 text-center rounded-lg bg-[rgb(var(--color-ui))] hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors group">
+              <FiTag className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-2 text-[rgb(var(--color-muted))] group-hover:text-red-600" />
+              <span className="text-xs sm:text-sm font-medium text-[rgb(var(--color-fg))]">Review Deals</span>
             </button>
-            <button className="p-4 text-center rounded-lg bg-[rgb(var(--color-ui))] hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors group">
-              <FiMail className="w-6 h-6 mx-auto mb-2 text-[rgb(var(--color-muted))] group-hover:text-red-600" />
-              <span className="text-sm font-medium text-[rgb(var(--color-fg))]">Send Newsletter</span>
+            <button className="p-3 sm:p-4 text-center rounded-lg bg-[rgb(var(--color-ui))] hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors group">
+              <FiMail className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-2 text-[rgb(var(--color-muted))] group-hover:text-red-600" />
+              <span className="text-xs sm:text-sm font-medium text-[rgb(var(--color-fg))]">Send Newsletter</span>
             </button>
-            <button className="p-4 text-center rounded-lg bg-[rgb(var(--color-ui))] hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors group">
-              <FiTrendingUp className="w-6 h-6 mx-auto mb-2 text-[rgb(var(--color-muted))] group-hover:text-red-600" />
-              <span className="text-sm font-medium text-[rgb(var(--color-fg))]">View Analytics</span>
+            <button className="p-3 sm:p-4 text-center rounded-lg bg-[rgb(var(--color-ui))] hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors group">
+              <FiTrendingUp className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-2 text-[rgb(var(--color-muted))] group-hover:text-red-600" />
+              <span className="text-xs sm:text-sm font-medium text-[rgb(var(--color-fg))]">View Analytics</span>
             </button>
           </div>
         </div>

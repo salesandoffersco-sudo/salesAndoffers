@@ -338,12 +338,12 @@ export default function DealDetailsPage() {
                       {[...Array(5)].map((_, i) => (
                         <FiStar
                           key={i}
-                          className={`w-4 h-4 ${i < Math.floor(deal.seller.rating) ? "text-yellow-400 fill-current" : "text-gray-300"}`}
+                          className={`w-4 h-4 ${i < Math.floor(Number(deal.seller.rating) || 0) ? "text-yellow-400 fill-current" : "text-gray-300"}`}
                         />
                       ))}
                     </div>
                     <span className="text-sm text-[rgb(var(--color-muted))] ml-2">
-                      {deal.seller.rating.toFixed(1)}
+                      {typeof deal.seller.rating === 'number' ? deal.seller.rating.toFixed(1) : '0.0'}
                     </span>
                   </div>
                   <div className="flex items-center text-sm text-[rgb(var(--color-muted))] mt-1">

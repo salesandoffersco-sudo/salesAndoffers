@@ -192,99 +192,99 @@ export default function SellerDashboardPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Link href="/seller/profile" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-6 hover:shadow-md transition-shadow">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
+          <Link href="/seller/profile" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-4 sm:p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-[rgb(var(--color-fg))]">Seller Profile</h3>
-                <p className="text-[rgb(var(--color-muted))] text-sm mt-1">Manage your business profile</p>
+              <div className="min-w-0 flex-1 pr-3">
+                <h3 className="text-base sm:text-lg font-semibold text-[rgb(var(--color-fg))] truncate">Seller Profile</h3>
+                <p className="text-[rgb(var(--color-muted))] text-xs sm:text-sm mt-1 line-clamp-2">Manage your business profile</p>
               </div>
-              <div className="bg-purple-100 dark:bg-purple-900/30 p-3 rounded-lg">
-                <FiUser className="text-purple-600 dark:text-purple-400 text-xl" />
+              <div className="bg-purple-100 dark:bg-purple-900/30 p-2 sm:p-3 rounded-lg flex-shrink-0">
+                <FiUser className="text-purple-600 dark:text-purple-400 text-lg sm:text-xl" />
               </div>
             </div>
           </Link>
           
-          <Link href="/seller/analytics" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-6 hover:shadow-md transition-shadow">
+          <Link href="/seller/analytics" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-4 sm:p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-[rgb(var(--color-fg))]">Analytics Dashboard</h3>
-                <p className="text-[rgb(var(--color-muted))] text-sm mt-1">View detailed performance insights</p>
+              <div className="min-w-0 flex-1 pr-3">
+                <h3 className="text-base sm:text-lg font-semibold text-[rgb(var(--color-fg))] truncate">Analytics Dashboard</h3>
+                <p className="text-[rgb(var(--color-muted))] text-xs sm:text-sm mt-1 line-clamp-2">View detailed performance insights</p>
               </div>
-              <div className="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-lg">
-                <FiBarChart className="text-blue-600 dark:text-blue-400 text-xl" />
+              <div className="bg-blue-100 dark:bg-blue-900/30 p-2 sm:p-3 rounded-lg flex-shrink-0">
+                <FiBarChart className="text-blue-600 dark:text-blue-400 text-lg sm:text-xl" />
               </div>
             </div>
           </Link>
           
-          <Link href="/seller/offers" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-6 hover:shadow-md transition-shadow">
+          <Link href="/seller/offers" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-4 sm:p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-[rgb(var(--color-fg))]">Manage Offers</h3>
-                <p className="text-[rgb(var(--color-muted))] text-sm mt-1">Edit and update your listings</p>
+              <div className="min-w-0 flex-1 pr-3">
+                <h3 className="text-base sm:text-lg font-semibold text-[rgb(var(--color-fg))] truncate">Manage Offers</h3>
+                <p className="text-[rgb(var(--color-muted))] text-xs sm:text-sm mt-1 line-clamp-2">Edit and update your listings</p>
               </div>
-              <div className="bg-green-100 dark:bg-green-900/30 p-3 rounded-lg">
-                <FiEdit className="text-green-600 dark:text-green-400 text-xl" />
+              <div className="bg-green-100 dark:bg-green-900/30 p-2 sm:p-3 rounded-lg flex-shrink-0">
+                <FiEdit className="text-green-600 dark:text-green-400 text-lg sm:text-xl" />
               </div>
             </div>
           </Link>
           
-          <Link href="/seller/reviews" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-6 hover:shadow-md transition-shadow">
+          <Link href="/seller/reviews" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-4 sm:p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-[rgb(var(--color-fg))]">Customer Reviews</h3>
-                <p className="text-[rgb(var(--color-muted))] text-sm mt-1">View and respond to feedback</p>
+              <div className="min-w-0 flex-1 pr-3">
+                <h3 className="text-base sm:text-lg font-semibold text-[rgb(var(--color-fg))] truncate">Customer Reviews</h3>
+                <p className="text-[rgb(var(--color-muted))] text-xs sm:text-sm mt-1 line-clamp-2">View and respond to feedback</p>
               </div>
-              <div className="bg-yellow-100 dark:bg-yellow-900/30 p-3 rounded-lg">
-                <FiStar className="text-yellow-600 dark:text-yellow-400 text-xl" />
+              <div className="bg-yellow-100 dark:bg-yellow-900/30 p-2 sm:p-3 rounded-lg flex-shrink-0">
+                <FiStar className="text-yellow-600 dark:text-yellow-400 text-lg sm:text-xl" />
               </div>
             </div>
           </Link>
           
-          <Link href="/seller/withdrawals" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-6 hover:shadow-md transition-shadow">
+          <Link href="/seller/withdrawals" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-4 sm:p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-[rgb(var(--color-fg))]">Withdrawals</h3>
-                <p className="text-[rgb(var(--color-muted))] text-sm mt-1">Manage your earnings</p>
+              <div className="min-w-0 flex-1 pr-3">
+                <h3 className="text-base sm:text-lg font-semibold text-[rgb(var(--color-fg))] truncate">Withdrawals</h3>
+                <p className="text-[rgb(var(--color-muted))] text-xs sm:text-sm mt-1 line-clamp-2">Manage your earnings</p>
               </div>
-              <div className="bg-green-100 dark:bg-green-900/30 p-3 rounded-lg">
-                <FiDollarSign className="text-green-600 dark:text-green-400 text-xl" />
+              <div className="bg-green-100 dark:bg-green-900/30 p-2 sm:p-3 rounded-lg flex-shrink-0">
+                <FiDollarSign className="text-green-600 dark:text-green-400 text-lg sm:text-xl" />
               </div>
             </div>
           </Link>
           
-          <Link href="/seller/notifications" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-6 hover:shadow-md transition-shadow">
+          <Link href="/seller/notifications" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-4 sm:p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-[rgb(var(--color-fg))]">Notifications</h3>
-                <p className="text-[rgb(var(--color-muted))] text-sm mt-1">Stay updated with alerts</p>
+              <div className="min-w-0 flex-1 pr-3">
+                <h3 className="text-base sm:text-lg font-semibold text-[rgb(var(--color-fg))] truncate">Notifications</h3>
+                <p className="text-[rgb(var(--color-muted))] text-xs sm:text-sm mt-1 line-clamp-2">Stay updated with alerts</p>
               </div>
-              <div className="bg-indigo-100 dark:bg-indigo-900/30 p-3 rounded-lg">
-                <FiBell className="text-indigo-600 dark:text-indigo-400 text-xl" />
+              <div className="bg-indigo-100 dark:bg-indigo-900/30 p-2 sm:p-3 rounded-lg flex-shrink-0">
+                <FiBell className="text-indigo-600 dark:text-indigo-400 text-lg sm:text-xl" />
               </div>
             </div>
           </Link>
           
-          <Link href="/seller/settings" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-6 hover:shadow-md transition-shadow">
+          <Link href="/seller/settings" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-4 sm:p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-[rgb(var(--color-fg))]">Settings</h3>
-                <p className="text-[rgb(var(--color-muted))] text-sm mt-1">Configure preferences</p>
+              <div className="min-w-0 flex-1 pr-3">
+                <h3 className="text-base sm:text-lg font-semibold text-[rgb(var(--color-fg))] truncate">Settings</h3>
+                <p className="text-[rgb(var(--color-muted))] text-xs sm:text-sm mt-1 line-clamp-2">Configure preferences</p>
               </div>
-              <div className="bg-gray-100 dark:bg-gray-900/30 p-3 rounded-lg">
-                <FiSettings className="text-gray-600 dark:text-gray-400 text-xl" />
+              <div className="bg-gray-100 dark:bg-gray-900/30 p-2 sm:p-3 rounded-lg flex-shrink-0">
+                <FiSettings className="text-gray-600 dark:text-gray-400 text-lg sm:text-xl" />
               </div>
             </div>
           </Link>
           
-          <Link href="/pricing" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-6 hover:shadow-md transition-shadow">
+          <Link href="/pricing" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-4 sm:p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-[rgb(var(--color-fg))]">Upgrade Plan</h3>
-                <p className="text-[rgb(var(--color-muted))] text-sm mt-1">Unlock more features</p>
+              <div className="min-w-0 flex-1 pr-3">
+                <h3 className="text-base sm:text-lg font-semibold text-[rgb(var(--color-fg))] truncate">Upgrade Plan</h3>
+                <p className="text-[rgb(var(--color-muted))] text-xs sm:text-sm mt-1 line-clamp-2">Unlock more features</p>
               </div>
-              <div className="bg-orange-100 dark:bg-orange-900/30 p-3 rounded-lg">
-                <FiTrendingUp className="text-orange-600 dark:text-orange-400 text-xl" />
+              <div className="bg-orange-100 dark:bg-orange-900/30 p-2 sm:p-3 rounded-lg flex-shrink-0">
+                <FiTrendingUp className="text-orange-600 dark:text-orange-400 text-lg sm:text-xl" />
               </div>
             </div>
           </Link>
@@ -309,30 +309,30 @@ export default function SellerDashboardPage() {
             ) : (
               <div className="space-y-4">
                 {offers.slice(0, 5).map((offer) => (
-                  <div key={offer.id} className="flex items-center justify-between p-4 bg-[rgb(var(--color-bg))] rounded-lg">
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-[rgb(var(--color-fg))]">{offer.title}</h3>
-                      <div className="flex items-center space-x-4 mt-1">
-                        <span className="text-purple-600 dark:text-purple-400 font-medium">KES {offer.discounted_price}</span>
-                        <span className="text-[rgb(var(--color-muted))] line-through">KES {offer.original_price}</span>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${offer.is_active ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'}`}>
+                  <div key={offer.id} className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 bg-[rgb(var(--color-bg))] rounded-lg">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-[rgb(var(--color-fg))] truncate">{offer.title}</h3>
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-1">
+                        <span className="text-purple-600 dark:text-purple-400 font-medium whitespace-nowrap">KES {offer.discounted_price}</span>
+                        <span className="text-[rgb(var(--color-muted))] line-through whitespace-nowrap">KES {offer.original_price}</span>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${offer.is_active ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'}`}>
                           {offer.is_active ? 'Active' : 'Inactive'}
                         </span>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
                       <Link href={`/seller/analytics/deal/${offer.id}`}>
-                        <Button variant="outline" size="sm" title="View Analytics">
+                        <Button variant="outline" size="sm" title="View Analytics" className="min-w-0">
                           <FiBarChart className="w-4 h-4" />
                         </Button>
                       </Link>
                       <Link href={`/seller/offers`}>
-                        <Button variant="outline" size="sm" title="Manage Offers">
+                        <Button variant="outline" size="sm" title="Manage Offers" className="min-w-0">
                           <FiEdit className="w-4 h-4" />
                         </Button>
                       </Link>
                       <Link href={`/offers/${offer.id}`}>
-                        <Button variant="outline" size="sm" title="View Offer">
+                        <Button variant="outline" size="sm" title="View Offer" className="min-w-0">
                           <FiEye className="w-4 h-4" />
                         </Button>
                       </Link>

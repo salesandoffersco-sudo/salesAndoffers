@@ -46,7 +46,7 @@ def initialize_payment(request):
             customer=request.user,
             quantity=quantity,
             total_amount=total_amount,
-            expires_at=deal.redemption_deadline
+            expires_at=deal.redemption_deadline or deal.expires_at
         )
         
         # Update voucher with commission after creation

@@ -198,27 +198,27 @@ export default function SellerOffersPage() {
                       {offer.is_active ? 'Active' : 'Inactive'}
                     </div>
                     
-                    <div className="flex items-center gap-2 flex-wrap">
+                    <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
                       <button
                         onClick={() => toggleOfferStatus(offer.id, offer.is_active)}
-                        className="p-2 hover:bg-[rgb(var(--color-ui))] rounded-lg transition-colors"
+                        className="p-2 hover:bg-[rgb(var(--color-ui))] rounded-lg transition-colors flex-shrink-0"
                         title={offer.is_active ? 'Deactivate offer' : 'Activate offer'}
                       >
                         {offer.is_active ? (
-                          <FiToggleRight className="w-5 h-5 text-green-600" />
+                          <FiToggleRight className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
                         ) : (
-                          <FiToggleLeft className="w-5 h-5 text-gray-400" />
+                          <FiToggleLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
                         )}
                       </button>
                       
                       <Link href={`/seller/analytics/deal/${offer.id}`}>
-                        <Button variant="outline" size="sm" title="View Analytics">
+                        <Button variant="outline" size="sm" title="View Analytics" className="min-w-0 px-2 sm:px-4">
                           <FiBarChart className="w-4 h-4" />
                         </Button>
                       </Link>
                       
                       <Link href={`/offers/${offer.id}`}>
-                        <Button variant="outline" size="sm" title="View Offer">
+                        <Button variant="outline" size="sm" title="View Offer" className="min-w-0 px-2 sm:px-4">
                           <FiEye className="w-4 h-4" />
                         </Button>
                       </Link>
@@ -231,6 +231,7 @@ export default function SellerOffersPage() {
                           setShowEditModal(true);
                         }}
                         title="Edit Offer"
+                        className="min-w-0 px-2 sm:px-4"
                       >
                         <FiEdit className="w-4 h-4" />
                       </Button>
@@ -240,7 +241,7 @@ export default function SellerOffersPage() {
                         size="sm" 
                         onClick={() => deleteOffer(offer.id)}
                         title="Delete Offer"
-                        className="text-red-500 hover:text-red-700"
+                        className="text-red-500 hover:text-red-700 min-w-0 px-2 sm:px-4"
                       >
                         <FiTrash2 className="w-4 h-4" />
                       </Button>
