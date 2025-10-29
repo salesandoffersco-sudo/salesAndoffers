@@ -246,10 +246,12 @@ def verify_payment(request):
 @permission_classes([IsAuthenticated])
 def my_vouchers(request):
     """Get user's vouchers"""
+    from deals.models import Review
     vouchers = Voucher.objects.filter(customer=request.user).select_related('deal', 'deal__seller')
     
     voucher_data = []
     for voucher in vouchers:
+        has_review = Review.objects.filter(voucher=voucher, customer=request.user).exists()
         voucher_data.append({
             'id': voucher.id,
             'code': voucher.code,
@@ -262,6 +264,7 @@ def my_vouchers(request):
             'purchased_at': voucher.purchased_at,
             'expires_at': voucher.expires_at,
             'redemption_instructions': voucher.deal.redemption_instructions,
+            'has_review': has_review,
             'deal': {
                 'id': voucher.deal.id,
                 'category': voucher.deal.category,

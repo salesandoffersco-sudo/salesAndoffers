@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FiPackage, FiClock, FiCheckCircle, FiXCircle, FiEye, FiDownload, FiMapPin, FiCalendar, FiTag } from "react-icons/fi";
+import { FiPackage, FiClock, FiCheckCircle, FiXCircle, FiEye, FiDownload, FiMapPin, FiCalendar, FiTag, FiStar } from "react-icons/fi";
 import Button from "../../components/Button";
 import { api } from "../../lib/api";
 
@@ -17,6 +17,7 @@ interface Voucher {
   purchased_at: string;
   expires_at: string;
   redemption_instructions: string;
+  has_review?: boolean;
   deal: {
     id: number;
     category: string;
@@ -33,6 +34,9 @@ export default function OrdersPage() {
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'paid' | 'redeemed' | 'expired'>('all');
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviewingVoucher, setReviewingVoucher] = useState<Voucher | null>(null);
+  const [reviewData, setReviewData] = useState({ rating: 5, title: '', comment: '' });
 
   useEffect(() => {
     fetchVouchers();
@@ -86,6 +90,34 @@ export default function OrdersPage() {
     link.href = voucher.qr_code;
     link.download = `voucher-${voucher.code}.png`;
     link.click();
+  };
+
+  const handleReview = (voucher: Voucher) => {
+    setReviewingVoucher(voucher);
+    setShowReviewModal(true);
+  };
+
+  const submitReview = async () => {
+    if (!reviewingVoucher) return;
+    
+    try {
+      const token = localStorage.getItem('token');
+      await api.post('/api/deals/reviews/', {
+        voucher_id: reviewingVoucher.id,
+        deal_id: reviewingVoucher.deal.id,
+        rating: reviewData.rating,
+        title: reviewData.title,
+        comment: reviewData.comment
+      }, {
+        headers: { Authorization: `Token ${token}` }
+      });
+      
+      setShowReviewModal(false);
+      setReviewData({ rating: 5, title: '', comment: '' });
+      fetchVouchers(); // Refresh to show review submitted
+    } catch (error) {
+      console.error('Error submitting review:', error);
+    }
   };
 
   const filteredVouchers = vouchers.filter(voucher => 
@@ -248,11 +280,79 @@ export default function OrdersPage() {
                         <FiEye className="w-4 h-4 mr-2" />
                         View Deal
                       </Button>
+                      {voucher.status === 'redeemed' && !voucher.has_review && (
+                        <Button 
+                          variant="primary" 
+                          size="sm" 
+                          onClick={() => handleReview(voucher)}
+                          className="w-full"
+                        >
+                          <FiStar className="w-4 h-4 mr-2" />
+                          Write Review
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>
               </div>
             ))}
+          </div>
+        )}
+        
+        {/* Review Modal */}
+        {showReviewModal && reviewingVoucher && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-[rgb(var(--color-card))] rounded-xl p-6 max-w-md w-full mx-4">
+              <h3 className="text-xl font-bold text-[rgb(var(--color-text))] mb-4">Review Your Experience</h3>
+              <p className="text-[rgb(var(--color-muted))] mb-4">{reviewingVoucher.deal_title}</p>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-[rgb(var(--color-text))] mb-2">Rating</label>
+                  <div className="flex space-x-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        onClick={() => setReviewData({...reviewData, rating: star})}
+                        className={`text-2xl ${star <= reviewData.rating ? 'text-yellow-400' : 'text-gray-300'}`}
+                      >
+                        ★
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-[rgb(var(--color-text))] mb-2">Title</label>
+                  <input
+                    type="text"
+                    value={reviewData.title}
+                    onChange={(e) => setReviewData({...reviewData, title: e.target.value})}
+                    className="w-full px-3 py-2 border border-[rgb(var(--color-border))] rounded-lg bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))]"
+                    placeholder="Brief summary of your experience"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-[rgb(var(--color-text))] mb-2">Comment</label>
+                  <textarea
+                    value={reviewData.comment}
+                    onChange={(e) => setReviewData({...reviewData, comment: e.target.value})}
+                    className="w-full px-3 py-2 border border-[rgb(var(--color-border))] rounded-lg bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] h-24"
+                    placeholder="Share your detailed experience..."
+                  />
+                </div>
+              </div>
+              
+              <div className="flex space-x-3 mt-6">
+                <Button variant="outline" onClick={() => setShowReviewModal(false)} className="flex-1">
+                  Cancel
+                </Button>
+                <Button variant="primary" onClick={submitReview} className="flex-1">
+                  Submit Review
+                </Button>
+              </div>
+            </div>
           </div>
         )}
       </div>
