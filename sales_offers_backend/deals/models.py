@@ -22,7 +22,7 @@ class Deal(models.Model):
     discount_percentage = models.IntegerField()
     image = models.URLField(blank=True, null=True)
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE, related_name='deals')
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
+    category = models.CharField(max_length=100, blank=True, default='General')
     location = models.CharField(max_length=200, blank=True)
     max_vouchers = models.IntegerField(default=100)
     min_purchase = models.IntegerField(default=1)
