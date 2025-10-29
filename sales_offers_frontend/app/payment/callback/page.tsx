@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { FiCheckCircle, FiXCircle, FiLoader, FiShoppingBag } from "react-icons/fi";
 import Button from "../../../components/Button";
 import { api } from "../../../lib/api";
 
-export default function PaymentCallbackPage() {
+function PaymentCallbackContent() {
   const [status, setStatus] = useState<'loading' | 'success' | 'failed'>('loading');
   const [voucher, setVoucher] = useState<any>(null);
   const [error, setError] = useState('');
@@ -117,5 +117,17 @@ export default function PaymentCallbackPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function PaymentCallbackPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[rgb(var(--color-bg))] flex items-center justify-center">
+        <FiLoader className="w-16 h-16 text-purple-600 animate-spin" />
+      </div>
+    }>
+      <PaymentCallbackContent />
+    </Suspense>
   );
 }
