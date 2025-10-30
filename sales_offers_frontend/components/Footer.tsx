@@ -143,7 +143,7 @@ export default function Footer() {
             <NewsletterSubscription />
           </div>
           <div className="text-center text-[rgb(var(--color-muted))]">
-            <p>&copy; 2025 Sales & Offers. All rights reserved.</p>
+            <p>&copy; 2025 Sales & Offers. All rights reserved. Developed with ❤️ by <a href="https://share.google/N0nYLmdcczEb5dgbS" target="_blank" rel="noopener noreferrer" className="hover:text-[rgb(var(--color-primary))] transition-colors">gurucrafts agency</a>.</p>
           </div>
         </div>
       </div>
