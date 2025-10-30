@@ -221,7 +221,7 @@ export default function FilterSidebar({
           {/* Collapsible non-search sections */}
           <div className="space-y-4">
             {otherSections.map((section) => (
-              <div key={section.id} className="border border-[rgb(var(--color-border))] rounded-lg overflow-hidden">
+              <div key={section.id} className="rounded-lg overflow-hidden">
                 <button
                   onClick={() => toggleSection(section.id)}
                   className="w-full flex items-center justify-between p-3 text-left hover:bg-[rgb(var(--color-ui))] transition-colors"
@@ -319,7 +319,7 @@ export default function FilterSidebar({
           {/* Collapsible non-search sections */}
           <div className="space-y-4">
             {otherSections.map((section) => (
-              <div key={section.id} className="border border-[rgb(var(--color-border))] rounded-lg overflow-hidden">
+              <div key={section.id} className="rounded-lg overflow-hidden">
                 <button
                   onClick={() => toggleSection(section.id)}
                   className="w-full flex items-center justify-between p-3 text-left hover:bg-[rgb(var(--color-ui))] transition-colors"
