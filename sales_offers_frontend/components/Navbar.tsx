@@ -377,6 +377,15 @@ export default function Navbar() {
                 >
                   Pricing
                 </Link>
+                {isLoggedIn && (
+                  <Link
+                    href="/dashboard"
+                    className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                    onClick={toggleMenu}
+                  >
+                    Dashboard
+                  </Link>
+                )}
                 
                 <div className="border-t border-[rgb(var(--color-border))] pt-4 mt-6">
                   <div className="flex items-center justify-between mb-4">
