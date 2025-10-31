@@ -16,7 +16,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
-  const [userProfile, setUserProfile] = useState<{name?: string, profilePicture?: string}>({});
+  const [userProfile, setUserProfile] = useState<{name?: string, profilePicture?: string, profile_picture?: string, google_picture?: string}>({});
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [subscription, setSubscription] = useState<any>(null);
@@ -182,7 +182,7 @@ export default function Navbar() {
                   className="flex items-center space-x-2 px-3 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 >
                   <ProfilePicture
-                    src={userProfile.profilePicture}
+                    src={userProfile.profile_picture || userProfile.google_picture || userProfile.profilePicture}
                     alt={userProfile.name || username}
                     size="md"
                     clickable={true}
@@ -397,7 +397,7 @@ export default function Navbar() {
                         onClick={toggleMenu}
                       >
                         <ProfilePicture
-                          src={userProfile.profilePicture}
+                          src={userProfile.profile_picture || userProfile.google_picture || userProfile.profilePicture}
                           alt={userProfile.name || username}
                           size="sm"
                           clickable={true}

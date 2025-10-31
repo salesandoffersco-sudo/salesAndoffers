@@ -7,6 +7,7 @@ import FilterSidebar from "../../components/FilterSidebar";
 import SellersCarousel from "../../components/SellersCarousel";
 import VerificationBadge from "../../components/VerificationBadge";
 import TrustIndicators from "../../components/TrustIndicators";
+import ProfilePicture from "../../components/ProfilePicture";
 import { api } from "../../lib/api";
 
 interface Seller {
@@ -199,17 +200,13 @@ export default function SellersPage() {
                         <div className="flex-1 p-6">
                           <div className="flex items-center mb-4">
                             <div className="relative mr-4">
-                              {seller.user?.profile_picture || seller.business_logo ? (
-                                <img
-                                  src={seller.user?.profile_picture || seller.business_logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(seller.business_name)}&background=6366f1&color=fff`}
-                                  alt={seller.user ? `${seller.user.first_name} ${seller.user.last_name}` : seller.business_name}
-                                  className="w-16 h-16 rounded-full object-cover border-2 border-purple-200 dark:border-indigo-300/40"
-                                />
-                              ) : (
-                                <div className="w-16 h-16 rounded-full bg-purple-100 dark:bg-indigo-900/40 flex items-center justify-center">
-                                  <FiUser className="text-purple-600 dark:text-indigo-400 text-2xl" />
-                                </div>
-                              )}
+                              <ProfilePicture
+                                src={seller.user?.profile_picture || seller.business_logo}
+                                alt={seller.user ? `${seller.user.first_name} ${seller.user.last_name}` : seller.business_name}
+                                size="xl"
+                                clickable={true}
+                                className="border-2 border-purple-200 dark:border-indigo-300/40"
+                              />
                               <VerificationBadge 
                                 isVerified={seller.user?.is_verified || false} 
                                 type="user" 
@@ -254,17 +251,13 @@ export default function SellersPage() {
                       <div className="p-6">
                         <div className="flex items-center mb-4">
                           <div className="relative mr-4">
-                            {seller.user?.profile_picture || seller.business_logo ? (
-                              <img
-                                src={seller.user?.profile_picture || seller.business_logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(seller.business_name)}&background=6366f1&color=fff`}
-                                alt={seller.user ? `${seller.user.first_name} ${seller.user.last_name}` : seller.business_name}
-                                className="w-20 h-20 rounded-full object-cover border-3 border-purple-300 dark:border-purple-600 shadow-lg"
-                              />
-                            ) : (
-                              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-800 dark:to-blue-800 flex items-center justify-center border-3 border-purple-300 dark:border-purple-600 shadow-lg">
-                                <FiUser className="text-purple-600 dark:text-purple-300 text-3xl" />
-                              </div>
-                            )}
+                            <ProfilePicture
+                              src={seller.user?.profile_picture || seller.business_logo}
+                              alt={seller.user ? `${seller.user.first_name} ${seller.user.last_name}` : seller.business_name}
+                              size="xl"
+                              clickable={true}
+                              className="border-3 border-purple-300 dark:border-purple-600 shadow-lg"
+                            />
                             <VerificationBadge 
                               isVerified={seller.user?.is_verified || false} 
                               type="user" 

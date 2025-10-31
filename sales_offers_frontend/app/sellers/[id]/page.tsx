@@ -7,6 +7,7 @@ import { FiStar, FiMapPin, FiPhone, FiMail, FiGlobe, FiShoppingBag, FiUser, FiAw
 import Button from "../../../components/Button";
 import VerificationBadge from "../../../components/VerificationBadge";
 import TrustIndicators from "../../../components/TrustIndicators";
+import ProfilePicture from "../../../components/ProfilePicture";
 import { api } from "../../../lib/api";
 
 interface Seller {
@@ -26,7 +27,8 @@ interface Seller {
     id: number;
     first_name: string;
     last_name: string;
-    profile_picture: string;
+    profile_picture?: string;
+    google_picture?: string;
     is_verified: boolean;
   };
 }
@@ -103,17 +105,11 @@ export default function SellerDetailPage() {
         <div className="bg-[rgb(var(--color-card))] rounded-2xl shadow-lg border border-[rgb(var(--color-border))] p-8 mb-8">
           <div className="flex flex-col md:flex-row items-start md:items-center space-y-6 md:space-y-0 md:space-x-8">
             <div className="flex-shrink-0 relative">
-              {seller.user?.profile_picture ? (
-                <img
-                  src={seller.user.profile_picture}
-                  alt={`${seller.user.first_name} ${seller.user.last_name}`}
-                  className="w-32 h-32 rounded-full object-cover border-4 border-purple-200"
-                />
-              ) : (
-                <div className="w-32 h-32 rounded-full bg-purple-100 flex items-center justify-center">
-                  <FiUser className="text-purple-600 text-6xl" />
-                </div>
-              )}
+              <ProfilePicture
+                src={seller.user?.profile_picture || seller.user?.google_picture}
+                size="xl"
+                className="border-4 border-purple-200"
+              />
               <VerificationBadge 
                 isVerified={seller.user?.is_verified || false} 
                 type="user" 

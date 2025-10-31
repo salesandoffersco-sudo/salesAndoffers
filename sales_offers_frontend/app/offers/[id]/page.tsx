@@ -8,6 +8,7 @@ import axios from "axios";
 import Button from "../../../components/Button";
 import { useCart } from "../../../contexts/CartContext";
 import { API_BASE_URL } from "../../../lib/api";
+import ProfilePicture from "../../../components/ProfilePicture";
 
 interface Deal {
   id: number;
@@ -32,6 +33,10 @@ interface Deal {
     business_name: string;
     rating: number;
     address: string;
+    user?: {
+      profile_picture?: string;
+      google_picture?: string;
+    };
   };
 }
 
@@ -329,26 +334,32 @@ export default function DealDetailsPage() {
             <div className="bg-[rgb(var(--color-card))] rounded-xl p-6 border border-[rgb(var(--color-border))]">
               <h3 className="text-lg font-semibold text-[rgb(var(--color-text))] mb-4">Merchant Information</h3>
               <div className="flex items-center justify-between">
-                <div>
-                  <Link href={`/sellers/${deal.seller.id}`} className="text-purple-600 dark:text-indigo-300 font-semibold hover:underline">
-                    {deal.seller.business_name}
-                  </Link>
-                  <div className="flex items-center mt-1">
-                    <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <FiStar
-                          key={i}
-                          className={`w-4 h-4 ${i < Math.floor(Number(deal.seller.rating) || 0) ? "text-yellow-400 fill-current" : "text-gray-300"}`}
-                        />
-                      ))}
+                <div className="flex items-center space-x-3">
+                  <ProfilePicture
+                    src={deal.seller.user?.profile_picture || deal.seller.user?.google_picture}
+                    size="md"
+                  />
+                  <div>
+                    <Link href={`/sellers/${deal.seller.id}`} className="text-purple-600 dark:text-indigo-300 font-semibold hover:underline">
+                      {deal.seller.business_name}
+                    </Link>
+                    <div className="flex items-center mt-1">
+                      <div className="flex items-center">
+                        {[...Array(5)].map((_, i) => (
+                          <FiStar
+                            key={i}
+                            className={`w-4 h-4 ${i < Math.floor(Number(deal.seller.rating) || 0) ? "text-yellow-400 fill-current" : "text-gray-300"}`}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-sm text-[rgb(var(--color-muted))] ml-2">
+                        {typeof deal.seller.rating === 'number' ? deal.seller.rating.toFixed(1) : '0.0'}
+                      </span>
                     </div>
-                    <span className="text-sm text-[rgb(var(--color-muted))] ml-2">
-                      {typeof deal.seller.rating === 'number' ? deal.seller.rating.toFixed(1) : '0.0'}
-                    </span>
-                  </div>
-                  <div className="flex items-center text-sm text-[rgb(var(--color-muted))] mt-1">
-                    <FiMapPin className="w-4 h-4 mr-1" />
-                    {deal.seller.address}
+                    <div className="flex items-center text-sm text-[rgb(var(--color-muted))] mt-1">
+                      <FiMapPin className="w-4 h-4 mr-1" />
+                      {deal.seller.address}
+                    </div>
                   </div>
                 </div>
                 <Link href={`/sellers/${deal.seller.id}`}>

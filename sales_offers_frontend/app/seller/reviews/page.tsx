@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { FiStar, FiMessageCircle, FiUser, FiCalendar, FiFilter } from "react-icons/fi";
 import Button from "../../../components/Button";
+import ProfilePicture from "../../../components/ProfilePicture";
 import { api } from "../../../lib/api";
 
 interface Review {
@@ -197,9 +198,10 @@ export default function SellerReviewsPage() {
               <div key={review.id} className="bg-[rgb(var(--color-card))] rounded-xl p-6 border border-[rgb(var(--color-border))]">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
-                      <FiUser className="text-purple-600 text-xl" />
-                    </div>
+                    <ProfilePicture
+                      src={review.customer_avatar}
+                      size="md"
+                    />
                     <div>
                       <h4 className="font-semibold text-[rgb(var(--color-text))]">{review.customer_name}</h4>
                       <div className="flex items-center gap-2 mt-1">
