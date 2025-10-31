@@ -52,9 +52,14 @@ export default function BlogPostPage() {
     setIsLoggedIn(!!localStorage.getItem("token"));
     if (params.slug) {
       fetchPost();
-      fetchComments();
     }
   }, [params.slug]);
+
+  useEffect(() => {
+    if (post?.id) {
+      fetchComments();
+    }
+  }, [post?.id]);
 
   const fetchPost = async () => {
     try {
@@ -70,8 +75,9 @@ export default function BlogPostPage() {
   };
 
   const fetchComments = async () => {
+    if (!post?.id) return;
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/blog/posts/${post?.id || 0}/comments/`);
+      const response = await axios.get(`${API_BASE_URL}/api/blog/posts/${post.id}/comments/`);
       setComments(response.data);
     } catch (error) {
       console.error("Error fetching comments:", error);
