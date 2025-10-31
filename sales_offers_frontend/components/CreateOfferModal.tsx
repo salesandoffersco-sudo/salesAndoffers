@@ -25,7 +25,7 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
     max_vouchers: 100,
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string | {message: string, actionRequired: boolean, redirectUrl: string}>("");
   const [subscription, setSubscription] = useState<any>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -78,7 +78,16 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
         max_vouchers: 100,
       });
     } catch (err: any) {
-      setError(err.response?.data?.detail || "Failed to create offer");
+      const errorData = err.response?.data;
+      if (errorData?.action_required === 'setup_profile') {
+        setError({
+          message: errorData.error,
+          actionRequired: true,
+          redirectUrl: errorData.redirect_url
+        });
+      } else {
+        setError(errorData?.detail || errorData?.error || "Failed to create offer");
+      }
     } finally {
       setLoading(false);
     }
@@ -116,7 +125,22 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
           )}
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
-              {error}
+              {typeof error === 'string' ? (
+                error
+              ) : (
+                <div className="space-y-3">
+                  <p>{error.message}</p>
+                  {error.actionRequired && (
+                    <Button 
+                      variant="primary" 
+                      size="sm"
+                      onClick={() => window.location.href = error.redirectUrl}
+                    >
+                      Setup Seller Profile
+                    </Button>
+                  )}
+                </div>
+              )}
             </div>
           )}
 

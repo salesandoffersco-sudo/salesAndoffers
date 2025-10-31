@@ -39,7 +39,11 @@ class DealListView(generics.ListCreateAPIView):
             # Check if seller profile exists and is published
             if hasattr(seller, 'profile'):
                 if not seller.profile.is_published:
-                    raise ValidationError({'error': 'You must publish your seller profile before creating offers.'})
+                    raise ValidationError({
+                        'error': 'You must publish your seller profile before creating offers.',
+                        'action_required': 'setup_profile',
+                        'redirect_url': '/seller/profile'
+                    })
             else:
                 # Create default profile if it doesn't exist
                 from sellers.models import SellerProfile
@@ -52,7 +56,11 @@ class DealListView(generics.ListCreateAPIView):
                     address=seller.address,
                     is_published=False
                 )
-                raise ValidationError({'error': 'You must publish your seller profile before creating offers.'})
+                raise ValidationError({
+                    'error': 'You must publish your seller profile before creating offers.',
+                    'action_required': 'setup_profile',
+                    'redirect_url': '/seller/profile'
+                })
         except Seller.DoesNotExist:
             raise ValidationError({'error': 'You must have a seller profile to create deals.'})
         
