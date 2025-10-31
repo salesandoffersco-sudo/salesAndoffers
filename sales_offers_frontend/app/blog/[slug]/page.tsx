@@ -6,6 +6,7 @@ import Link from "next/link";
 import { FiHeart, FiMessageCircle, FiUser, FiCalendar, FiSend, FiUserPlus } from "react-icons/fi";
 import axios from "axios";
 import Button from "../../../components/Button";
+import ProfilePicture from "../../../components/ProfilePicture";
 import { API_BASE_URL } from "../../../lib/api";
 
 interface BlogPost {
@@ -164,13 +165,12 @@ export default function BlogPostPage() {
           <div className="p-8">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center overflow-hidden">
-                  {post.author.profile_picture ? (
-                    <img src={post.author.profile_picture} alt={post.author.username} className="w-full h-full object-cover" />
-                  ) : (
-                    <FiUser className="w-6 h-6 text-white" />
-                  )}
-                </div>
+                <ProfilePicture
+                  src={post.author.profile_picture}
+                  alt={post.author.username}
+                  size="lg"
+                  clickable={true}
+                />
                 <div>
                   <Link href={`/blog/profile/${post.author.id}`} className="font-semibold text-[rgb(var(--color-text))] hover:text-purple-600">
                     {post.author.first_name} {post.author.last_name}
@@ -249,13 +249,12 @@ export default function BlogPostPage() {
           <div className="space-y-6">
             {comments.map((comment) => (
               <div key={comment.id} className="flex space-x-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
-                  {comment.user.profile_picture ? (
-                    <img src={comment.user.profile_picture} alt={comment.user.username} className="w-full h-full object-cover" />
-                  ) : (
-                    <FiUser className="w-5 h-5 text-white" />
-                  )}
-                </div>
+                <ProfilePicture
+                  src={comment.user.profile_picture}
+                  alt={comment.user.username}
+                  size="md"
+                  clickable={true}
+                />
                 <div className="flex-1">
                   <div className="bg-[rgb(var(--color-bg))] rounded-lg p-4">
                     <div className="flex items-center space-x-2 mb-2">

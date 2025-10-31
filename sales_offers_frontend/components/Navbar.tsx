@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { FiMenu, FiX, FiUser, FiLogOut, FiChevronDown, FiChevronUp } from "react-icons/fi";
+import ProfilePicture from "./ProfilePicture";
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import ThemeToggle from "./ThemeToggle";
@@ -180,17 +181,12 @@ export default function Navbar() {
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   className="flex items-center space-x-2 px-3 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 >
-                  <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center overflow-hidden">
-                    {userProfile.profilePicture ? (
-                      <img 
-                        src={userProfile.profilePicture} 
-                        alt="Profile" 
-                        className="w-full h-full object-cover rounded-full"
-                      />
-                    ) : (
-                      <FiUser className="w-4 h-4 text-white" />
-                    )}
-                  </div>
+                  <ProfilePicture
+                    src={userProfile.profilePicture}
+                    alt={userProfile.name || username}
+                    size="md"
+                    clickable={true}
+                  />
                   <span className="text-gray-700 dark:text-gray-200 font-medium text-sm max-w-20 truncate">
                     {userProfile.name || username}
                   </span>
@@ -400,17 +396,12 @@ export default function Navbar() {
                         className="flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
                         onClick={toggleMenu}
                       >
-                        <div className="w-5 h-5 bg-purple-600 rounded-full flex items-center justify-center overflow-hidden">
-                          {userProfile.profilePicture ? (
-                            <img 
-                              src={userProfile.profilePicture} 
-                              alt="Profile" 
-                              className="w-full h-full object-cover rounded-full"
-                            />
-                          ) : (
-                            <FiUser className="w-3 h-3 text-white" />
-                          )}
-                        </div>
+                        <ProfilePicture
+                          src={userProfile.profilePicture}
+                          alt={userProfile.name || username}
+                          size="sm"
+                          clickable={true}
+                        />
                         <span>{userProfile.name || username}</span>
                       </Link>
                       <Link

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { FiHeart, FiClock, FiTag, FiGrid, FiList, FiFilter, FiChevronLeft, FiChevronRight, FiShoppingCart, FiUser } from "react-icons/fi";
 import axios from "axios";
 import Button from "../../components/Button";
+import ProfilePicture from "../../components/ProfilePicture";
 import { useCart } from "../../contexts/CartContext";
 
 import FilterSidebar from "../../components/FilterSidebar";
@@ -397,17 +398,12 @@ export default function OffersPage() {
                                 
                                 {/* Seller Info */}
                                 <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300">
-                                  {offer.seller.user?.profile_picture ? (
-                                    <img
-                                      src={offer.seller.user.profile_picture}
-                                      alt={offer.seller.user.first_name}
-                                      className="w-4 h-4 rounded-full object-cover"
-                                    />
-                                  ) : (
-                                    <div className="w-4 h-4 rounded-full bg-purple-100 flex items-center justify-center">
-                                      <FiUser className="w-2 h-2 text-purple-600" />
-                                    </div>
-                                  )}
+                                  <ProfilePicture
+                                    src={offer.seller.user?.profile_picture}
+                                    alt={offer.seller.user?.first_name || offer.seller.business_name}
+                                    size="xs"
+                                    clickable={true}
+                                  />
                                   <span>
                                     By <span className="font-semibold text-purple-600 dark:text-indigo-300">{offer.seller.business_name}</span>
                                   </span>
@@ -518,17 +514,12 @@ export default function OffersPage() {
                         
                         <div className="border-t border-gray-100 dark:border-gray-800 pt-4">
                           <div className="flex items-center gap-2 mb-3">
-                            {offer.seller.user?.profile_picture ? (
-                              <img
-                                src={offer.seller.user.profile_picture}
-                                alt={offer.seller.user.first_name}
-                                className="w-6 h-6 rounded-full object-cover"
-                              />
-                            ) : (
-                              <div className="w-6 h-6 rounded-full bg-purple-100 flex items-center justify-center">
-                                <FiUser className="w-3 h-3 text-purple-600" />
-                              </div>
-                            )}
+                            <ProfilePicture
+                              src={offer.seller.user?.profile_picture}
+                              alt={offer.seller.user?.first_name || offer.seller.business_name}
+                              size="sm"
+                              clickable={true}
+                            />
                             <p className="text-sm text-gray-600 dark:text-gray-300">
                               By <span className="font-semibold text-purple-600 dark:text-indigo-300">{offer.seller.business_name}</span>
                             </p>
