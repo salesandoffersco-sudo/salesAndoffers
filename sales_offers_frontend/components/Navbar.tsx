@@ -44,21 +44,30 @@ export default function Navbar() {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     mediaQuery.addEventListener('change', checkTheme);
 
-    const checkAuth = () => {
+    const checkAuth = async () => {
       const token = localStorage.getItem("token");
       const storedUsername = localStorage.getItem("username");
-      const storedProfile = localStorage.getItem("userProfile");
       
       if (token && storedUsername) {
         setIsLoggedIn(true);
         setUsername(storedUsername);
         
-        if (storedProfile) {
-          try {
-            setUserProfile(JSON.parse(storedProfile));
-          } catch (e) {
-            setUserProfile({});
+        // Fetch fresh user profile data
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/accounts/profile/`, {
+            headers: { Authorization: `Token ${token}` }
+          });
+          if (response.ok) {
+            const userData = await response.json();
+            setUserProfile({
+              name: userData.first_name && userData.last_name ? `${userData.first_name} ${userData.last_name}` : userData.username,
+              profile_picture: userData.profile_picture,
+              google_picture: userData.google_picture,
+              profilePicture: userData.profile_picture || userData.google_picture
+            });
           }
+        } catch (error) {
+          console.error('Error fetching user profile:', error);
         }
       } else {
         setIsLoggedIn(false);
