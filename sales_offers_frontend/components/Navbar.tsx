@@ -302,14 +302,14 @@ export default function Navbar() {
 <div className="fixed inset-0 bg-black/50 z-[9998] md:hidden" onClick={toggleMenu}></div>
 <div className="fixed top-0 right-0 h-full w-80 bg-[rgb(var(--color-card))]/95 shadow-xl z-[9999] transform translate-x-0 transition-transform duration-300 md:hidden isolate border-l border-[rgb(var(--color-border))] overflow-hidden" style={{position: 'fixed', top: 0, right: 0, height: '100vh', zIndex: 9999}}>
             <div className="h-full flex flex-col">
-              <div className="flex items-center justify-between p-6 pb-4 flex-shrink-0">
-                <div style={{ overflow: 'visible', width: '100%', maxWidth: 'none' }}>
+              <div className="flex items-center justify-between p-4 pb-3 flex-shrink-0">
+                <div className="flex-1 min-w-0 pr-4">
                   <Image
                     src="/images/sales_and_offers_logo.svg"
                     alt="Sales & Offers Logo"
                     width={317}
                     height={50}
-                    className="h-5 w-auto max-w-[180px] sm:h-7 sm:max-w-full"
+                    className="h-6 w-auto max-w-full"
                     style={{ 
                       filter: isDarkMode 
                         ? 'brightness(0) saturate(100%) invert(89%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(89%) contrast(89%)' 
@@ -317,58 +317,58 @@ export default function Navbar() {
                     }}
                   />
                 </div>
-                <button onClick={toggleMenu} className="text-[rgb(var(--color-muted))]">
+                <button onClick={toggleMenu} className="text-[rgb(var(--color-muted))] flex-shrink-0">
                   <FiX className="h-6 w-6" />
                 </button>
               </div>
               
-              <div className="flex-1 overflow-y-auto px-6 pb-6">
-                <div className="space-y-4">
+              <div className="flex-1 overflow-y-auto px-4 pb-6">
+                <div className="space-y-2">
                 <Link
                   href="/offers"
-                  className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                  className="block px-3 py-2 rounded-lg text-sm font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
                   onClick={toggleMenu}
                 >
                   Browse Offers
                 </Link>
                 <Link
                   href="/sellers"
-                  className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                  className="block px-3 py-2 rounded-lg text-sm font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
                   onClick={toggleMenu}
                 >
                   Sellers
                 </Link>
                 <Link
                   href="/blog"
-                  className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                  className="block px-3 py-2 rounded-lg text-sm font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
                   onClick={toggleMenu}
                 >
                   Blog
                 </Link>
                 <Link
                   href="/about"
-                  className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                  className="block px-3 py-2 rounded-lg text-sm font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
                   onClick={toggleMenu}
                 >
                   About
                 </Link>
                 <Link
                   href="/help"
-                  className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                  className="block px-3 py-2 rounded-lg text-sm font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
                   onClick={toggleMenu}
                 >
                   Help Center
                 </Link>
                 <Link
                   href="/contact"
-                  className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                  className="block px-3 py-2 rounded-lg text-sm font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
                   onClick={toggleMenu}
                 >
                   Contact
                 </Link>
                 <Link
                   href="/pricing"
-                  className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                  className="block px-3 py-2 rounded-lg text-sm font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
                   onClick={toggleMenu}
                 >
                   Pricing
@@ -376,15 +376,15 @@ export default function Navbar() {
                 {isLoggedIn && (
                   <Link
                     href="/dashboard"
-                    className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                    className="block px-3 py-2 rounded-lg text-sm font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
                     onClick={toggleMenu}
                   >
                     Dashboard
                   </Link>
                 )}
                 
-                <div className="border-t border-[rgb(var(--color-border))] pt-4 mt-6">
-                  <div className="flex items-center justify-between mb-4">
+                <div className="border-t border-[rgb(var(--color-border))] pt-3 mt-4">
+                  <div className="flex items-center justify-between mb-3">
                     <span className="text-sm font-medium text-[rgb(var(--color-muted))]">Theme</span>
                     <ThemeToggle />
                   </div>
@@ -393,7 +393,7 @@ export default function Navbar() {
                     <div className="space-y-2">
                       <Link
                         href="/dashboard"
-                        className="flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                        className="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
                         onClick={toggleMenu}
                       >
                         <ProfilePicture
@@ -402,67 +402,67 @@ export default function Navbar() {
                           size="sm"
                           clickable={true}
                         />
-                        <span>{userProfile.name || username}</span>
+                        <span className="truncate">{userProfile.name || username}</span>
                       </Link>
                       <Link
                         href="/favorites"
-                        className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                        className="block px-3 py-2 rounded-lg text-sm font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
                         onClick={toggleMenu}
                       >
                         Favorites
                       </Link>
                       <Link
                         href="/notifications"
-                        className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                        className="block px-3 py-2 rounded-lg text-sm font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
                         onClick={toggleMenu}
                       >
                         Notifications
                       </Link>
                       <Link
                         href="/subscription"
-                        className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                        className="block px-3 py-2 rounded-lg text-sm font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
                         onClick={toggleMenu}
                       >
                         Subscription ({subscription?.plan_name || 'No Plan'})
                       </Link>
                       <Link
                         href="/seller/dashboard"
-                        className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                        className="block px-3 py-2 rounded-lg text-sm font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
                         onClick={toggleMenu}
                       >
                         Seller Dashboard
                       </Link>
                       <Link
                         href="/seller/profile"
-                        className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                        className="block px-3 py-2 rounded-lg text-sm font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
                         onClick={toggleMenu}
                       >
                         Seller Profile
                       </Link>
                       <Link
                         href="/seller/offers"
-                        className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                        className="block px-3 py-2 rounded-lg text-sm font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
                         onClick={toggleMenu}
                       >
                         My Offers
                       </Link>
                       <Link
                         href="/seller/withdrawals"
-                        className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                        className="block px-3 py-2 rounded-lg text-sm font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
                         onClick={toggleMenu}
                       >
                         Withdrawals
                       </Link>
                       <Link
                         href="/orders"
-                        className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                        className="block px-3 py-2 rounded-lg text-sm font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
                         onClick={toggleMenu}
                       >
                         My Orders
                       </Link>
                       <Link
                         href="/transactions"
-                        className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                        className="block px-3 py-2 rounded-lg text-sm font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
                         onClick={toggleMenu}
                       >
                         Purchase History
@@ -470,7 +470,7 @@ export default function Navbar() {
                       {canAccessAdmin() && (
                         <Link
                           href="/admin/dashboard"
-                          className="block px-4 py-3 rounded-lg text-base font-medium text-purple-600 hover:bg-purple-50 transition-colors"
+                          className="block px-3 py-2 rounded-lg text-sm font-medium text-purple-600 hover:bg-purple-50 transition-colors"
                           onClick={toggleMenu}
                         >
                           Admin Dashboard
@@ -478,16 +478,16 @@ export default function Navbar() {
                       )}
                       <Link
                         href="/profile"
-                        className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                        className="block px-3 py-2 rounded-lg text-sm font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
                         onClick={toggleMenu}
                       >
                         Profile
                       </Link>
                       <button
                         onClick={() => { handleLogout(); toggleMenu(); }}
-                        className="flex items-center space-x-3 w-full px-4 py-3 rounded-lg text-base font-medium text-red-600 hover:bg-red-50 transition-colors"
+                        className="flex items-center space-x-3 w-full px-3 py-2 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
                       >
-                        <FiLogOut className="w-5 h-5" />
+                        <FiLogOut className="w-4 h-4" />
                         <span>Logout</span>
                       </button>
                     </div>
@@ -495,14 +495,14 @@ export default function Navbar() {
                     <div className="space-y-2">
                       <Link
                         href="/login"
-                        className="block px-4 py-3 rounded-lg text-base font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
+                        className="block px-3 py-2 rounded-lg text-sm font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
                         onClick={toggleMenu}
                       >
                         Login
                       </Link>
                       <Link
                         href="/register"
-                        className="block w-full text-center bg-[rgb(var(--color-primary))] text-[rgb(var(--color-on-primary))] px-4 py-3 rounded-lg text-base font-medium hover:shadow-lg transition-all duration-300"
+                        className="block w-full text-center bg-[rgb(var(--color-primary))] text-[rgb(var(--color-on-primary))] px-3 py-2 rounded-lg text-sm font-medium hover:shadow-lg transition-all duration-300"
                         onClick={toggleMenu}
                       >
                         Sign Up
