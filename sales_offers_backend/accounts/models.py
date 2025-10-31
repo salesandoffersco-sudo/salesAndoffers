@@ -10,6 +10,7 @@ class User(AbstractUser):
     address = models.TextField(blank=True)
     firebase_uid = models.CharField(max_length=128, blank=True, null=True)
     profile_picture = models.URLField(blank=True, null=True)
+    google_picture = models.URLField(blank=True, null=True)
     is_google_user = models.BooleanField(default=False)
     is_email_verified = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
