@@ -32,6 +32,6 @@
     <polygon class="cls-1" points="8.88 32.02 9.93 32.55 9.93 41.3 9.4 41.82 8.88 41.3 8.88 32.02"/>
     <polygon class="cls-1" points="5.38 32.55 5.9 32.03 6.43 32.55 6.43 41.3 5.9 41.82 5.38 41.3 5.38 32.55"/>
     <rect class="cls-1" x="12.38" y="32.02" width=".7" height="9.81"/>
-    <text class="cls-2" transform="translate(67.22 39.85)"><tspan x="0" y="0">SalesAndoffers</tspan></text>
+    <text class="cls-2" transform="translate(67.22 39.85)"><tspan x="0" y="0">SalesAndOffers</tspan></text>
   </g>
 </svg>
