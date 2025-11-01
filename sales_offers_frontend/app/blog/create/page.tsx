@@ -96,7 +96,7 @@ export default function CreateBlogPage() {
                 Content
               </label>
               <Editor
-                apiKey="no-api-key"
+                apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY || "no-api-key"}
                 value={formData.content}
                 onEditorChange={(content) => setFormData({ ...formData, content })}
                 init={{
