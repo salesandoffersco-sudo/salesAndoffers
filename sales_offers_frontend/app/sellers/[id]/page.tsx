@@ -32,6 +32,11 @@ interface Seller {
     google_picture?: string;
     is_verified: boolean;
   };
+  profile?: {
+    company_logo: string;
+    cover_image: string;
+    is_published: boolean;
+  };
 }
 
 interface Deal {
@@ -43,6 +48,14 @@ interface Deal {
   discount_percentage: number;
   category: string;
   expires_at: string;
+  main_image?: string;
+  images?: Array<{
+    id: number;
+    image_url: string;
+    is_main: boolean;
+    order: number;
+    alt_text?: string;
+  }>;
 }
 
 export default function SellerDetailPage() {
@@ -105,10 +118,10 @@ export default function SellerDetailPage() {
         {/* Seller Header */}
         <div className="bg-[rgb(var(--color-card))] rounded-2xl shadow-lg border border-[rgb(var(--color-border))] overflow-hidden mb-8">
           {/* Cover Image */}
-          {seller.cover_image && (
+          {(seller.profile?.cover_image || seller.cover_image) && (
             <div className="h-48 bg-gradient-to-r from-purple-600 to-blue-600 relative">
               <img 
-                src={seller.cover_image} 
+                src={seller.profile?.cover_image || seller.cover_image} 
                 alt={`${seller.business_name} cover`}
                 className="w-full h-full object-cover"
               />
@@ -120,7 +133,7 @@ export default function SellerDetailPage() {
             <div className="flex flex-col md:flex-row items-start md:items-center space-y-6 md:space-y-0 md:space-x-8">
               <div className="flex-shrink-0 relative">
                 <ProfilePicture
-                  src={seller.business_logo || seller.user?.profile_picture || seller.user?.google_picture}
+                  src={seller.profile?.company_logo || seller.business_logo || seller.user?.profile_picture || seller.user?.google_picture}
                   size="xl"
                   className="border-4 border-purple-200"
                 />
@@ -211,6 +224,23 @@ export default function SellerDetailPage() {
                   key={deal.id}
                   className="bg-[rgb(var(--color-card))] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-[rgb(var(--color-border))]"
                 >
+                  {/* Deal Image */}
+                  {deal.main_image && (
+                    <div className="bg-gray-100 dark:bg-gray-800 relative">
+                      <img 
+                        src={deal.main_image} 
+                        alt={deal.title}
+                        className="w-full h-48 object-cover"
+                      />
+                      {/* Image count indicator */}
+                      {deal.images && deal.images.length > 1 && (
+                        <div className="absolute bottom-2 right-2 bg-black bg-opacity-75 text-white px-2 py-1 rounded text-xs">
+                          +{deal.images.length - 1} more
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
                   <div className="p-6">
                     <span className="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-sm font-semibold">
                       {deal.category}
