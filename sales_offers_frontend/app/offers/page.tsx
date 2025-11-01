@@ -473,11 +473,11 @@ export default function OffersPage() {
                       )}
                       {/* Offer Image */}
                       {(offer.main_image || offer.image) && (
-                        <div className="aspect-video bg-gray-100 dark:bg-gray-800 relative">
+                        <div className="bg-gray-100 dark:bg-gray-800 relative">
                           <img 
                             src={offer.main_image || offer.image} 
                             alt={offer.title}
-                            className="w-full h-full object-cover"
+                            className="w-full h-auto object-contain"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
                               target.style.display = 'none';
