@@ -311,14 +311,14 @@ export default function Navbar() {
 <div className="fixed inset-0 bg-black/50 z-[9998] md:hidden" onClick={toggleMenu}></div>
 <div className="fixed top-0 right-0 h-full w-80 bg-[rgb(var(--color-card))]/95 shadow-xl z-[9999] transform translate-x-0 transition-transform duration-300 md:hidden isolate border-l border-[rgb(var(--color-border))] overflow-hidden" style={{position: 'fixed', top: 0, right: 0, height: '100vh', zIndex: 9999}}>
             <div className="h-full flex flex-col">
-              <div className="flex items-center justify-between p-4 pb-3 flex-shrink-0">
-                <div className="flex-1 overflow-visible">
+              <div className="flex items-center justify-between p-3 pb-2 flex-shrink-0">
+                <div className="flex-1 min-w-0 max-w-[calc(100%-60px)]">
                   <Image
                     src="/images/sales_and_offers_logo.svg"
                     alt="Sales & Offers Logo"
                     width={317}
                     height={50}
-                    className="h-6 w-full object-contain object-left"
+                    className="h-5 w-auto max-w-full"
                     style={{ 
                       filter: isDarkMode 
                         ? 'brightness(0) saturate(100%) invert(89%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(89%) contrast(89%)' 
@@ -326,8 +326,8 @@ export default function Navbar() {
                     }}
                   />
                 </div>
-                <button onClick={toggleMenu} className="text-[rgb(var(--color-muted))] flex-shrink-0 ml-4">
-                  <FiX className="h-6 w-6" />
+                <button onClick={toggleMenu} className="text-[rgb(var(--color-muted))] flex-shrink-0 ml-3 p-2">
+                  <FiX className="h-5 w-5" />
                 </button>
               </div>
               
