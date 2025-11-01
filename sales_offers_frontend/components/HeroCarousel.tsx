@@ -57,7 +57,8 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
     
     // Get actual slide width for responsive radius calculation
     const slideWidth = window.innerWidth <= 480 ? 200 : window.innerWidth <= 768 ? 240 : 280;
-    const radius = Math.round((slideWidth / 2) / Math.tan(Math.PI / totalSlides));
+    // Fix for single item: use a reasonable default radius instead of infinite calculation
+    const radius = totalSlides === 1 ? 0 : Math.round((slideWidth / 2) / Math.tan(Math.PI / totalSlides));
     
     const slides = carousel.querySelectorAll('.carousel-slide');
     slides.forEach((slide, index) => {
