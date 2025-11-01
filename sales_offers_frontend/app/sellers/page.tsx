@@ -125,9 +125,11 @@ export default function SellersPage() {
             followers: seller.total_reviews || 0,
             location: seller.address,
             avatar: seller.user?.profile_picture || seller.business_logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(seller.business_name)}&background=6366f1&color=fff`,
-            coverImage: seller.business_logo || `https://picsum.photos/320/128?random=${seller.id}`,
+            coverImage: (seller as any).cover_image || `https://picsum.photos/320/128?random=${seller.id}`,
             verified: seller.is_verified,
-            specialOffer: seller.is_verified ? '✓ Verified' : seller.total_deals > 20 ? '🔥 Hot Deals' : undefined
+            specialOffer: seller.is_verified ? '✓ Verified' : seller.total_deals > 20 ? '🔥 Hot Deals' : undefined,
+            businessLogo: seller.business_logo,
+            userProfilePicture: seller.user?.profile_picture
           }))}
         />
       )}

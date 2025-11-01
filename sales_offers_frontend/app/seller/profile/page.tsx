@@ -3,12 +3,14 @@
 import { useState, useEffect } from "react";
 import { FiSave, FiEye, FiEyeOff, FiHome } from "react-icons/fi";
 import LoadingButton from "../../../components/LoadingButton";
+import SellerImageUpload from "../../../components/SellerImageUpload";
 import { api } from "../../../lib/api";
 
 interface SellerProfile {
   id?: number;
   company_name: string;
   company_logo: string;
+  cover_image?: string;
   description: string;
   website: string;
   phone: string;
@@ -21,6 +23,7 @@ export default function SellerProfilePage() {
   const [profile, setProfile] = useState<SellerProfile>({
     company_name: "",
     company_logo: "",
+    cover_image: "",
     description: "",
     website: "",
     phone: "",
@@ -173,16 +176,18 @@ export default function SellerProfilePage() {
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-[rgb(var(--color-fg))] mb-2">
-                Company Logo URL
-              </label>
-              <input
-                type="url"
-                value={profile.company_logo}
-                onChange={(e) => setProfile(prev => ({ ...prev, company_logo: e.target.value }))}
-                className="w-full px-4 py-3 border border-[rgb(var(--color-border))] rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="https://example.com/logo.png"
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <SellerImageUpload
+                type="logo"
+                currentImage={profile.company_logo}
+                onImageChange={(url) => setProfile(prev => ({ ...prev, company_logo: url }))}
+                sellerId={profile.id}
+              />
+              <SellerImageUpload
+                type="cover"
+                currentImage={profile.cover_image}
+                onImageChange={(url) => setProfile(prev => ({ ...prev, cover_image: url }))}
+                sellerId={profile.id}
               />
             </div>
 

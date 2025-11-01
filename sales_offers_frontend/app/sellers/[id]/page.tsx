@@ -15,6 +15,7 @@ interface Seller {
   business_name: string;
   business_description: string;
   business_logo: string;
+  cover_image?: string;
   rating: number;
   total_reviews: number;
   address: string;
@@ -102,21 +103,34 @@ export default function SellerDetailPage() {
     <div className="min-h-screen bg-[rgb(var(--color-bg))]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Seller Header */}
-        <div className="bg-[rgb(var(--color-card))] rounded-2xl shadow-lg border border-[rgb(var(--color-border))] p-8 mb-8">
-          <div className="flex flex-col md:flex-row items-start md:items-center space-y-6 md:space-y-0 md:space-x-8">
-            <div className="flex-shrink-0 relative">
-              <ProfilePicture
-                src={seller.user?.profile_picture || seller.user?.google_picture}
-                size="xl"
-                className="border-4 border-purple-200"
+        <div className="bg-[rgb(var(--color-card))] rounded-2xl shadow-lg border border-[rgb(var(--color-border))] overflow-hidden mb-8">
+          {/* Cover Image */}
+          {seller.cover_image && (
+            <div className="h-48 bg-gradient-to-r from-purple-600 to-blue-600 relative">
+              <img 
+                src={seller.cover_image} 
+                alt={`${seller.business_name} cover`}
+                className="w-full h-full object-cover"
               />
-              <VerificationBadge 
-                isVerified={seller.user?.is_verified || false} 
-                type="user" 
-                size="lg" 
-                className="absolute -bottom-2 -right-2"
-              />
+              <div className="absolute inset-0 bg-black bg-opacity-30" />
             </div>
+          )}
+          
+          <div className="p-8">
+            <div className="flex flex-col md:flex-row items-start md:items-center space-y-6 md:space-y-0 md:space-x-8">
+              <div className="flex-shrink-0 relative">
+                <ProfilePicture
+                  src={seller.business_logo || seller.user?.profile_picture || seller.user?.google_picture}
+                  size="xl"
+                  className="border-4 border-purple-200"
+                />
+                <VerificationBadge 
+                  isVerified={seller.user?.is_verified || false} 
+                  type="user" 
+                  size="lg" 
+                  className="absolute -bottom-2 -right-2"
+                />
+              </div>
             
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">

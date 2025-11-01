@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FiUser, FiBell, FiShield, FiCreditCard, FiGlobe, FiSave } from "react-icons/fi";
+import { FiUser, FiBell, FiShield, FiCreditCard, FiGlobe, FiSave, FiImage } from "react-icons/fi";
 import Button from "../../../components/Button";
+import SellerImageUpload from "../../../components/SellerImageUpload";
 import { api } from "../../../lib/api";
 
 interface SellerSettings {
@@ -64,7 +65,11 @@ export default function SellerSettingsPage() {
     },
   });
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState("notifications");
+  const [activeTab, setActiveTab] = useState("profile");
+  const [profileImages, setProfileImages] = useState({
+    business_logo: "",
+    cover_image: ""
+  });
 
   useEffect(() => {
     fetchSettings();
@@ -103,6 +108,7 @@ export default function SellerSettingsPage() {
   };
 
   const tabs = [
+    { id: "profile", label: "Profile Images", icon: FiImage },
     { id: "notifications", label: "Notifications", icon: FiBell },
     { id: "privacy", label: "Privacy", icon: FiShield },
     { id: "business", label: "Business", icon: FiGlobe },
@@ -152,6 +158,30 @@ export default function SellerSettingsPage() {
           {/* Content */}
           <div className="flex-1">
             <div className="bg-[rgb(var(--color-card))] rounded-xl border border-[rgb(var(--color-border))] p-6">
+              {activeTab === "profile" && (
+                <div>
+                  <h2 className="text-xl font-semibold text-[rgb(var(--color-text))] mb-6">Profile Images</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <SellerImageUpload
+                      type="logo"
+                      currentImage={profileImages.business_logo}
+                      onImageChange={(url) => setProfileImages(prev => ({ ...prev, business_logo: url }))}
+                    />
+                    <SellerImageUpload
+                      type="cover"
+                      currentImage={profileImages.cover_image}
+                      onImageChange={(url) => setProfileImages(prev => ({ ...prev, cover_image: url }))}
+                    />
+                  </div>
+                  <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                    <p className="text-blue-800 dark:text-blue-200 text-sm">
+                      <strong>Tip:</strong> Your business logo will appear in seller listings and your store page. 
+                      The cover image will be displayed as the background on your store profile.
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {activeTab === "notifications" && (
                 <div>
                   <h2 className="text-xl font-semibold text-[rgb(var(--color-text))] mb-6">Notification Preferences</h2>

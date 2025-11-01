@@ -179,9 +179,9 @@ export default function SellersCarousel({ sellers, className = '' }: SellersCaro
                   <div className="absolute top-20 left-6">
                     <div className="relative">
                       <img 
-                        src={seller.avatar} 
+                        src={seller.businessLogo || seller.userProfilePicture || seller.avatar} 
                         alt={seller.name}
-                        className="w-16 h-16 rounded-full border-4 border-[rgb(var(--color-card))] shadow-lg"
+                        className="w-16 h-16 rounded-full border-4 border-[rgb(var(--color-card))] shadow-lg object-cover"
                       />
                       <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-[rgb(var(--color-card))]" />
                     </div>
