@@ -192,6 +192,7 @@ export default function SellerDetailPage() {
                 )}
               </div>
             </div>
+            </div>
           </div>
         </div>
 
