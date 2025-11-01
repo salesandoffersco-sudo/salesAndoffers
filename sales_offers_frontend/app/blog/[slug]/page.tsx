@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { FiHeart, FiMessageCircle, FiUser, FiCalendar, FiSend, FiUserPlus, FiArrowLeft, FiShare2, FiBookmark, FiMoreHorizontal, FiClock, FiEye } from "react-icons/fi";
+import { FiHeart, FiMessageCircle, FiUser, FiCalendar, FiSend, FiUserPlus, FiArrowLeft, FiShare2, FiBookmark, FiMoreHorizontal, FiClock, FiEye, FiChevronDown, FiChevronRight, FiCornerDownRight } from "react-icons/fi";
 import axios from "axios";
 import Button from "../../../components/Button";
 import ProfilePicture from "../../../components/ProfilePicture";
@@ -44,6 +44,8 @@ interface Comment {
   };
   content: string;
   created_at: string;
+  replies?: Comment[];
+  parent_id?: number;
 }
 
 export default function BlogPostPage() {
@@ -51,6 +53,9 @@ export default function BlogPostPage() {
   const [post, setPost] = useState<BlogPost | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
+  const [replyingTo, setReplyingTo] = useState<number | null>(null);
+  const [replyContent, setReplyContent] = useState("");
+  const [expandedReplies, setExpandedReplies] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -123,6 +128,47 @@ export default function BlogPostPage() {
     } catch (error) {
       console.error("Error posting comment:", error);
     }
+  };
+
+  const handleReply = async (e: React.FormEvent, parentId: number) => {
+    e.preventDefault();
+    if (!replyContent.trim() || !isLoggedIn || !post) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        `${API_BASE_URL}/api/blog/posts/${post.id}/comments/`,
+        { content: replyContent, parent_id: parentId },
+        { headers: { Authorization: `Token ${token}` } }
+      );
+      
+      // Add reply to the parent comment
+      setComments(comments.map(comment => {
+        if (comment.id === parentId) {
+          return {
+            ...comment,
+            replies: [response.data, ...(comment.replies || [])]
+          };
+        }
+        return comment;
+      }));
+      
+      setReplyContent("");
+      setReplyingTo(null);
+      setPost({ ...post, comments_count: post.comments_count + 1 });
+    } catch (error) {
+      console.error("Error posting reply:", error);
+    }
+  };
+
+  const toggleReplies = (commentId: number) => {
+    const newExpanded = new Set(expandedReplies);
+    if (newExpanded.has(commentId)) {
+      newExpanded.delete(commentId);
+    } else {
+      newExpanded.add(commentId);
+    }
+    setExpandedReplies(newExpanded);
   };
 
   const formatDate = (dateString: string) => {
@@ -371,7 +417,7 @@ export default function BlogPostPage() {
             )}
 
             <div className="space-y-8">
-              {comments.map((comment) => (
+              {comments.filter(comment => !comment.parent_id).map((comment) => (
                 <div key={comment.id} className="group">
                   <div className="flex space-x-4">
                     <div className="flex-shrink-0">
@@ -396,8 +442,107 @@ export default function BlogPostPage() {
                             {formatDateTime(comment.created_at)}
                           </span>
                         </div>
-                        <p className="text-[rgb(var(--color-text))] leading-relaxed">{comment.content}</p>
+                        <p className="text-[rgb(var(--color-text))] leading-relaxed mb-4">{comment.content}</p>
+                        
+                        {/* Comment Actions */}
+                        <div className="flex items-center space-x-4 text-sm">
+                          {isLoggedIn && (
+                            <button
+                              onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
+                              className="text-[rgb(var(--color-muted))] hover:text-purple-600 transition-colors"
+                            >
+                              Reply
+                            </button>
+                          )}
+                          {comment.replies && comment.replies.length > 0 && (
+                            <button
+                              onClick={() => toggleReplies(comment.id)}
+                              className="flex items-center space-x-1 text-[rgb(var(--color-muted))] hover:text-purple-600 transition-colors"
+                            >
+                              {expandedReplies.has(comment.id) ? (
+                                <FiChevronDown className="w-4 h-4" />
+                              ) : (
+                                <FiChevronRight className="w-4 h-4" />
+                              )}
+                              <span>{comment.replies.length} {comment.replies.length === 1 ? 'reply' : 'replies'}</span>
+                            </button>
+                          )}
+                        </div>
                       </div>
+                      
+                      {/* Reply Form */}
+                      {replyingTo === comment.id && (
+                        <form onSubmit={(e) => handleReply(e, comment.id)} className="mt-4 ml-4">
+                          <div className="bg-[rgb(var(--color-card))] rounded-2xl p-4 border border-[rgb(var(--color-border))]">
+                            <textarea
+                              value={replyContent}
+                              onChange={(e) => setReplyContent(e.target.value)}
+                              placeholder={`Reply to ${comment.user.first_name}...`}
+                              rows={3}
+                              className="w-full px-0 py-0 border-0 bg-transparent text-[rgb(var(--color-text))] placeholder-[rgb(var(--color-muted))] focus:ring-0 focus:outline-none resize-none"
+                            />
+                            <div className="flex items-center justify-between mt-3 pt-3 border-t border-[rgb(var(--color-border))]">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setReplyingTo(null);
+                                  setReplyContent("");
+                                }}
+                                className="text-sm text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-text))] transition-colors"
+                              >
+                                Cancel
+                              </button>
+                              <Button 
+                                type="submit" 
+                                variant="primary" 
+                                size="sm"
+                                disabled={!replyContent.trim()}
+                              >
+                                <FiSend className="w-3 h-3 mr-2" />
+                                Reply
+                              </Button>
+                            </div>
+                          </div>
+                        </form>
+                      )}
+                      
+                      {/* Replies */}
+                      {comment.replies && comment.replies.length > 0 && expandedReplies.has(comment.id) && (
+                        <div className="mt-6 ml-8 space-y-4">
+                          {comment.replies.map((reply) => (
+                            <div key={reply.id} className="flex space-x-3">
+                              <FiCornerDownRight className="w-4 h-4 text-[rgb(var(--color-muted))] mt-3 flex-shrink-0" />
+                              <div className="flex space-x-3 flex-1">
+                                <div className="flex-shrink-0">
+                                  <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center overflow-hidden">
+                                    {reply.user.profile_picture ? (
+                                      <img src={reply.user.profile_picture} alt={reply.user.username} className="w-full h-full object-cover" />
+                                    ) : (
+                                      <FiUser className="w-5 h-5 text-white" />
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="flex-1">
+                                  <div className="bg-[rgb(var(--color-card))] rounded-xl p-4 border border-[rgb(var(--color-border))]">
+                                    <div className="flex items-center space-x-2 mb-2">
+                                      <span className="font-semibold text-[rgb(var(--color-text))] text-sm">
+                                        {reply.user.first_name} {reply.user.last_name}
+                                      </span>
+                                      <span className="text-xs text-[rgb(var(--color-muted))]">
+                                        @{reply.user.username}
+                                      </span>
+                                      <span className="text-xs text-[rgb(var(--color-muted))]">
+                                        {formatDateTime(reply.created_at)}
+                                      </span>
+                                    </div>
+                                    <p className="text-[rgb(var(--color-text))] text-sm leading-relaxed">{reply.content}</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
