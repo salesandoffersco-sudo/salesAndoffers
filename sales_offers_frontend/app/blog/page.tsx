@@ -205,8 +205,10 @@ export default function BlogPage() {
   };
 
   const truncateContent = (content: string, maxLength: number = 200) => {
-    if (content.length <= maxLength) return content;
-    return content.substring(0, maxLength) + "...";
+    // Remove HTML tags for preview
+    const textContent = content.replace(/<[^>]*>/g, '');
+    if (textContent.length <= maxLength) return textContent;
+    return textContent.substring(0, maxLength).trim() + "...";
   };
 
   return (
@@ -286,30 +288,39 @@ export default function BlogPage() {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
             {posts.map((post) => (
               <article
                 key={post.id}
-                className="bg-[rgb(var(--color-card))] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-[rgb(var(--color-border))] group"
+                className="bg-[rgb(var(--color-card))] rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-[rgb(var(--color-border))] group hover:-translate-y-2 backdrop-blur-sm"
               >
-                {post.image && (
-                  <div className="aspect-video bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/20 dark:to-blue-900/20 overflow-hidden">
-                    <img 
-                      src={post.image} 
-                      alt={post.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                )}
+                <Link href={`/blog/${post.slug}`} className="block">
+                  {post.image ? (
+                    <div className="aspect-[16/10] bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/20 dark:to-blue-900/20 overflow-hidden relative">
+                      <img 
+                        src={post.image} 
+                        alt={post.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    </div>
+                  ) : (
+                    <div className="aspect-[16/10] bg-gradient-to-br from-purple-500/10 via-blue-500/10 to-indigo-500/10 flex items-center justify-center">
+                      <div className="text-6xl opacity-20">
+                        {post.title.charAt(0).toUpperCase()}
+                      </div>
+                    </div>
+                  )}
+                </Link>
                 
-                <div className="p-6">
-                  <div className="flex items-center space-x-3 mb-4">
+                <div className="p-6 space-y-4">
+                  <div className="flex items-center space-x-3">
                     <div className="relative">
-                      <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center overflow-hidden">
+                      <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center overflow-hidden ring-2 ring-white/10">
                         {post.author.profile_picture ? (
                           <img src={post.author.profile_picture} alt={post.author.username} className="w-full h-full object-cover" />
                         ) : (
-                          <FiUser className="w-5 h-5 text-white" />
+                          <FiUser className="w-6 h-6 text-white" />
                         )}
                       </div>
                       <VerificationBadge 
@@ -319,49 +330,55 @@ export default function BlogPage() {
                         className="absolute -bottom-1 -right-1"
                       />
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <p className="font-semibold text-[rgb(var(--color-text))] text-sm">
+                        <p className="font-semibold text-[rgb(var(--color-text))] text-sm truncate">
                           {post.author.first_name} {post.author.last_name}
                         </p>
-                        <span className="text-[rgb(var(--color-muted))] text-sm">@{post.author.username}</span>
+                        <span className="text-[rgb(var(--color-muted))] text-xs">@{post.author.username}</span>
                       </div>
-                      <div className="flex items-center text-xs text-[rgb(var(--color-muted))]">
+                      <div className="flex items-center text-xs text-[rgb(var(--color-muted))] mt-1">
                         <FiCalendar className="w-3 h-3 mr-1" />
                         {formatDate(post.created_at)}
                       </div>
                     </div>
                   </div>
 
-                  <Link href={`/blog/${post.slug}`}>
-                    <h2 className="text-xl font-bold text-[rgb(var(--color-text))] mb-3 hover:text-purple-600 dark:hover:text-purple-400 transition-colors line-clamp-2">
+                  <Link href={`/blog/${post.slug}`} className="block">
+                    <h2 className="text-xl font-bold text-[rgb(var(--color-text))] mb-3 hover:text-purple-600 dark:hover:text-purple-400 transition-colors line-clamp-2 leading-tight">
                       {post.title}
                     </h2>
                   </Link>
 
-                  <p className="text-[rgb(var(--color-muted))] mb-4 line-clamp-3">
-                    {truncateContent(post.content)}
-                  </p>
+                  <div className="text-[rgb(var(--color-muted))] text-sm leading-relaxed line-clamp-3" 
+                       dangerouslySetInnerHTML={{ __html: truncateContent(post.content.replace(/<[^>]*>/g, ''), 150) }} />
 
                   <div className="flex items-center justify-between pt-4 border-t border-[rgb(var(--color-border))]">
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-6">
                       <button
-                        onClick={() => handleLike(post.id)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleLike(post.id);
+                        }}
                         disabled={!isLoggedIn}
-                        className={`flex items-center space-x-1 transition-colors ${
-                          post.is_liked ? 'text-red-500' : 'text-[rgb(var(--color-muted))] hover:text-red-500'
-                        } ${!isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        className={`flex items-center space-x-2 transition-all duration-200 ${
+                          post.is_liked 
+                            ? 'text-red-500 scale-105' 
+                            : 'text-[rgb(var(--color-muted))] hover:text-red-500 hover:scale-105'
+                        } ${!isLoggedIn ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                       >
-                        <FiHeart className={`w-4 h-4 ${post.is_liked ? 'fill-current' : ''}`} />
-                        <span className="text-sm">{post.likes_count}</span>
+                        <FiHeart className={`w-5 h-5 ${post.is_liked ? 'fill-current' : ''}`} />
+                        <span className="text-sm font-medium">{post.likes_count}</span>
                       </button>
-                      <Link href={`/blog/${post.slug}`} className="flex items-center space-x-1 text-[rgb(var(--color-muted))] hover:text-purple-600">
-                        <FiMessageCircle className="w-4 h-4" />
-                        <span className="text-sm">{post.comments_count}</span>
+                      <Link href={`/blog/${post.slug}`} className="flex items-center space-x-2 text-[rgb(var(--color-muted))] hover:text-purple-600 transition-colors">
+                        <FiMessageCircle className="w-5 h-5" />
+                        <span className="text-sm font-medium">{post.comments_count}</span>
                       </Link>
                     </div>
                     <Link href={`/blog/${post.slug}`}>
-                      <Button variant="outline" size="sm">Read More</Button>
+                      <Button variant="outline" size="sm" className="hover:bg-purple-50 dark:hover:bg-purple-900/20">
+                        Read More
+                      </Button>
                     </Link>
                   </div>
                 </div>

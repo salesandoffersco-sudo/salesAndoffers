@@ -3,10 +3,11 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { FiHeart, FiMessageCircle, FiUser, FiCalendar, FiSend, FiUserPlus } from "react-icons/fi";
+import { FiHeart, FiMessageCircle, FiUser, FiCalendar, FiSend, FiUserPlus, FiArrowLeft, FiShare2, FiBookmark, FiMoreHorizontal, FiClock, FiEye } from "react-icons/fi";
 import axios from "axios";
 import Button from "../../../components/Button";
 import ProfilePicture from "../../../components/ProfilePicture";
+import VerificationBadge from "../../../components/VerificationBadge";
 import { API_BASE_URL } from "../../../lib/api";
 
 interface BlogPost {
@@ -21,11 +22,15 @@ interface BlogPost {
     first_name: string;
     last_name: string;
     profile_picture?: string;
+    is_verified?: boolean;
   };
   created_at: string;
+  updated_at?: string;
   likes_count: number;
   comments_count: number;
+  views_count?: number;
   is_liked: boolean;
+  reading_time?: number;
 }
 
 interface Comment {
@@ -125,10 +130,34 @@ export default function BlogPostPage() {
     return date.toLocaleDateString('en-US', { 
       year: 'numeric', 
       month: 'long', 
+      day: 'numeric'
+    });
+  };
+
+  const formatDateTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  const calculateReadingTime = (content: string) => {
+    const wordsPerMinute = 200;
+    const textContent = content.replace(/<[^>]*>/g, '');
+    const wordCount = textContent.split(/\s+/).length;
+    return Math.ceil(wordCount / wordsPerMinute);
+  };
+
+  const renderContent = (content: string) => {
+    return {
+      __html: content
+        .replace(/\n/g, '<br>')
+        .replace(/<p><br><\/p>/g, '<p>&nbsp;</p>')
+    };
   };
 
   if (loading) {
@@ -154,133 +183,239 @@ export default function BlogPostPage() {
 
   return (
     <div className="min-h-screen bg-[rgb(var(--color-bg))]">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <article className="bg-[rgb(var(--color-card))] rounded-2xl shadow-lg border border-[rgb(var(--color-border))] overflow-hidden">
-          {post.image && (
-            <div className="aspect-video bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/20 dark:to-blue-900/20">
-              <img src={post.image} alt={post.title} className="w-full h-full object-cover" />
+      {/* Navigation Bar */}
+      <div className="sticky top-0 z-40 bg-[rgb(var(--color-card))]/80 backdrop-blur-md border-b border-[rgb(var(--color-border))]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <Link href="/blog" className="flex items-center space-x-2 text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-text))] transition-colors">
+              <FiArrowLeft className="w-5 h-5" />
+              <span className="font-medium">Back to Blog</span>
+            </Link>
+            <div className="flex items-center space-x-3">
+              <Button variant="ghost" size="sm">
+                <FiShare2 className="w-4 h-4" />
+              </Button>
+              <Button variant="ghost" size="sm">
+                <FiBookmark className="w-4 h-4" />
+              </Button>
+              <Button variant="ghost" size="sm">
+                <FiMoreHorizontal className="w-4 h-4" />
+              </Button>
             </div>
-          )}
+          </div>
+        </div>
+      </div>
 
-          <div className="p-8">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center space-x-4">
-                <ProfilePicture
-                  src={post.author.profile_picture}
-                  alt={post.author.username}
-                  size="lg"
-                  clickable={true}
-                />
-                <div>
-                  <Link href={`/blog/profile/${post.author.id}`} className="font-semibold text-[rgb(var(--color-text))] hover:text-purple-600">
-                    {post.author.first_name} {post.author.last_name}
-                  </Link>
-                  <p className="text-sm text-[rgb(var(--color-muted))]">@{post.author.username}</p>
-                  <div className="flex items-center text-xs text-[rgb(var(--color-muted))] mt-1">
-                    <FiCalendar className="w-3 h-3 mr-1" />
-                    {formatDate(post.created_at)}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Hero Image */}
+        {post.image && (
+          <div className="aspect-[21/9] bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/20 dark:to-blue-900/20 rounded-3xl overflow-hidden mb-8 shadow-2xl">
+            <img src={post.image} alt={post.title} className="w-full h-full object-cover" />
+          </div>
+        )}
+
+        <article className="bg-[rgb(var(--color-card))] rounded-3xl shadow-xl border border-[rgb(var(--color-border))] overflow-hidden">
+          <div className="p-8 lg:p-12">
+            {/* Article Header */}
+            <div className="mb-8">
+              <h1 className="text-4xl lg:text-5xl font-bold text-[rgb(var(--color-text))] mb-6 leading-tight">
+                {post.title}
+              </h1>
+              
+              {/* Article Meta */}
+              <div className="flex flex-wrap items-center gap-6 text-sm text-[rgb(var(--color-muted))] mb-8">
+                <div className="flex items-center space-x-2">
+                  <FiCalendar className="w-4 h-4" />
+                  <span>{formatDate(post.created_at)}</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <FiClock className="w-4 h-4" />
+                  <span>{calculateReadingTime(post.content)} min read</span>
+                </div>
+                {post.views_count && (
+                  <div className="flex items-center space-x-2">
+                    <FiEye className="w-4 h-4" />
+                    <span>{post.views_count} views</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Author Info */}
+              <div className="flex items-center justify-between p-6 bg-[rgb(var(--color-bg))] rounded-2xl border border-[rgb(var(--color-border))]">
+                <div className="flex items-center space-x-4">
+                  <div className="relative">
+                    <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center overflow-hidden ring-4 ring-white/10">
+                      {post.author.profile_picture ? (
+                        <img src={post.author.profile_picture} alt={post.author.username} className="w-full h-full object-cover" />
+                      ) : (
+                        <FiUser className="w-8 h-8 text-white" />
+                      )}
+                    </div>
+                    <VerificationBadge 
+                      isVerified={post.author.is_verified || false} 
+                      type="user" 
+                      size="md" 
+                      className="absolute -bottom-1 -right-1"
+                    />
+                  </div>
+                  <div>
+                    <Link href={`/blog/profile/${post.author.id}`} className="text-lg font-semibold text-[rgb(var(--color-text))] hover:text-purple-600 transition-colors">
+                      {post.author.first_name} {post.author.last_name}
+                    </Link>
+                    <p className="text-[rgb(var(--color-muted))]">@{post.author.username}</p>
+                    <p className="text-sm text-[rgb(var(--color-muted))] mt-1">Published {formatDate(post.created_at)}</p>
                   </div>
                 </div>
+                <Link href={`/blog/profile/${post.author.id}`}>
+                  <Button variant="primary" size="sm" className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
+                    <FiUserPlus className="w-4 h-4 mr-2" />
+                    Follow
+                  </Button>
+                </Link>
               </div>
-              <Link href={`/blog/profile/${post.author.id}`}>
-                <Button variant="outline" size="sm">
-                  <FiUserPlus className="w-4 h-4 mr-2" />
-                  Follow
-                </Button>
-              </Link>
             </div>
 
-            <h1 className="text-3xl md:text-4xl font-bold text-[rgb(var(--color-text))] mb-6">
-              {post.title}
-            </h1>
-
-            <div className="prose prose-lg max-w-none text-[rgb(var(--color-text))] mb-8">
-              {post.content.split('\n').map((paragraph, index) => (
-                <p key={index} className="mb-4 leading-relaxed">
-                  {paragraph}
-                </p>
-              ))}
+            {/* Article Content */}
+            <div className="prose prose-lg prose-purple max-w-none text-[rgb(var(--color-text))] mb-12">
+              <div 
+                className="leading-relaxed text-lg"
+                dangerouslySetInnerHTML={renderContent(post.content)}
+                style={{
+                  lineHeight: '1.8',
+                  fontSize: '1.125rem'
+                }}
+              />
             </div>
 
-            <div className="flex items-center justify-between py-6 border-t border-[rgb(var(--color-border))]">
-              <div className="flex items-center space-x-6">
+            {/* Article Actions */}
+            <div className="flex items-center justify-between py-8 border-t border-[rgb(var(--color-border))]">
+              <div className="flex items-center space-x-8">
                 <button
                   onClick={handleLike}
                   disabled={!isLoggedIn}
-                  className={`flex items-center space-x-2 transition-colors ${
-                    post.is_liked ? 'text-red-500' : 'text-[rgb(var(--color-muted))] hover:text-red-500'
-                  } ${!isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`flex items-center space-x-3 px-4 py-2 rounded-full transition-all duration-200 ${
+                    post.is_liked 
+                      ? 'text-red-500 bg-red-50 dark:bg-red-900/20 scale-105' 
+                      : 'text-[rgb(var(--color-muted))] hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:scale-105'
+                  } ${!isLoggedIn ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                 >
-                  <FiHeart className={`w-5 h-5 ${post.is_liked ? 'fill-current' : ''}`} />
-                  <span>{post.likes_count}</span>
+                  <FiHeart className={`w-6 h-6 ${post.is_liked ? 'fill-current' : ''}`} />
+                  <span className="font-medium">{post.likes_count}</span>
                 </button>
-                <div className="flex items-center space-x-2 text-[rgb(var(--color-muted))]">
-                  <FiMessageCircle className="w-5 h-5" />
-                  <span>{post.comments_count}</span>
+                <div className="flex items-center space-x-3 px-4 py-2 rounded-full text-[rgb(var(--color-muted))]">
+                  <FiMessageCircle className="w-6 h-6" />
+                  <span className="font-medium">{post.comments_count}</span>
                 </div>
+              </div>
+              <div className="flex items-center space-x-3">
+                <Button variant="ghost" size="sm">
+                  <FiShare2 className="w-4 h-4 mr-2" />
+                  Share
+                </Button>
+                <Button variant="ghost" size="sm">
+                  <FiBookmark className="w-4 h-4 mr-2" />
+                  Save
+                </Button>
               </div>
             </div>
           </div>
         </article>
 
         {/* Comments Section */}
-        <div className="mt-8 bg-[rgb(var(--color-card))] rounded-2xl shadow-lg border border-[rgb(var(--color-border))] p-8">
-          <h2 className="text-2xl font-bold text-[rgb(var(--color-text))] mb-6">
-            Comments ({comments.length})
-          </h2>
-
-          {isLoggedIn && (
-            <form onSubmit={handleComment} className="mb-8">
-              <div className="flex space-x-4">
-                <textarea
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  placeholder="Share your thoughts..."
-                  rows={3}
-                  className="flex-1 px-4 py-3 border border-[rgb(var(--color-border))] rounded-lg bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
-                />
-                <Button type="submit" variant="primary" disabled={!newComment.trim()}>
-                  <FiSend className="w-4 h-4" />
-                </Button>
+        <div className="mt-8 bg-[rgb(var(--color-card))] rounded-3xl shadow-xl border border-[rgb(var(--color-border))] overflow-hidden">
+          <div className="p-8 lg:p-12">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-3xl font-bold text-[rgb(var(--color-text))]">
+                Discussion
+              </h2>
+              <div className="text-[rgb(var(--color-muted))] text-sm">
+                {comments.length} {comments.length === 1 ? 'comment' : 'comments'}
               </div>
-            </form>
-          )}
+            </div>
 
-          <div className="space-y-6">
-            {comments.map((comment) => (
-              <div key={comment.id} className="flex space-x-4">
-                <ProfilePicture
-                  src={comment.user.profile_picture}
-                  alt={comment.user.username}
-                  size="md"
-                  clickable={true}
-                />
-                <div className="flex-1">
-                  <div className="bg-[rgb(var(--color-bg))] rounded-lg p-4">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <span className="font-semibold text-[rgb(var(--color-text))]">
-                        {comment.user.first_name} {comment.user.last_name}
-                      </span>
-                      <span className="text-sm text-[rgb(var(--color-muted))]">
-                        @{comment.user.username}
-                      </span>
-                      <span className="text-xs text-[rgb(var(--color-muted))]">
-                        {formatDate(comment.created_at)}
-                      </span>
+            {isLoggedIn ? (
+              <form onSubmit={handleComment} className="mb-12">
+                <div className="bg-[rgb(var(--color-bg))] rounded-2xl p-6 border border-[rgb(var(--color-border))]">
+                  <textarea
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    placeholder="Join the discussion... Share your thoughts, ask questions, or provide insights."
+                    rows={4}
+                    className="w-full px-0 py-0 border-0 bg-transparent text-[rgb(var(--color-text))] placeholder-[rgb(var(--color-muted))] focus:ring-0 focus:outline-none resize-none text-lg"
+                  />
+                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-[rgb(var(--color-border))]">
+                    <div className="text-sm text-[rgb(var(--color-muted))]">
+                      Be respectful and constructive in your comments
                     </div>
-                    <p className="text-[rgb(var(--color-text))]">{comment.content}</p>
+                    <Button 
+                      type="submit" 
+                      variant="primary" 
+                      disabled={!newComment.trim()}
+                      className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                    >
+                      <FiSend className="w-4 h-4 mr-2" />
+                      Post Comment
+                    </Button>
                   </div>
                 </div>
+              </form>
+            ) : (
+              <div className="mb-12 p-8 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/10 dark:to-blue-900/10 rounded-2xl border border-[rgb(var(--color-border))] text-center">
+                <FiMessageCircle className="w-12 h-12 mx-auto mb-4 text-[rgb(var(--color-muted))]" />
+                <h3 className="text-lg font-semibold text-[rgb(var(--color-text))] mb-2">Join the Discussion</h3>
+                <p className="text-[rgb(var(--color-muted))] mb-4">Sign in to share your thoughts and engage with the community</p>
+                <Link href="/login">
+                  <Button variant="primary">Sign In to Comment</Button>
+                </Link>
               </div>
-            ))}
-          </div>
+            )}
 
-          {comments.length === 0 && (
-            <div className="text-center py-8 text-[rgb(var(--color-muted))]">
-              <FiMessageCircle className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <p>No comments yet. Be the first to share your thoughts!</p>
+            <div className="space-y-8">
+              {comments.map((comment) => (
+                <div key={comment.id} className="group">
+                  <div className="flex space-x-4">
+                    <div className="flex-shrink-0">
+                      <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center overflow-hidden">
+                        {comment.user.profile_picture ? (
+                          <img src={comment.user.profile_picture} alt={comment.user.username} className="w-full h-full object-cover" />
+                        ) : (
+                          <FiUser className="w-6 h-6 text-white" />
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="bg-[rgb(var(--color-bg))] rounded-2xl p-6 border border-[rgb(var(--color-border))] group-hover:border-purple-200 dark:group-hover:border-purple-800 transition-colors">
+                        <div className="flex items-center space-x-3 mb-3">
+                          <span className="font-semibold text-[rgb(var(--color-text))]">
+                            {comment.user.first_name} {comment.user.last_name}
+                          </span>
+                          <span className="text-sm text-[rgb(var(--color-muted))]">
+                            @{comment.user.username}
+                          </span>
+                          <span className="text-xs text-[rgb(var(--color-muted))]">
+                            {formatDateTime(comment.created_at)}
+                          </span>
+                        </div>
+                        <p className="text-[rgb(var(--color-text))] leading-relaxed">{comment.content}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-          )}
+
+            {comments.length === 0 && (
+              <div className="text-center py-16">
+                <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/20 dark:to-blue-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <FiMessageCircle className="w-12 h-12 text-[rgb(var(--color-muted))]" />
+                </div>
+                <h3 className="text-xl font-semibold text-[rgb(var(--color-text))] mb-2">Start the Conversation</h3>
+                <p className="text-[rgb(var(--color-muted))] max-w-md mx-auto">
+                  Be the first to share your thoughts on this post. Your insights could spark an interesting discussion!
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
