@@ -298,7 +298,7 @@ export default function Navbar() {
           <div className="md:hidden flex items-center space-x-3">
             <CartIcon />
             {isLoggedIn && <NotificationBell />}
-            <button onClick={toggleMenu} className="text-[rgb(var(--color-muted))] focus:outline-none">
+            <button onClick={toggleMenu} className="p-2 text-[rgb(var(--color-muted))] focus:outline-none">
               <FiMenu className="h-6 w-6" />
             </button>
           </div>
