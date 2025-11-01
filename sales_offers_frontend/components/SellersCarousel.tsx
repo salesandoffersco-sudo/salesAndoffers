@@ -179,7 +179,7 @@ export default function SellersCarousel({ sellers, className = '' }: SellersCaro
                   <div className="absolute top-20 left-6">
                     <div className="relative">
                       <img 
-                        src={seller.businessLogo || seller.userProfilePicture || seller.avatar} 
+                        src={(seller as any).businessLogo || (seller as any).userProfilePicture || seller.avatar} 
                         alt={seller.name}
                         className="w-16 h-16 rounded-full border-4 border-[rgb(var(--color-card))] shadow-lg object-cover"
                       />
