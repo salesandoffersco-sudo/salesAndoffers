@@ -8,12 +8,12 @@ interface CarouselItem {
   id: number;
   title: string;
   description: string;
-  price: string;
-  originalPrice?: string;
-  rating: number;
-  image: string;
+  discounted_price: number;
+  original_price: number;
+  average_rating: number;
+  main_image: string;
   category: string;
-  discount?: number;
+  discount_percentage?: number;
 }
 
 interface HeroCarouselProps {
@@ -71,7 +71,7 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
   };
 
   const updateBackground = () => {
-    const activeSlideImg = items[currentIndex]?.image;
+    const activeSlideImg = items[currentIndex]?.main_image;
     if (!activeSlideImg) return;
     
     const targetBg = isBg1Active ? '.hero-bg-2' : '.hero-bg-1';
@@ -106,18 +106,13 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
     startAutoPlay();
   };
 
-  const parsePrice = (priceStr: string): number => {
-    const numericValue = priceStr.replace(/[^0-9.]/g, '');
-    return parseFloat(numericValue) || 0;
-  };
-
   const handleAddToCart = (item: CarouselItem) => {
     addToCart({
       dealId: item.id,
       title: item.title,
-      originalPrice: parsePrice(item.originalPrice || item.price),
-      discountedPrice: parsePrice(item.price),
-      discountPercentage: item.discount || 0,
+      originalPrice: item.original_price,
+      discountedPrice: item.discounted_price,
+      discountPercentage: item.discount_percentage || 0,
       maxPurchase: 10,
       minPurchase: 1,
       availableVouchers: 100,
@@ -180,7 +175,7 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
       <div 
         className={`hero-bg-1 absolute inset-0 bg-cover bg-center transition-opacity duration-1200 ${isBg1Active ? 'opacity-100' : 'opacity-0'}`}
         style={{
-          backgroundImage: `url(${currentItem?.image})`,
+          backgroundImage: `url(${currentItem?.main_image})`,
           filter: 'blur(25px) brightness(0.6)',
           transform: 'scale(1.1)'
         }}
@@ -256,7 +251,7 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
                   }}
                 >
                   <img 
-                    src={item.image} 
+                    src={item.main_image} 
                     alt={item.title}
                     className="w-full h-full object-cover"
                   />
@@ -284,9 +279,12 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
                     <div className="space-y-1">
                       <h3 className="text-xs font-bold truncate leading-tight">{item.title}</h3>
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold">{item.price}</span>
+                        <div className="flex items-center gap-1">
+                          <span className="text-xs font-bold">KES {item.discounted_price}</span>
+                          <span className="text-xs text-gray-400 line-through">KES {item.original_price}</span>
+                        </div>
                         <div className="flex text-yellow-400" style={{fontSize: '10px'}}>
-                          {generateStars(item.rating).slice(0, 3)}
+                          {generateStars(item.average_rating).slice(0, 3)}
                         </div>
                       </div>
                       <div className="flex gap-1">
@@ -295,7 +293,7 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
                             e.stopPropagation();
                             handleViewDetails(item);
                           }}
-                          className="bg-blue-600 text-white px-2 py-1 rounded text-xs font-medium flex-1"
+                          className="bg-blue-600 text-white px-2 py-1 rounded-md text-xs font-medium flex-1"
                         >
                           View
                         </button>
@@ -304,7 +302,7 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
                             e.stopPropagation();
                             handleAddToCart(item);
                           }}
-                          className="bg-white text-indigo-600 px-2 py-1 rounded text-xs font-medium flex-1 flex items-center justify-center gap-1"
+                          className="bg-white text-indigo-600 px-2 py-1 rounded-md text-xs font-medium flex-1 flex items-center justify-center gap-1"
                         >
                           <FiShoppingCart className="w-2 h-2" />
                           Cart
@@ -341,11 +339,16 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
         {/* Right Details - Desktop Only */}
         <div className="hidden lg:block flex-1 text-white text-right pl-8 relative z-20">
           <div className="details-content opacity-0 transform translate-y-5 transition-all duration-600">
-            <div className="text-4xl xl:text-5xl font-bold mb-2">
-              {currentItem?.price}
+            <div className="space-y-2">
+              <div className="text-3xl xl:text-4xl font-bold">
+                KES {currentItem?.discounted_price}
+              </div>
+              <div className="text-xl xl:text-2xl text-gray-300 line-through">
+                KES {currentItem?.original_price}
+              </div>
             </div>
             <div className="flex justify-end text-yellow-400 text-2xl xl:text-3xl space-x-1">
-              {generateStars(currentItem?.rating || 0)}
+              {generateStars(currentItem?.average_rating || 0)}
             </div>
           </div>
         </div>
