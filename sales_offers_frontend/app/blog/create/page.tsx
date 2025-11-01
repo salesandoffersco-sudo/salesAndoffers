@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { FiSave, FiArrowLeft } from "react-icons/fi";
 import axios from "axios";
 import Button from "../../../components/Button";
+import BlogImageUpload from "../../../components/BlogImageUpload";
 import { API_BASE_URL } from "../../../lib/api";
 
 export default function CreateBlogPage() {
@@ -83,20 +84,11 @@ export default function CreateBlogPage() {
               />
             </div>
 
-            <div>
-              <label htmlFor="image" className="block text-sm font-medium text-[rgb(var(--color-text))] mb-2">
-                Featured Image URL (Optional)
-              </label>
-              <input
-                type="url"
-                id="image"
-                name="image"
-                value={formData.image}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border border-[rgb(var(--color-border))] rounded-lg bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="https://example.com/image.jpg"
-              />
-            </div>
+            <BlogImageUpload
+              currentImage={formData.image}
+              onImageChange={(url) => setFormData({ ...formData, image: url })}
+              label="Featured Image"
+            />
 
             <div>
               <label htmlFor="content" className="block text-sm font-medium text-[rgb(var(--color-text))] mb-2">
