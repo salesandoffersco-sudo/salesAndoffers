@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FiSave, FiArrowLeft } from "react-icons/fi";
 import axios from "axios";
+import { Editor } from '@tinymce/tinymce-react';
 import Button from "../../../components/Button";
 import BlogImageUpload from "../../../components/BlogImageUpload";
 import { API_BASE_URL } from "../../../lib/api";
@@ -94,15 +95,24 @@ export default function CreateBlogPage() {
               <label htmlFor="content" className="block text-sm font-medium text-[rgb(var(--color-text))] mb-2">
                 Content
               </label>
-              <textarea
-                id="content"
-                name="content"
+              <Editor
+                apiKey="no-api-key"
                 value={formData.content}
-                onChange={handleChange}
-                required
-                rows={15}
-                className="w-full px-4 py-3 border border-[rgb(var(--color-border))] rounded-lg bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
-                placeholder="Write your post content here..."
+                onEditorChange={(content) => setFormData({ ...formData, content })}
+                init={{
+                  height: 400,
+                  menubar: false,
+                  plugins: [
+                    'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                    'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                    'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+                  ],
+                  toolbar: 'undo redo | blocks | ' +
+                    'bold italic forecolor | alignleft aligncenter ' +
+                    'alignright alignjustify | bullist numlist outdent indent | ' +
+                    'removeformat | help',
+                  content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+                }}
               />
             </div>
 
