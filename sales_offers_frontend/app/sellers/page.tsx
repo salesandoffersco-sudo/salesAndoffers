@@ -55,6 +55,7 @@ export default function SellersPage() {
   const fetchSellers = async () => {
     try {
       const response = await api.get('/api/sellers/');
+      console.log('Sellers API response:', response.data);
       setSellers(response.data);
       setLoading(false);
     } catch (error) {
@@ -122,22 +123,29 @@ export default function SellersPage() {
       {/* Featured Sellers Carousel */}
       {sellers.length > 0 && (
         <SellersCarousel 
-          sellers={sellers.map(seller => ({
-            id: seller.id,
-            name: seller.user ? `${seller.user.first_name} ${seller.user.last_name}` : seller.business_name,
-            businessName: seller.business_name,
-            category: seller.total_deals > 10 ? 'Top Seller' : seller.total_deals > 5 ? 'Active Seller' : 'New Seller',
-            rating: Number(seller.rating || 0),
-            totalSales: seller.total_deals || 0,
-            followers: seller.total_reviews || 0,
-            location: seller.address,
-            avatar: seller.profile?.company_logo || seller.business_logo || seller.user?.profile_picture || seller.user?.google_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(seller.business_name)}&background=6366f1&color=fff`,
-            coverImage: seller.profile?.cover_image || seller.cover_image || `https://picsum.photos/320/128?random=${seller.id}`,
-            verified: seller.is_verified,
-            specialOffer: seller.is_verified ? '✓ Verified' : seller.total_deals > 20 ? '🔥 Hot Deals' : undefined,
-            businessLogo: seller.profile?.company_logo || seller.business_logo,
-            userProfilePicture: seller.user?.profile_picture || seller.user?.google_picture
-          }))}
+          sellers={sellers.map(seller => {
+            console.log('Mapping seller:', seller.business_name, {
+              profile: seller.profile,
+              business_logo: seller.business_logo,
+              cover_image: seller.cover_image
+            });
+            return {
+              id: seller.id,
+              name: seller.user ? `${seller.user.first_name} ${seller.user.last_name}` : seller.business_name,
+              businessName: seller.business_name,
+              category: seller.total_deals > 10 ? 'Top Seller' : seller.total_deals > 5 ? 'Active Seller' : 'New Seller',
+              rating: Number(seller.rating || 0),
+              totalSales: seller.total_deals || 0,
+              followers: seller.total_reviews || 0,
+              location: seller.address,
+              avatar: seller.profile?.company_logo || seller.business_logo || seller.user?.profile_picture || seller.user?.google_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(seller.business_name)}&background=6366f1&color=fff`,
+              coverImage: seller.profile?.cover_image || seller.cover_image || `https://picsum.photos/320/128?random=${seller.id}`,
+              verified: seller.is_verified,
+              specialOffer: seller.is_verified ? '✓ Verified' : seller.total_deals > 20 ? '🔥 Hot Deals' : undefined,
+              businessLogo: seller.profile?.company_logo || seller.business_logo,
+              userProfilePicture: seller.user?.profile_picture || seller.user?.google_picture
+            };
+          })}
         />
       )}
 
