@@ -44,7 +44,7 @@ export default function BlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [filterSidebarOpen, setFilterSidebarOpen] = useState(false);
+  const [filterSidebarOpen, setFilterSidebarOpen] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({
     category: "",
@@ -343,18 +343,6 @@ export default function BlogPage() {
 
         <div className="flex gap-8">
           {/* Filter Sidebar */}
-          <div className="hidden lg:block w-80 flex-shrink-0">
-            <BlogFilterSidebar
-              isOpen={true}
-              onClose={() => {}}
-              selectedCategory={filters.category}
-              selectedSubcategory={filters.subcategory}
-              selectedSort={filters.sort}
-              onFilterChange={handleFilterChange}
-            />
-          </div>
-
-          {/* Mobile Filter Sidebar */}
           <BlogFilterSidebar
             isOpen={filterSidebarOpen}
             onClose={() => setFilterSidebarOpen(false)}
