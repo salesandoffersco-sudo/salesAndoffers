@@ -32,6 +32,11 @@ interface Seller {
     google_picture?: string;
     is_verified: boolean;
   };
+  profile?: {
+    company_logo: string;
+    cover_image: string;
+    is_published: boolean;
+  };
 }
 
 export default function SellersPage() {
@@ -126,11 +131,11 @@ export default function SellersPage() {
             totalSales: seller.total_deals || 0,
             followers: seller.total_reviews || 0,
             location: seller.address,
-            avatar: seller.business_logo || seller.user?.profile_picture || seller.user?.google_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(seller.business_name)}&background=6366f1&color=fff`,
-            coverImage: seller.cover_image || `https://picsum.photos/320/128?random=${seller.id}`,
+            avatar: seller.profile?.company_logo || seller.business_logo || seller.user?.profile_picture || seller.user?.google_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(seller.business_name)}&background=6366f1&color=fff`,
+            coverImage: seller.profile?.cover_image || seller.cover_image || `https://picsum.photos/320/128?random=${seller.id}`,
             verified: seller.is_verified,
             specialOffer: seller.is_verified ? '✓ Verified' : seller.total_deals > 20 ? '🔥 Hot Deals' : undefined,
-            businessLogo: seller.business_logo,
+            businessLogo: seller.profile?.company_logo || seller.business_logo,
             userProfilePicture: seller.user?.profile_picture || seller.user?.google_picture
           }))}
         />
@@ -205,7 +210,7 @@ export default function SellersPage() {
                           <div className="flex items-center mb-4">
                             <div className="relative mr-4">
                               <ProfilePicture
-                                src={seller.business_logo || seller.user?.profile_picture || seller.user?.google_picture}
+                                src={seller.profile?.company_logo || seller.business_logo || seller.user?.profile_picture || seller.user?.google_picture}
                                 alt={seller.user ? `${seller.user.first_name} ${seller.user.last_name}` : seller.business_name}
                                 size="xl"
                                 clickable={true}
@@ -256,7 +261,7 @@ export default function SellersPage() {
                         <div className="flex items-center mb-4">
                           <div className="relative mr-4">
                             <ProfilePicture
-                              src={seller.business_logo || seller.user?.profile_picture || seller.user?.google_picture}
+                              src={seller.profile?.company_logo || seller.business_logo || seller.user?.profile_picture || seller.user?.google_picture}
                               alt={seller.user ? `${seller.user.first_name} ${seller.user.last_name}` : seller.business_name}
                               size="xl"
                               clickable={true}

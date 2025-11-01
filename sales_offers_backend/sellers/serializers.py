@@ -4,6 +4,7 @@ from .models import Seller, SubscriptionPlan, Subscription, SellerProfile, Payme
 class SellerSerializer(serializers.ModelSerializer):
     total_deals = serializers.SerializerMethodField()
     user = serializers.SerializerMethodField()
+    profile = serializers.SerializerMethodField()
     
     class Meta:
         model = Seller
@@ -24,6 +25,17 @@ class SellerSerializer(serializers.ModelSerializer):
                 'is_verified': getattr(obj.user, 'is_verified', False)
             }
         return None
+    
+    def get_profile(self, obj):
+        try:
+            profile = obj.profile
+            return {
+                'company_logo': profile.company_logo,
+                'cover_image': profile.cover_image,
+                'is_published': profile.is_published
+            }
+        except:
+            return None
 
 class SubscriptionPlanSerializer(serializers.ModelSerializer):
     class Meta:
