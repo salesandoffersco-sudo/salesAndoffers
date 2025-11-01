@@ -15,6 +15,7 @@ interface Seller {
   business_name: string;
   business_description: string;
   business_logo: string;
+  cover_image?: string;
   rating: number;
   total_reviews: number;
   total_deals: number;
@@ -28,6 +29,7 @@ interface Seller {
     first_name: string;
     last_name: string;
     profile_picture: string;
+    google_picture?: string;
     is_verified: boolean;
   };
 }
@@ -125,7 +127,7 @@ export default function SellersPage() {
             followers: seller.total_reviews || 0,
             location: seller.address,
             avatar: seller.user?.profile_picture || seller.business_logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(seller.business_name)}&background=6366f1&color=fff`,
-            coverImage: (seller as any).cover_image || `https://picsum.photos/320/128?random=${seller.id}`,
+            coverImage: seller.cover_image || `https://picsum.photos/320/128?random=${seller.id}`,
             verified: seller.is_verified,
             specialOffer: seller.is_verified ? '✓ Verified' : seller.total_deals > 20 ? '🔥 Hot Deals' : undefined,
             businessLogo: seller.business_logo,
@@ -203,7 +205,7 @@ export default function SellersPage() {
                           <div className="flex items-center mb-4">
                             <div className="relative mr-4">
                               <ProfilePicture
-                                src={seller.user?.profile_picture || seller.business_logo}
+                                src={seller.business_logo || seller.user?.profile_picture || seller.user?.google_picture}
                                 alt={seller.user ? `${seller.user.first_name} ${seller.user.last_name}` : seller.business_name}
                                 size="xl"
                                 clickable={true}
@@ -254,7 +256,7 @@ export default function SellersPage() {
                         <div className="flex items-center mb-4">
                           <div className="relative mr-4">
                             <ProfilePicture
-                              src={seller.user?.profile_picture || seller.business_logo}
+                              src={seller.business_logo || seller.user?.profile_picture || seller.user?.google_picture}
                               alt={seller.user ? `${seller.user.first_name} ${seller.user.last_name}` : seller.business_name}
                               size="xl"
                               clickable={true}

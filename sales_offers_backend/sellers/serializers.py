@@ -20,6 +20,7 @@ class SellerSerializer(serializers.ModelSerializer):
                 'first_name': obj.user.first_name or 'Unknown',
                 'last_name': obj.user.last_name or 'User',
                 'profile_picture': getattr(obj.user, 'profile_picture', None),
+                'google_picture': getattr(obj.user, 'google_picture', None),
                 'is_verified': getattr(obj.user, 'is_verified', False)
             }
         return None
@@ -46,7 +47,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 class SellerProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = SellerProfile
-        fields = ['id', 'company_name', 'company_logo', 'description', 'website', 'phone', 'email', 'address', 'is_published', 'created_at', 'updated_at']
+        fields = ['id', 'company_name', 'company_logo', 'cover_image', 'description', 'website', 'phone', 'email', 'address', 'is_published', 'created_at', 'updated_at']
 
 class PaymentSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
