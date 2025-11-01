@@ -99,19 +99,49 @@ export default function CreateBlogPage() {
                 apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY || "no-api-key"}
                 value={formData.content}
                 onEditorChange={(content) => setFormData({ ...formData, content })}
+                onInit={(evt, editor) => {
+                  // Editor initialization complete
+                }}
                 init={{
-                  height: 400,
-                  menubar: false,
+                  height: 500,
+                  menubar: 'file edit view insert format tools table help',
                   plugins: [
                     'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
                     'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                    'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+                    'insertdatetime', 'media', 'table', 'help', 'wordcount', 'emoticons',
+                    'template', 'codesample', 'hr', 'pagebreak', 'nonbreaking', 'toc',
+                    'imagetools', 'textpattern', 'noneditable', 'quickbars', 'accordion'
                   ],
-                  toolbar: 'undo redo | blocks | ' +
-                    'bold italic forecolor | alignleft aligncenter ' +
-                    'alignright alignjustify | bullist numlist outdent indent | ' +
-                    'removeformat | help',
-                  content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+                  toolbar1: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | ' +
+                    'forecolor backcolor | alignleft aligncenter alignright alignjustify',
+                  toolbar2: 'bullist numlist outdent indent | link image media table | ' +
+                    'hr pagebreak | code codesample | emoticons charmap | fullscreen preview help',
+                  image_advtab: true,
+                  image_uploadtab: true,
+                  file_picker_types: 'image media',
+                  automatic_uploads: true,
+                  images_upload_handler: async (blobInfo: any) => {
+                    const formData = new FormData();
+                    const filename = `blog/images/editor-${Date.now()}.${blobInfo.blob().name.split('.').pop()}`;
+                    
+                    try {
+                      const response = await fetch(`/api/upload?filename=${encodeURIComponent(filename)}`, {
+                        method: 'POST',
+                        body: blobInfo.blob(),
+                      });
+                      
+                      if (!response.ok) throw new Error('Upload failed');
+                      
+                      const result = await response.json();
+                      return result.url;
+                    } catch (error) {
+                      throw new Error('Image upload failed');
+                    }
+                  },
+                  content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px; line-height:1.6; }',
+                  skin: 'oxide',
+                  content_css: 'default',
+                  branding: false
                 }}
               />
             </div>
