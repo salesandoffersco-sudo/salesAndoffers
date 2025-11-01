@@ -41,12 +41,11 @@ export default function DealImageUpload({
     
     try {
       const uploadPromises = filesToUpload.map(async (file, index) => {
-        const formData = new FormData();
-        formData.append('file', file);
+        const filename = `deals/${dealId || 'temp'}/image-${Date.now()}-${index}.${file.name.split('.').pop()}`;
         
-        const response = await fetch('/api/upload', {
+        const response = await fetch(`/api/upload?filename=${encodeURIComponent(filename)}`, {
           method: 'POST',
-          body: formData,
+          body: file,
         });
         
         if (!response.ok) {
