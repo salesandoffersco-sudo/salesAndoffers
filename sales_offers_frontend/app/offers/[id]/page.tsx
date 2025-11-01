@@ -9,6 +9,7 @@ import Button from "../../../components/Button";
 import { useCart } from "../../../contexts/CartContext";
 import { API_BASE_URL } from "../../../lib/api";
 import ProfilePicture from "../../../components/ProfilePicture";
+import DealImageGallery from "../../../components/DealImageGallery";
 
 interface Deal {
   id: number;
@@ -28,6 +29,14 @@ interface Deal {
   expires_at: string;
   redemption_deadline: string;
   image?: string;
+  main_image?: string;
+  images?: Array<{
+    id: number;
+    image_url: string;
+    is_main: boolean;
+    order: number;
+    alt_text?: string;
+  }>;
   seller: {
     id: number;
     business_name: string;
@@ -163,13 +172,11 @@ export default function DealDetailsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Image Section */}
           <div className="bg-[rgb(var(--color-card))] rounded-2xl p-6 border border-[rgb(var(--color-border))]">
-            <div className="aspect-square bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl flex items-center justify-center">
-              {deal.image ? (
-                <img src={deal.image} alt={deal.title} className="w-full h-full object-cover rounded-xl" />
-              ) : (
-                <FiTag className="text-6xl text-[rgb(var(--color-muted))]" />
-              )}
-            </div>
+            <DealImageGallery
+              images={deal.images || []}
+              mainImage={deal.main_image || deal.image}
+              title={deal.title}
+            />
             
             {/* Availability Info */}
             <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">

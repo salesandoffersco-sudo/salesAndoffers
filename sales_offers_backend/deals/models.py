@@ -21,7 +21,8 @@ class Deal(models.Model):
     original_price = models.DecimalField(max_digits=10, decimal_places=2)
     discounted_price = models.DecimalField(max_digits=10, decimal_places=2)
     discount_percentage = models.IntegerField()
-    image = models.URLField(blank=True, null=True)
+    image = models.URLField(blank=True, null=True)  # Legacy field, kept for backward compatibility
+    main_image = models.URLField(blank=True, null=True)  # Primary image for cards and listings
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE, related_name='deals')
     category = models.CharField(max_length=100, blank=True, default='General')
     location = models.CharField(max_length=200, blank=True)
@@ -52,6 +53,21 @@ class Deal(models.Model):
     @property
     def vouchers_available(self):
         return max(0, self.max_vouchers - self.vouchers_sold)
+
+class DealImage(models.Model):
+    deal = models.ForeignKey(Deal, on_delete=models.CASCADE, related_name='images')
+    image_url = models.URLField()
+    is_main = models.BooleanField(default=False)
+    order = models.PositiveIntegerField(default=0)
+    alt_text = models.CharField(max_length=200, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['order', 'created_at']
+        unique_together = ['deal', 'order']
+    
+    def __str__(self):
+        return f"{self.deal.title} - Image {self.order}"
 
 class Voucher(models.Model):
     VOUCHER_STATUS_CHOICES = [

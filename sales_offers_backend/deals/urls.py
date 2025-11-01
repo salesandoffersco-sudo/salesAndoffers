@@ -1,5 +1,8 @@
 from django.urls import path
-from .views import DealListView, DealDetailView, seller_detail, seller_offers, my_deals, deal_analytics, admin_deals
+from .views import (
+    DealListView, DealDetailView, seller_detail, seller_offers, my_deals, deal_analytics, admin_deals,
+    upload_deal_image, delete_deal_image, update_deal_image
+)
 from .review_views import create_review, get_deal_reviews
 
 urlpatterns = [
@@ -12,4 +15,7 @@ urlpatterns = [
     path('admin/deals/', admin_deals, name='admin-deals'),
     path('reviews/', create_review, name='create-review'),
     path('<int:deal_id>/reviews/', get_deal_reviews, name='deal-reviews'),
+    path('<int:deal_id>/images/', upload_deal_image, name='upload-deal-image'),
+    path('<int:deal_id>/images/<int:image_id>/', update_deal_image, name='update-deal-image'),
+    path('<int:deal_id>/images/<int:image_id>/delete/', delete_deal_image, name='delete-deal-image'),
 ]

@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import React from "react";
-import { FiX, FiImage, FiCalendar } from "react-icons/fi";
+import { FiX, FiCalendar } from "react-icons/fi";
 import Button from "./Button";
+import DealImageUpload from "./DealImageUpload";
 import { api } from "../lib/api";
 
 interface CreateOfferModalProps {
@@ -19,11 +20,11 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
     original_price: "",
     discounted_price: "",
     discount_percentage: 0,
-    image: "",
     expires_at: "",
     category: "Other",
     max_vouchers: 100,
   });
+  const [images, setImages] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | {message: string, actionRequired: boolean, redirectUrl: string}>("");
   const [subscription, setSubscription] = useState<any>(null);
@@ -62,7 +63,24 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
     setError("");
 
     try {
-      await api.post('/api/deals/', formData);
+      const dealData = {
+        ...formData,
+        main_image: images.find(img => img.is_main)?.image_url || images[0]?.image_url || null
+      };
+      
+      const response = await api.post('/api/deals/', dealData);
+      const dealId = response.data.id;
+      
+      // Upload images to the created deal
+      if (images.length > 0) {
+        for (const image of images) {
+          await api.post(`/api/deals/${dealId}/images/`, {
+            image_url: image.image_url,
+            is_main: image.is_main,
+            alt_text: image.alt_text
+          });
+        }
+      }
       
       onSuccess();
       onClose();
@@ -72,11 +90,11 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
         original_price: "",
         discounted_price: "",
         discount_percentage: 0,
-        image: "",
         expires_at: "",
         category: "Other",
         max_vouchers: 100,
       });
+      setImages([]);
     } catch (err: any) {
       const errorData = err.response?.data;
       if (errorData?.action_required === 'setup_profile') {
@@ -245,19 +263,13 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Image URL (Optional)
+              Deal Images
             </label>
-            <div className="relative">
-              <FiImage className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <input
-                type="url"
-                name="image"
-                value={formData.image}
-                onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                placeholder="https://example.com/image.jpg"
-              />
-            </div>
+            <DealImageUpload
+              images={images}
+              onImagesChange={setImages}
+              maxImages={5}
+            />
           </div>
 
           <div>

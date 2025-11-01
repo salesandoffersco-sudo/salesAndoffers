@@ -24,6 +24,14 @@ interface Offer {
   category: string;
   expires_at: string;
   image?: string;
+  main_image?: string;
+  images?: Array<{
+    id: number;
+    image_url: string;
+    is_main: boolean;
+    order: number;
+    alt_text?: string;
+  }>;
   is_favorited?: boolean;
   is_verified?: boolean;
   rating?: number;
@@ -345,10 +353,10 @@ export default function OffersPage() {
                       >
                         <div className="flex flex-col sm:flex-row">
                           {/* Image Section */}
-                          {offer.image && (
+                          {(offer.main_image || offer.image) && (
                             <div className="w-full sm:w-48 h-32 sm:h-auto flex-shrink-0">
                               <img 
-                                src={offer.image} 
+                                src={offer.main_image || offer.image} 
                                 alt={offer.title}
                                 className="w-full h-full object-cover"
                                 onError={(e) => {
@@ -464,10 +472,10 @@ export default function OffersPage() {
                         </div>
                       )}
                       {/* Offer Image */}
-                      {offer.image && (
-                        <div className="aspect-video bg-gray-100 dark:bg-gray-800">
+                      {(offer.main_image || offer.image) && (
+                        <div className="aspect-video bg-gray-100 dark:bg-gray-800 relative">
                           <img 
-                            src={offer.image} 
+                            src={offer.main_image || offer.image} 
                             alt={offer.title}
                             className="w-full h-full object-cover"
                             onError={(e) => {
@@ -475,6 +483,12 @@ export default function OffersPage() {
                               target.style.display = 'none';
                             }}
                           />
+                          {/* Image count indicator */}
+                          {offer.images && offer.images.length > 1 && (
+                            <div className="absolute bottom-2 right-2 bg-black bg-opacity-75 text-white px-2 py-1 rounded text-xs">
+                              +{offer.images.length - 1} more
+                            </div>
+                          )}
                         </div>
                       )}
                       <div className="p-6">

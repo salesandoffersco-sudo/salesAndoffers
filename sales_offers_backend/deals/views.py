@@ -1,9 +1,9 @@
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from .models import Deal, Voucher
-from .serializers import DealSerializer, VoucherSerializer
+from .models import Deal, Voucher, DealImage
+from .serializers import DealSerializer, VoucherSerializer, DealImageSerializer
 from sellers.models import Seller
 from sellers.serializers import SellerSerializer
 from accounts.models import User
@@ -178,3 +178,97 @@ def deal_analytics(request, deal_id):
         return Response(analytics)
     except (Seller.DoesNotExist, Deal.DoesNotExist):
         return Response({'error': 'Deal not found'}, status=404)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def upload_deal_image(request, deal_id):
+    """Upload image for a deal"""
+    try:
+        seller = Seller.objects.get(user=request.user)
+        deal = Deal.objects.get(id=deal_id, seller=seller)
+        
+        image_url = request.data.get('image_url')
+        is_main = request.data.get('is_main', False)
+        alt_text = request.data.get('alt_text', '')
+        
+        if not image_url:
+            return Response({'error': 'image_url is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # If setting as main image, unset other main images
+        if is_main:
+            DealImage.objects.filter(deal=deal, is_main=True).update(is_main=False)
+            deal.main_image = image_url
+            deal.save()
+        
+        # Get next order number
+        last_image = DealImage.objects.filter(deal=deal).order_by('-order').first()
+        order = (last_image.order + 1) if last_image else 0
+        
+        deal_image = DealImage.objects.create(
+            deal=deal,
+            image_url=image_url,
+            is_main=is_main,
+            order=order,
+            alt_text=alt_text
+        )
+        
+        serializer = DealImageSerializer(deal_image)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+    except (Seller.DoesNotExist, Deal.DoesNotExist):
+        return Response({'error': 'Deal not found'}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_deal_image(request, deal_id, image_id):
+    """Delete a deal image"""
+    try:
+        seller = Seller.objects.get(user=request.user)
+        deal = Deal.objects.get(id=deal_id, seller=seller)
+        image = DealImage.objects.get(id=image_id, deal=deal)
+        
+        # If deleting main image, clear main_image field
+        if image.is_main:
+            deal.main_image = None
+            deal.save()
+        
+        image.delete()
+        return Response({'message': 'Image deleted successfully'}, status=status.HTTP_200_OK)
+        
+    except (Seller.DoesNotExist, Deal.DoesNotExist, DealImage.DoesNotExist):
+        return Response({'error': 'Image not found'}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_deal_image(request, deal_id, image_id):
+    """Update deal image (set as main, reorder, etc.)"""
+    try:
+        seller = Seller.objects.get(user=request.user)
+        deal = Deal.objects.get(id=deal_id, seller=seller)
+        image = DealImage.objects.get(id=image_id, deal=deal)
+        
+        is_main = request.data.get('is_main')
+        order = request.data.get('order')
+        alt_text = request.data.get('alt_text')
+        
+        if is_main is not None:
+            if is_main:
+                # Unset other main images
+                DealImage.objects.filter(deal=deal, is_main=True).update(is_main=False)
+                deal.main_image = image.image_url
+                deal.save()
+            image.is_main = is_main
+        
+        if order is not None:
+            image.order = order
+        
+        if alt_text is not None:
+            image.alt_text = alt_text
+        
+        image.save()
+        
+        serializer = DealImageSerializer(image)
+        return Response(serializer.data)
+        
+    except (Seller.DoesNotExist, Deal.DoesNotExist, DealImage.DoesNotExist):
+        return Response({'error': 'Image not found'}, status=status.HTTP_404_NOT_FOUND)
