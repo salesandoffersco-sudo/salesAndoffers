@@ -1,5 +1,6 @@
 "use client";
 
+// Deal image upload component with Vercel Blob integration
 import React, { useState, useRef } from 'react';
 import { FiUpload, FiX, FiImage, FiStar, FiTrash2 } from 'react-icons/fi';
 import { put } from '@vercel/blob';
