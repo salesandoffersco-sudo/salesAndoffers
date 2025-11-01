@@ -3,7 +3,6 @@
 // Deal image upload component with Vercel Blob integration
 import React, { useState, useRef } from 'react';
 import { FiUpload, FiX, FiImage, FiStar, FiTrash2 } from 'react-icons/fi';
-import { put } from '@vercel/blob';
 
 interface DealImage {
   id?: number;
@@ -42,12 +41,22 @@ export default function DealImageUpload({
     
     try {
       const uploadPromises = filesToUpload.map(async (file, index) => {
-        const blob = await put(`deals/${dealId || 'temp'}/image-${Date.now()}-${index}.${file.name.split('.').pop()}`, file, {
-          access: 'public',
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
         });
         
+        if (!response.ok) {
+          throw new Error('Upload failed');
+        }
+        
+        const result = await response.json();
+        
         return {
-          image_url: blob.url,
+          image_url: result.url,
           is_main: images.length === 0 && index === 0, // First image is main if no images exist
           order: images.length + index,
           alt_text: file.name.split('.')[0]
