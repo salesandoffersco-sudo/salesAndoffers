@@ -190,75 +190,7 @@ export default function OffersPage() {
     }
   ];
 
-  // Mock featured items for demo (always show carousel)
-  const mockFeaturedItems = [
-    {
-      id: 1,
-      title: "Premium Wireless Headphones",
-      description: "Experience crystal-clear audio with our premium wireless headphones featuring noise cancellation.",
-      price: "KES 8,999",
-      originalPrice: "KES 12,999",
-      rating: 4.8,
-      image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=400&h=600&auto=format&fit=crop",
-      category: "Electronics",
-      discount: 30
-    },
-    {
-      id: 2,
-      title: "Smart Fitness Watch",
-      description: "Track your health and fitness goals with this advanced smartwatch featuring heart rate monitoring.",
-      price: "KES 15,999",
-      originalPrice: "KES 22,999",
-      rating: 4.6,
-      image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400&h=600&auto=format&fit=crop",
-      category: "Wearables",
-      discount: 25
-    },
-    {
-      id: 3,
-      title: "Professional Camera",
-      description: "Capture life's moments with this professional-grade camera perfect for photography enthusiasts.",
-      price: "KES 45,999",
-      originalPrice: "KES 65,999",
-      rating: 4.9,
-      image: "https://images.unsplash.com/photo-1526170375885-4a8ecf77b99f?q=80&w=400&h=600&auto=format&fit=crop",
-      category: "Photography",
-      discount: 35
-    },
-    {
-      id: 4,
-      title: "Designer Sneakers",
-      description: "Step out in style with these premium designer sneakers crafted for comfort and fashion.",
-      price: "KES 12,999",
-      originalPrice: "KES 18,999",
-      rating: 4.4,
-      image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=400&h=600&auto=format&fit=crop",
-      category: "Fashion",
-      discount: 32
-    },
-    {
-      id: 5,
-      title: "Bluetooth Speaker",
-      description: "Portable wireless speaker with powerful bass and waterproof design for any adventure.",
-      price: "KES 6,999",
-      originalPrice: "KES 9,999",
-      rating: 4.7,
-      image: "https://images.unsplash.com/photo-1546868871-7041f2a55e12?q=80&w=400&h=600&auto=format&fit=crop",
-      category: "Audio",
-      discount: 30
-    },
-    {
-      id: 6,
-      title: "Leather Dress Shoes",
-      description: "Handcrafted leather dress shoes perfect for formal occasions and business meetings.",
-      price: "KES 18,999",
-      originalPrice: "KES 28,999",
-      rating: 4.5,
-      image: "https://images.unsplash.com/photo-1560769629-975ec94e6a86?q=80&w=400&h=600&auto=format&fit=crop",
-      category: "Fashion",
-      discount: 35
-    }
-  ];
+
 
   // Use real offers if available, otherwise use mock data
   const featuredItems = offers.length > 0 
@@ -266,19 +198,19 @@ export default function OffersPage() {
         id: offer.id,
         title: offer.title,
         description: offer.description,
-        price: `KES ${offer.discounted_price}`,
-        originalPrice: `KES ${offer.original_price}`,
-        rating: 4.5,
-        image: offer.main_image || offer.image || `https://picsum.photos/400/600?random=${offer.id}`,
+        discounted_price: parseFloat(offer.discounted_price),
+        original_price: parseFloat(offer.original_price),
+        average_rating: 4.5,
+        main_image: offer.main_image || offer.image || `https://picsum.photos/400/600?random=${offer.id}`,
         category: offer.category,
-        discount: offer.discount_percentage
+        discount_percentage: offer.discount_percentage
       }))
-    : mockFeaturedItems;
+    : [];
 
   return (
     <div className="min-h-screen bg-[rgb(var(--color-bg))]">
-      {/* Hero Carousel Section - Always show */}
-      <HeroCarousel items={featuredItems} />
+      {/* Hero Carousel Section - Show only if we have items */}
+      {featuredItems.length > 0 && <HeroCarousel items={featuredItems} />}
 
       <div className="flex">
         <FilterSidebar
