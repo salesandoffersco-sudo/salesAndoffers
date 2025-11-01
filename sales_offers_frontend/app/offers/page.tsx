@@ -269,7 +269,7 @@ export default function OffersPage() {
         price: `KES ${offer.discounted_price}`,
         originalPrice: `KES ${offer.original_price}`,
         rating: 4.5,
-        image: offer.image || `https://picsum.photos/400/600?random=${offer.id}`,
+        image: offer.main_image || offer.image || `https://picsum.photos/400/600?random=${offer.id}`,
         category: offer.category,
         discount: offer.discount_percentage
       }))
