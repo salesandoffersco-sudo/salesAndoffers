@@ -8,6 +8,8 @@ import axios from "axios";
 import Button from "../../../components/Button";
 import ProfilePicture from "../../../components/ProfilePicture";
 import VerificationBadge from "../../../components/VerificationBadge";
+import AuthorPostsSidebar from "../../../components/AuthorPostsSidebar";
+import CommentsSidebar from "../../../components/CommentsSidebar";
 import { API_BASE_URL } from "../../../lib/api";
 
 interface BlogPost {
@@ -58,6 +60,7 @@ export default function BlogPostPage() {
   const [expandedReplies, setExpandedReplies] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [recommendedPosts, setRecommendedPosts] = useState<BlogPost[]>([]);
 
   useEffect(() => {
     setIsLoggedIn(!!localStorage.getItem("token"));
@@ -69,8 +72,19 @@ export default function BlogPostPage() {
   useEffect(() => {
     if (post?.id) {
       fetchComments();
+      fetchRecommendedPosts();
     }
   }, [post?.id]);
+
+  const fetchRecommendedPosts = async () => {
+    if (!post?.slug) return;
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/blog/posts/${post.slug}/recommended/`);
+      setRecommendedPosts(response.data);
+    } catch (error) {
+      console.error("Error fetching recommended posts:", error);
+    }
+  };
 
   const fetchPost = async () => {
     try {
@@ -231,7 +245,7 @@ export default function BlogPostPage() {
     <div className="min-h-screen bg-[rgb(var(--color-bg))]">
       {/* Navigation Bar */}
       <div className="sticky top-0 z-40 bg-[rgb(var(--color-card))]/80 backdrop-blur-md border-b border-[rgb(var(--color-border))]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <Link href="/blog" className="flex items-center space-x-2 text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-text))] transition-colors">
               <FiArrowLeft className="w-5 h-5" />
@@ -252,16 +266,24 @@ export default function BlogPostPage() {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Hero Image */}
-        {post.image && (
-          <div className="aspect-[21/9] bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/20 dark:to-blue-900/20 rounded-3xl overflow-hidden mb-8 shadow-2xl">
-            <img src={post.image} alt={post.title} className="w-full h-full object-cover" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
+          {/* Left Sidebar - Author's Posts (Desktop/Tablet) */}
+          <div className="hidden lg:block xl:col-span-3">
+            <AuthorPostsSidebar authorId={post.author.id} currentSlug={post.slug} />
           </div>
-        )}
 
-        <article className="bg-[rgb(var(--color-card))] rounded-3xl shadow-xl border border-[rgb(var(--color-border))] overflow-hidden">
-          <div className="p-8 lg:p-12">
+          {/* Main Content */}
+          <div className="xl:col-span-6">
+            {/* Hero Image */}
+            {post.image && (
+              <div className="aspect-[21/9] bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/20 dark:to-blue-900/20 rounded-3xl overflow-hidden mb-8 shadow-2xl">
+                <img src={post.image} alt={post.title} className="w-full h-full object-cover" />
+              </div>
+            )}
+
+            <article className="bg-[rgb(var(--color-card))] rounded-3xl shadow-xl border border-[rgb(var(--color-border))] overflow-hidden">
+              <div className="p-8 lg:p-12">
             {/* Article Header */}
             <div className="mb-8">
               <h1 className="text-4xl lg:text-5xl font-bold text-[rgb(var(--color-text))] mb-6 leading-tight">
@@ -364,203 +386,50 @@ export default function BlogPostPage() {
                 </Button>
               </div>
             </div>
+              </div>
+            </article>
           </div>
-        </article>
 
-        {/* Comments Section */}
-        <div className="mt-8 bg-[rgb(var(--color-card))] rounded-3xl shadow-xl border border-[rgb(var(--color-border))] overflow-hidden">
-          <div className="p-8 lg:p-12">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-3xl font-bold text-[rgb(var(--color-text))]">
-                Discussion
-              </h2>
-              <div className="text-[rgb(var(--color-muted))] text-sm">
-                {comments.length} {comments.length === 1 ? 'comment' : 'comments'}
-              </div>
-            </div>
-
-            {isLoggedIn ? (
-              <form onSubmit={handleComment} className="mb-12">
-                <div className="bg-[rgb(var(--color-bg))] rounded-2xl p-6 border border-[rgb(var(--color-border))]">
-                  <textarea
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    placeholder="Join the discussion... Share your thoughts, ask questions, or provide insights."
-                    rows={4}
-                    className="w-full px-0 py-0 border-0 bg-transparent text-[rgb(var(--color-text))] placeholder-[rgb(var(--color-muted))] focus:ring-0 focus:outline-none resize-none text-lg"
-                  />
-                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-[rgb(var(--color-border))]">
-                    <div className="text-sm text-[rgb(var(--color-muted))]">
-                      Be respectful and constructive in your comments
-                    </div>
-                    <Button 
-                      type="submit" 
-                      variant="primary" 
-                      disabled={!newComment.trim()}
-                      className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                    >
-                      <FiSend className="w-4 h-4 mr-2" />
-                      Post Comment
-                    </Button>
-                  </div>
-                </div>
-              </form>
-            ) : (
-              <div className="mb-12 p-8 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/10 dark:to-blue-900/10 rounded-2xl border border-[rgb(var(--color-border))] text-center">
-                <FiMessageCircle className="w-12 h-12 mx-auto mb-4 text-[rgb(var(--color-muted))]" />
-                <h3 className="text-lg font-semibold text-[rgb(var(--color-text))] mb-2">Join the Discussion</h3>
-                <p className="text-[rgb(var(--color-muted))] mb-4">Sign in to share your thoughts and engage with the community</p>
-                <Link href="/login">
-                  <Button variant="primary">Sign In to Comment</Button>
-                </Link>
-              </div>
-            )}
-
-            <div className="space-y-8">
-              {comments.filter(comment => !comment.parent_id).map((comment) => (
-                <div key={comment.id} className="group">
-                  <div className="flex space-x-4">
-                    <div className="flex-shrink-0">
-                      <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center overflow-hidden">
-                        {comment.user.profile_picture ? (
-                          <img src={comment.user.profile_picture} alt={comment.user.username} className="w-full h-full object-cover" />
-                        ) : (
-                          <FiUser className="w-6 h-6 text-white" />
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="bg-[rgb(var(--color-bg))] rounded-2xl p-6 border border-[rgb(var(--color-border))] group-hover:border-purple-200 dark:group-hover:border-purple-800 transition-colors">
-                        <div className="flex items-center space-x-3 mb-3">
-                          <span className="font-semibold text-[rgb(var(--color-text))]">
-                            {comment.user.first_name} {comment.user.last_name}
-                          </span>
-                          <span className="text-sm text-[rgb(var(--color-muted))]">
-                            @{comment.user.username}
-                          </span>
-                          <span className="text-xs text-[rgb(var(--color-muted))]">
-                            {formatDateTime(comment.created_at)}
-                          </span>
-                        </div>
-                        <p className="text-[rgb(var(--color-text))] leading-relaxed mb-4">{comment.content}</p>
-                        
-                        {/* Comment Actions */}
-                        <div className="flex items-center space-x-4 text-sm">
-                          {isLoggedIn && (
-                            <button
-                              onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
-                              className="text-[rgb(var(--color-muted))] hover:text-purple-600 transition-colors"
-                            >
-                              Reply
-                            </button>
-                          )}
-                          {comment.replies && comment.replies.length > 0 && (
-                            <button
-                              onClick={() => toggleReplies(comment.id)}
-                              className="flex items-center space-x-1 text-[rgb(var(--color-muted))] hover:text-purple-600 transition-colors"
-                            >
-                              {expandedReplies.has(comment.id) ? (
-                                <FiChevronDown className="w-4 h-4" />
-                              ) : (
-                                <FiChevronRight className="w-4 h-4" />
-                              )}
-                              <span>{comment.replies.length} {comment.replies.length === 1 ? 'reply' : 'replies'}</span>
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                      
-                      {/* Reply Form */}
-                      {replyingTo === comment.id && (
-                        <form onSubmit={(e) => handleReply(e, comment.id)} className="mt-4 ml-4">
-                          <div className="bg-[rgb(var(--color-card))] rounded-2xl p-4 border border-[rgb(var(--color-border))]">
-                            <textarea
-                              value={replyContent}
-                              onChange={(e) => setReplyContent(e.target.value)}
-                              placeholder={`Reply to ${comment.user.first_name}...`}
-                              rows={3}
-                              className="w-full px-0 py-0 border-0 bg-transparent text-[rgb(var(--color-text))] placeholder-[rgb(var(--color-muted))] focus:ring-0 focus:outline-none resize-none"
-                            />
-                            <div className="flex items-center justify-between mt-3 pt-3 border-t border-[rgb(var(--color-border))]">
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setReplyingTo(null);
-                                  setReplyContent("");
-                                }}
-                                className="text-sm text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-text))] transition-colors"
-                              >
-                                Cancel
-                              </button>
-                              <Button 
-                                type="submit" 
-                                variant="primary" 
-                                size="sm"
-                                disabled={!replyContent.trim()}
-                              >
-                                <FiSend className="w-3 h-3 mr-2" />
-                                Reply
-                              </Button>
-                            </div>
-                          </div>
-                        </form>
-                      )}
-                      
-                      {/* Replies */}
-                      {comment.replies && comment.replies.length > 0 && expandedReplies.has(comment.id) && (
-                        <div className="mt-6 ml-8 space-y-4">
-                          {comment.replies.map((reply) => (
-                            <div key={reply.id} className="flex space-x-3">
-                              <FiCornerDownRight className="w-4 h-4 text-[rgb(var(--color-muted))] mt-3 flex-shrink-0" />
-                              <div className="flex space-x-3 flex-1">
-                                <div className="flex-shrink-0">
-                                  <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center overflow-hidden">
-                                    {reply.user.profile_picture ? (
-                                      <img src={reply.user.profile_picture} alt={reply.user.username} className="w-full h-full object-cover" />
-                                    ) : (
-                                      <FiUser className="w-5 h-5 text-white" />
-                                    )}
-                                  </div>
-                                </div>
-                                <div className="flex-1">
-                                  <div className="bg-[rgb(var(--color-card))] rounded-xl p-4 border border-[rgb(var(--color-border))]">
-                                    <div className="flex items-center space-x-2 mb-2">
-                                      <span className="font-semibold text-[rgb(var(--color-text))] text-sm">
-                                        {reply.user.first_name} {reply.user.last_name}
-                                      </span>
-                                      <span className="text-xs text-[rgb(var(--color-muted))]">
-                                        @{reply.user.username}
-                                      </span>
-                                      <span className="text-xs text-[rgb(var(--color-muted))]">
-                                        {formatDateTime(reply.created_at)}
-                                      </span>
-                                    </div>
-                                    <p className="text-[rgb(var(--color-text))] text-sm leading-relaxed">{reply.content}</p>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {comments.length === 0 && (
-              <div className="text-center py-16">
-                <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/20 dark:to-blue-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <FiMessageCircle className="w-12 h-12 text-[rgb(var(--color-muted))]" />
-                </div>
-                <h3 className="text-xl font-semibold text-[rgb(var(--color-text))] mb-2">Start the Conversation</h3>
-                <p className="text-[rgb(var(--color-muted))] max-w-md mx-auto">
-                  Be the first to share your thoughts on this post. Your insights could spark an interesting discussion!
-                </p>
-              </div>
-            )}
+          {/* Right Sidebar - Comments (Desktop/Tablet) */}
+          <div className="hidden lg:block xl:col-span-3">
+            <CommentsSidebar 
+              post={post} 
+              comments={comments} 
+              newComment={newComment}
+              setNewComment={setNewComment}
+              replyingTo={replyingTo}
+              setReplyingTo={setReplyingTo}
+              replyContent={replyContent}
+              setReplyContent={setReplyContent}
+              expandedReplies={expandedReplies}
+              toggleReplies={toggleReplies}
+              handleComment={handleComment}
+              handleReply={handleReply}
+              isLoggedIn={isLoggedIn}
+              formatDateTime={formatDateTime}
+            />
           </div>
+        </div>
+
+        {/* Mobile Comments Section */}
+        <div className="lg:hidden mt-8 bg-[rgb(var(--color-card))] rounded-3xl shadow-xl border border-[rgb(var(--color-border))] overflow-hidden">
+          <CommentsSidebar 
+            post={post} 
+            comments={comments} 
+            newComment={newComment}
+            setNewComment={setNewComment}
+            replyingTo={replyingTo}
+            setReplyingTo={setReplyingTo}
+            replyContent={replyContent}
+            setReplyContent={setReplyContent}
+            expandedReplies={expandedReplies}
+            toggleReplies={toggleReplies}
+            handleComment={handleComment}
+            handleReply={handleReply}
+            isLoggedIn={isLoggedIn}
+            formatDateTime={formatDateTime}
+            isMobile={true}
+          />
         </div>
       </div>
     </div>

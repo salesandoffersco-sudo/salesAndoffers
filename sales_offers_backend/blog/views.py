@@ -2,9 +2,11 @@ from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
-from django.db.models import Count, Q
-from .models import BlogPost, BlogLike, BlogComment, BlogFollow
-from .serializers import BlogPostSerializer, BlogCommentSerializer, BlogFollowSerializer
+from django.db.models import Count, Q, F
+from django.utils import timezone
+from datetime import timedelta
+from .models import BlogPost, BlogLike, BlogComment, BlogFollow, BlogCategory, BlogSubcategory
+from .serializers import BlogPostSerializer, BlogCommentSerializer, BlogFollowSerializer, BlogCategoryWithSubsSerializer
 from accounts.models import User
 
 class BlogPostListView(generics.ListCreateAPIView):
@@ -12,7 +14,42 @@ class BlogPostListView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
     
     def get_queryset(self):
-        return BlogPost.objects.filter(is_published=True).select_related('author').prefetch_related('likes', 'comments')
+        queryset = BlogPost.objects.filter(is_published=True).select_related('author', 'category', 'subcategory').prefetch_related('likes', 'comments')
+        
+        # Filter by category
+        category = self.request.query_params.get('category')
+        if category:
+            queryset = queryset.filter(category__slug=category)
+        
+        # Filter by subcategory
+        subcategory = self.request.query_params.get('subcategory')
+        if subcategory:
+            queryset = queryset.filter(subcategory__slug=subcategory)
+        
+        # Search functionality
+        search = self.request.query_params.get('search')
+        if search:
+            queryset = queryset.filter(
+                Q(title__icontains=search) | 
+                Q(content__icontains=search) |
+                Q(author__first_name__icontains=search) |
+                Q(author__last_name__icontains=search)
+            )
+        
+        # Sort options
+        sort = self.request.query_params.get('sort', 'newest')
+        if sort == 'popular':
+            queryset = queryset.annotate(likes_count=Count('likes')).order_by('-likes_count', '-created_at')
+        elif sort == 'trending':
+            # Posts with most engagement in last 7 days
+            week_ago = timezone.now() - timedelta(days=7)
+            queryset = queryset.filter(created_at__gte=week_ago).annotate(
+                engagement=Count('likes') + Count('comments')
+            ).order_by('-engagement', '-created_at')
+        else:  # newest
+            queryset = queryset.order_by('-created_at')
+        
+        return queryset
     
     def perform_create(self, serializer):
         # Check subscription limits for blog posts
@@ -41,21 +78,70 @@ class BlogPostDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = BlogPostSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     lookup_field = 'slug'
+    
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        # Increment view count
+        BlogPost.objects.filter(pk=instance.pk).update(views_count=F('views_count') + 1)
+        instance.refresh_from_db()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
 class UserBlogPostsView(generics.ListAPIView):
     serializer_class = BlogPostSerializer
     
     def get_queryset(self):
         user_id = self.kwargs['user_id']
-        return BlogPost.objects.filter(author_id=user_id, is_published=True)
+        return BlogPost.objects.filter(
+            author_id=user_id, 
+            is_published=True
+        ).select_related('author', 'category', 'subcategory').prefetch_related('likes', 'comments').order_by('-created_at')
 
 class BlogFeedView(generics.ListAPIView):
     serializer_class = BlogPostSerializer
     permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
-        following_users = BlogFollow.objects.filter(follower=self.request.user).values_list('following', flat=True)
-        return BlogPost.objects.filter(Q(author__in=following_users) | Q(author=self.request.user), is_published=True)
+        user = self.request.user
+        
+        # Get users the current user follows
+        following_users = BlogFollow.objects.filter(follower=user).values_list('following', flat=True)
+        
+        # Get posts from followed users
+        followed_posts = BlogPost.objects.filter(author__in=following_users, is_published=True)
+        
+        # Get posts user has liked (for recommendation)
+        liked_posts = BlogPost.objects.filter(likes__user=user, is_published=True)
+        
+        # Get categories from liked posts for recommendations
+        liked_categories = liked_posts.values_list('category', flat=True).distinct()
+        
+        # Recommendation algorithm: posts from same categories as liked posts
+        recommended_posts = BlogPost.objects.filter(
+            category__in=liked_categories, 
+            is_published=True
+        ).exclude(author=user).exclude(likes__user=user)
+        
+        # Combine and prioritize: followed > recommended > trending
+        if followed_posts.exists():
+            # Prioritize followed users' posts
+            queryset = followed_posts.annotate(
+                priority=Count('likes') + Count('comments')
+            ).order_by('-priority', '-created_at')
+        else:
+            # If not following anyone, show recommended + trending
+            week_ago = timezone.now() - timedelta(days=7)
+            trending_posts = BlogPost.objects.filter(
+                created_at__gte=week_ago, 
+                is_published=True
+            ).annotate(
+                engagement=Count('likes') + Count('comments')
+            ).order_by('-engagement', '-created_at')[:20]
+            
+            # Combine recommended and trending
+            queryset = (recommended_posts[:10].union(trending_posts[:10])).order_by('-created_at')
+        
+        return queryset.select_related('author', 'category', 'subcategory').prefetch_related('likes', 'comments')
 
 @api_view(['POST', 'DELETE'])
 @permission_classes([IsAuthenticated])
@@ -82,14 +168,23 @@ def post_comments(request, post_id):
         post = BlogPost.objects.get(id=post_id)
         
         if request.method == 'GET':
-            comments = post.comments.all()
-            serializer = BlogCommentSerializer(comments, many=True)
+            # Get only top-level comments (no parent)
+            comments = post.comments.filter(parent__isnull=True)
+            serializer = BlogCommentSerializer(comments, many=True, context={'request': request})
             return Response(serializer.data)
         
         elif request.method == 'POST':
-            serializer = BlogCommentSerializer(data=request.data)
+            serializer = BlogCommentSerializer(data=request.data, context={'request': request})
             if serializer.is_valid():
-                serializer.save(user=request.user, post=post)
+                parent_id = serializer.validated_data.get('parent_id')
+                parent = None
+                if parent_id:
+                    try:
+                        parent = BlogComment.objects.get(id=parent_id, post=post)
+                    except BlogComment.DoesNotExist:
+                        return Response({'error': 'Parent comment not found'}, status=400)
+                
+                serializer.save(user=request.user, post=post, parent=parent)
                 return Response(serializer.data, status=201)
             return Response(serializer.errors, status=400)
     except BlogPost.DoesNotExist:
@@ -133,3 +228,32 @@ def user_stats(request, user_id):
         })
     except User.DoesNotExist:
         return Response({'error': 'User not found'}, status=404)
+
+@api_view(['GET'])
+def categories_list(request):
+    categories = BlogCategory.objects.prefetch_related('subcategories')
+    serializer = BlogCategoryWithSubsSerializer(categories, many=True)
+    return Response(serializer.data)
+
+class RecommendedPostsView(generics.ListAPIView):
+    serializer_class = BlogPostSerializer
+    
+    def get_queryset(self):
+        # Get current post to exclude it and find similar posts
+        current_slug = self.kwargs.get('slug')
+        try:
+            current_post = BlogPost.objects.get(slug=current_slug)
+        except BlogPost.DoesNotExist:
+            return BlogPost.objects.none()
+        
+        # Get posts from same category/subcategory or same author
+        queryset = BlogPost.objects.filter(
+            Q(category=current_post.category) | 
+            Q(subcategory=current_post.subcategory) |
+            Q(author=current_post.author),
+            is_published=True
+        ).exclude(id=current_post.id).annotate(
+            engagement=Count('likes') + Count('comments')
+        ).order_by('-engagement', '-created_at')[:6]
+        
+        return queryset.select_related('author', 'category', 'subcategory').prefetch_related('likes', 'comments')

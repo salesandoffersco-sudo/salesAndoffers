@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { FiSave, FiArrowLeft } from "react-icons/fi";
 import axios from "axios";
@@ -14,9 +14,36 @@ export default function CreateBlogPage() {
   const [formData, setFormData] = useState({
     title: "",
     content: "",
-    image: ""
+    image: "",
+    category_id: "",
+    subcategory_id: ""
   });
+  const [categories, setCategories] = useState<any[]>([]);
+  const [subcategories, setSubcategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/blog/categories/`);
+      setCategories(response.data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  const handleCategoryChange = (categoryId: string) => {
+    const selectedCategory = categories.find(cat => cat.id.toString() === categoryId);
+    setSubcategories(selectedCategory?.subcategories || []);
+    setFormData({
+      ...formData,
+      category_id: categoryId,
+      subcategory_id: ""
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,6 +117,47 @@ export default function CreateBlogPage() {
               onImageChange={(url) => setFormData({ ...formData, image: url })}
               label="Featured Image"
             />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label htmlFor="category" className="block text-sm font-medium text-[rgb(var(--color-text))] mb-2">
+                  Category
+                </label>
+                <select
+                  id="category"
+                  value={formData.category_id}
+                  onChange={(e) => handleCategoryChange(e.target.value)}
+                  className="w-full px-4 py-3 border border-[rgb(var(--color-border))] rounded-lg bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                >
+                  <option value="">Select a category</option>
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label htmlFor="subcategory" className="block text-sm font-medium text-[rgb(var(--color-text))] mb-2">
+                  Subcategory (Optional)
+                </label>
+                <select
+                  id="subcategory"
+                  value={formData.subcategory_id}
+                  onChange={(e) => setFormData({ ...formData, subcategory_id: e.target.value })}
+                  disabled={!formData.category_id}
+                  className="w-full px-4 py-3 border border-[rgb(var(--color-border))] rounded-lg bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:opacity-50"
+                >
+                  <option value="">Select a subcategory</option>
+                  {subcategories.map((subcategory) => (
+                    <option key={subcategory.id} value={subcategory.id}>
+                      {subcategory.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
 
             <div>
               <label htmlFor="content" className="block text-sm font-medium text-[rgb(var(--color-text))] mb-2">

@@ -3,10 +3,11 @@
 // Enhanced blog listing with modern UI/UX
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { FiHeart, FiMessageCircle, FiUser, FiCalendar, FiTrendingUp, FiEdit3 } from "react-icons/fi";
+import { FiHeart, FiMessageCircle, FiUser, FiCalendar, FiTrendingUp, FiEdit3, FiFilter, FiSearch } from "react-icons/fi";
 import axios from "axios";
 import Button from "../../components/Button";
 import VerificationBadge from "../../components/VerificationBadge";
+import BlogFilterSidebar from "../../components/BlogFilterSidebar";
 import { API_BASE_URL } from "../../lib/api";
 
 interface BlogPost {
@@ -43,6 +44,13 @@ export default function BlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [filterSidebarOpen, setFilterSidebarOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filters, setFilters] = useState({
+    category: "",
+    subcategory: "",
+    sort: "newest"
+  });
   const [emojis, setEmojis] = useState<EmojiParticle[]>([]);
   const heroRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number | null>(null);
@@ -61,7 +69,6 @@ export default function BlogPage() {
 
   useEffect(() => {
     setIsLoggedIn(!!localStorage.getItem("token"));
-    fetchPosts();
     initEmojis();
     startAnimation();
     
@@ -71,6 +78,19 @@ export default function BlogPage() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    fetchPosts();
+  }, [filters, searchQuery]);
+
+  const handleFilterChange = (newFilters: typeof filters) => {
+    setFilters(newFilters);
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    fetchPosts();
+  };
 
   const initEmojis = () => {
     const newEmojis: EmojiParticle[] = [];
@@ -166,7 +186,14 @@ export default function BlogPage() {
     try {
       const token = localStorage.getItem("token");
       const headers = token ? { Authorization: `Token ${token}` } : {};
-      const response = await axios.get(`${API_BASE_URL}/api/blog/posts/`, { headers });
+      
+      const params = new URLSearchParams();
+      if (filters.category) params.append('category', filters.category);
+      if (filters.subcategory) params.append('subcategory', filters.subcategory);
+      if (filters.sort) params.append('sort', filters.sort);
+      if (searchQuery) params.append('search', searchQuery);
+      
+      const response = await axios.get(`${API_BASE_URL}/api/blog/posts/?${params.toString()}`, { headers });
       setPosts(response.data);
       setLoading(false);
     } catch (error) {
@@ -271,122 +298,197 @@ export default function BlogPage() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {loading ? (
-          <div className="text-center py-20">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600 mx-auto"></div>
-            <p className="mt-4 text-[rgb(var(--color-muted))]">Loading posts...</p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Search and Filter Bar */}
+        <div className="mb-8">
+          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+            <form onSubmit={handleSearch} className="flex-1 max-w-md">
+              <div className="relative">
+                <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[rgb(var(--color-muted))] w-5 h-5" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search posts, authors, topics..."
+                  className="w-full pl-10 pr-4 py-3 border border-[rgb(var(--color-border))] rounded-xl bg-[rgb(var(--color-card))] text-[rgb(var(--color-text))] focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                />
+              </div>
+            </form>
+            
+            <div className="flex items-center space-x-3">
+              <Button
+                variant="outline"
+                onClick={() => setFilterSidebarOpen(true)}
+                className="lg:hidden"
+              >
+                <FiFilter className="w-4 h-4 mr-2" />
+                Filters
+              </Button>
+              
+              <div className="hidden lg:flex items-center space-x-2 text-sm text-[rgb(var(--color-muted))]">
+                <span>Sort:</span>
+                <select
+                  value={filters.sort}
+                  onChange={(e) => handleFilterChange({ ...filters, sort: e.target.value })}
+                  className="bg-[rgb(var(--color-card))] border border-[rgb(var(--color-border))] rounded-lg px-3 py-1 text-[rgb(var(--color-text))] focus:ring-2 focus:ring-purple-500"
+                >
+                  <option value="newest">Newest</option>
+                  <option value="popular">Popular</option>
+                  <option value="trending">Trending</option>
+                </select>
+              </div>
+            </div>
           </div>
-        ) : posts.length === 0 ? (
-          <div className="text-center py-20">
-            <FiEdit3 className="text-6xl text-[rgb(var(--color-muted))] mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-[rgb(var(--color-text))] mb-2">No Posts Yet</h2>
-            <p className="text-[rgb(var(--color-muted))] mb-6">Be the first to share your story!</p>
-            {isLoggedIn && (
-              <Link href="/blog/create">
-                <Button variant="primary">Create First Post</Button>
-              </Link>
+        </div>
+
+        <div className="flex gap-8">
+          {/* Filter Sidebar - Desktop */}
+          <div className="hidden lg:block w-80 flex-shrink-0">
+            <BlogFilterSidebar
+              isOpen={true}
+              onClose={() => {}}
+              selectedCategory={filters.category}
+              selectedSubcategory={filters.subcategory}
+              selectedSort={filters.sort}
+              onFilterChange={handleFilterChange}
+            />
+          </div>
+
+          {/* Mobile Filter Sidebar */}
+          <BlogFilterSidebar
+            isOpen={filterSidebarOpen}
+            onClose={() => setFilterSidebarOpen(false)}
+            selectedCategory={filters.category}
+            selectedSubcategory={filters.subcategory}
+            selectedSort={filters.sort}
+            onFilterChange={handleFilterChange}
+          />
+
+          {/* Main Content */}
+          <div className="flex-1 min-w-0">
+            {loading ? (
+              <div className="text-center py-20">
+                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600 mx-auto"></div>
+                <p className="mt-4 text-[rgb(var(--color-muted))]">Loading posts...</p>
+              </div>
+            ) : posts.length === 0 ? (
+              <div className="text-center py-20">
+                <FiEdit3 className="text-6xl text-[rgb(var(--color-muted))] mx-auto mb-4" />
+                <h2 className="text-2xl font-bold text-[rgb(var(--color-text))] mb-2">
+                  {searchQuery || filters.category || filters.subcategory ? 'No Posts Found' : 'No Posts Yet'}
+                </h2>
+                <p className="text-[rgb(var(--color-muted))] mb-6">
+                  {searchQuery || filters.category || filters.subcategory 
+                    ? 'Try adjusting your search or filters' 
+                    : 'Be the first to share your story!'}
+                </p>
+                {isLoggedIn && (
+                  <Link href="/blog/create">
+                    <Button variant="primary">Create First Post</Button>
+                  </Link>
+                )}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {posts.map((post) => (
+                  <article
+                    key={post.id}
+                    className="bg-[rgb(var(--color-card))] rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-[rgb(var(--color-border))] group hover:-translate-y-2 backdrop-blur-sm"
+                  >
+                    <Link href={`/blog/${post.slug}`} className="block">
+                      {post.image ? (
+                        <div className="aspect-[16/10] bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/20 dark:to-blue-900/20 overflow-hidden relative">
+                          <img 
+                            src={post.image} 
+                            alt={post.title}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        </div>
+                      ) : (
+                        <div className="aspect-[16/10] bg-gradient-to-br from-purple-500/10 via-blue-500/10 to-indigo-500/10 flex items-center justify-center">
+                          <div className="text-6xl opacity-20">
+                            {post.title.charAt(0).toUpperCase()}
+                          </div>
+                        </div>
+                      )}
+                    </Link>
+                    
+                    <div className="p-6 space-y-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="relative">
+                          <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center overflow-hidden ring-2 ring-white/10">
+                            {post.author.profile_picture ? (
+                              <img src={post.author.profile_picture} alt={post.author.username} className="w-full h-full object-cover" />
+                            ) : (
+                              <FiUser className="w-6 h-6 text-white" />
+                            )}
+                          </div>
+                          <VerificationBadge 
+                            isVerified={post.author.is_verified || false} 
+                            type="user" 
+                            size="sm" 
+                            className="absolute -bottom-1 -right-1"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <p className="font-semibold text-[rgb(var(--color-text))] text-sm truncate">
+                              {post.author.first_name} {post.author.last_name}
+                            </p>
+                            <span className="text-[rgb(var(--color-muted))] text-xs">@{post.author.username}</span>
+                          </div>
+                          <div className="flex items-center text-xs text-[rgb(var(--color-muted))] mt-1">
+                            <FiCalendar className="w-3 h-3 mr-1" />
+                            {formatDate(post.created_at)}
+                          </div>
+                        </div>
+                      </div>
+
+                      <Link href={`/blog/${post.slug}`} className="block">
+                        <h2 className="text-xl font-bold text-[rgb(var(--color-text))] mb-3 hover:text-purple-600 dark:hover:text-purple-400 transition-colors line-clamp-2 leading-tight">
+                          {post.title}
+                        </h2>
+                      </Link>
+
+                      <div className="text-[rgb(var(--color-muted))] text-sm leading-relaxed line-clamp-3" 
+                           dangerouslySetInnerHTML={{ __html: truncateContent(post.content.replace(/<[^>]*>/g, ''), 150) }} />
+
+                      <div className="flex items-center justify-between pt-4 border-t border-[rgb(var(--color-border))]">
+                        <div className="flex items-center space-x-6">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleLike(post.id);
+                            }}
+                            disabled={!isLoggedIn}
+                            className={`flex items-center space-x-2 transition-all duration-200 ${
+                              post.is_liked 
+                                ? 'text-red-500 scale-105' 
+                                : 'text-[rgb(var(--color-muted))] hover:text-red-500 hover:scale-105'
+                            } ${!isLoggedIn ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                          >
+                            <FiHeart className={`w-5 h-5 ${post.is_liked ? 'fill-current' : ''}`} />
+                            <span className="text-sm font-medium">{post.likes_count}</span>
+                          </button>
+                          <Link href={`/blog/${post.slug}`} className="flex items-center space-x-2 text-[rgb(var(--color-muted))] hover:text-purple-600 transition-colors">
+                            <FiMessageCircle className="w-5 h-5" />
+                            <span className="text-sm font-medium">{post.comments_count}</span>
+                          </Link>
+                        </div>
+                        <Link href={`/blog/${post.slug}`}>
+                          <Button variant="outline" size="sm" className="hover:bg-purple-50 dark:hover:bg-purple-900/20">
+                            Read More
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
             )}
           </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-            {posts.map((post) => (
-              <article
-                key={post.id}
-                className="bg-[rgb(var(--color-card))] rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-[rgb(var(--color-border))] group hover:-translate-y-2 backdrop-blur-sm"
-              >
-                <Link href={`/blog/${post.slug}`} className="block">
-                  {post.image ? (
-                    <div className="aspect-[16/10] bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/20 dark:to-blue-900/20 overflow-hidden relative">
-                      <img 
-                        src={post.image} 
-                        alt={post.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    </div>
-                  ) : (
-                    <div className="aspect-[16/10] bg-gradient-to-br from-purple-500/10 via-blue-500/10 to-indigo-500/10 flex items-center justify-center">
-                      <div className="text-6xl opacity-20">
-                        {post.title.charAt(0).toUpperCase()}
-                      </div>
-                    </div>
-                  )}
-                </Link>
-                
-                <div className="p-6 space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="relative">
-                      <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center overflow-hidden ring-2 ring-white/10">
-                        {post.author.profile_picture ? (
-                          <img src={post.author.profile_picture} alt={post.author.username} className="w-full h-full object-cover" />
-                        ) : (
-                          <FiUser className="w-6 h-6 text-white" />
-                        )}
-                      </div>
-                      <VerificationBadge 
-                        isVerified={post.author.is_verified || false} 
-                        type="user" 
-                        size="sm" 
-                        className="absolute -bottom-1 -right-1"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="font-semibold text-[rgb(var(--color-text))] text-sm truncate">
-                          {post.author.first_name} {post.author.last_name}
-                        </p>
-                        <span className="text-[rgb(var(--color-muted))] text-xs">@{post.author.username}</span>
-                      </div>
-                      <div className="flex items-center text-xs text-[rgb(var(--color-muted))] mt-1">
-                        <FiCalendar className="w-3 h-3 mr-1" />
-                        {formatDate(post.created_at)}
-                      </div>
-                    </div>
-                  </div>
-
-                  <Link href={`/blog/${post.slug}`} className="block">
-                    <h2 className="text-xl font-bold text-[rgb(var(--color-text))] mb-3 hover:text-purple-600 dark:hover:text-purple-400 transition-colors line-clamp-2 leading-tight">
-                      {post.title}
-                    </h2>
-                  </Link>
-
-                  <div className="text-[rgb(var(--color-muted))] text-sm leading-relaxed line-clamp-3" 
-                       dangerouslySetInnerHTML={{ __html: truncateContent(post.content.replace(/<[^>]*>/g, ''), 150) }} />
-
-                  <div className="flex items-center justify-between pt-4 border-t border-[rgb(var(--color-border))]">
-                    <div className="flex items-center space-x-6">
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleLike(post.id);
-                        }}
-                        disabled={!isLoggedIn}
-                        className={`flex items-center space-x-2 transition-all duration-200 ${
-                          post.is_liked 
-                            ? 'text-red-500 scale-105' 
-                            : 'text-[rgb(var(--color-muted))] hover:text-red-500 hover:scale-105'
-                        } ${!isLoggedIn ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                      >
-                        <FiHeart className={`w-5 h-5 ${post.is_liked ? 'fill-current' : ''}`} />
-                        <span className="text-sm font-medium">{post.likes_count}</span>
-                      </button>
-                      <Link href={`/blog/${post.slug}`} className="flex items-center space-x-2 text-[rgb(var(--color-muted))] hover:text-purple-600 transition-colors">
-                        <FiMessageCircle className="w-5 h-5" />
-                        <span className="text-sm font-medium">{post.comments_count}</span>
-                      </Link>
-                    </div>
-                    <Link href={`/blog/${post.slug}`}>
-                      <Button variant="outline" size="sm" className="hover:bg-purple-50 dark:hover:bg-purple-900/20">
-                        Read More
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );
