@@ -1,5 +1,6 @@
 "use client";
 
+// Enhanced blog listing with modern UI/UX
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { FiHeart, FiMessageCircle, FiUser, FiCalendar, FiTrendingUp, FiEdit3 } from "react-icons/fi";
