@@ -106,12 +106,17 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
     startAutoPlay();
   };
 
+  const parsePrice = (priceStr: string): number => {
+    const numericValue = priceStr.replace(/[^0-9.]/g, '');
+    return parseFloat(numericValue) || 0;
+  };
+
   const handleAddToCart = (item: CarouselItem) => {
     addToCart({
       dealId: item.id,
       title: item.title,
-      originalPrice: parseFloat(item.originalPrice || item.price),
-      discountedPrice: parseFloat(item.price),
+      originalPrice: parsePrice(item.originalPrice || item.price),
+      discountedPrice: parsePrice(item.price),
       discountPercentage: item.discount || 0,
       maxPurchase: 10,
       minPurchase: 1,
