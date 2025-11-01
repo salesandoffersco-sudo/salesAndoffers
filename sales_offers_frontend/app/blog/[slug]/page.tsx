@@ -61,6 +61,7 @@ export default function BlogPostPage() {
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [recommendedPosts, setRecommendedPosts] = useState<BlogPost[]>([]);
+  const [authorPosts, setAuthorPosts] = useState<BlogPost[]>([]);
 
   useEffect(() => {
     setIsLoggedIn(!!localStorage.getItem("token"));
@@ -73,6 +74,7 @@ export default function BlogPostPage() {
     if (post?.id) {
       fetchComments();
       fetchRecommendedPosts();
+      fetchAuthorPosts();
     }
   }, [post?.id]);
 
@@ -83,6 +85,17 @@ export default function BlogPostPage() {
       setRecommendedPosts(response.data);
     } catch (error) {
       console.error("Error fetching recommended posts:", error);
+    }
+  };
+
+  const fetchAuthorPosts = async () => {
+    if (!post?.author.id) return;
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/blog/users/${post.author.id}/posts/`);
+      const filteredPosts = response.data.filter((p: BlogPost) => p.slug !== post.slug);
+      setAuthorPosts(filteredPosts);
+    } catch (error) {
+      console.error("Error fetching author posts:", error);
     }
   };
 
@@ -267,14 +280,16 @@ export default function BlogPostPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
+        <div className={`grid grid-cols-1 gap-8 ${authorPosts.length > 0 ? 'xl:grid-cols-12' : 'lg:grid-cols-3'}`}>
           {/* Left Sidebar - Author's Posts (Desktop/Tablet) */}
-          <div className="hidden lg:block xl:col-span-3">
-            <AuthorPostsSidebar authorId={post.author.id} currentSlug={post.slug} />
-          </div>
+          {authorPosts.length > 0 && (
+            <div className="hidden lg:block xl:col-span-3">
+              <AuthorPostsSidebar authorId={post.author.id} currentSlug={post.slug} />
+            </div>
+          )}
 
           {/* Main Content */}
-          <div className="xl:col-span-6">
+          <div className={authorPosts.length > 0 ? 'xl:col-span-6' : 'lg:col-span-2'}>
             {/* Hero Image */}
             {post.image && (
               <div className="aspect-[21/9] bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/20 dark:to-blue-900/20 rounded-3xl overflow-hidden mb-8 shadow-2xl">
@@ -391,7 +406,7 @@ export default function BlogPostPage() {
           </div>
 
           {/* Right Sidebar - Comments (Desktop/Tablet) */}
-          <div className="hidden lg:block xl:col-span-3">
+          <div className={`hidden lg:block ${authorPosts.length > 0 ? 'xl:col-span-3' : 'lg:col-span-1'}`}>
             <CommentsSidebar 
               post={post} 
               comments={comments} 
