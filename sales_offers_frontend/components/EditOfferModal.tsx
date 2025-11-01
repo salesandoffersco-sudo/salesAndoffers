@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FiX, FiUpload } from "react-icons/fi";
+import { FiX } from "react-icons/fi";
 import Button from "./Button";
+import DealImageUpload from "./DealImageUpload";
 import { api } from "../lib/api";
 
 interface EditOfferModalProps {
@@ -19,7 +20,6 @@ interface OfferData {
   discounted_price: string;
   category: string;
   location: string;
-  image: string;
   max_vouchers: number;
   min_purchase: number;
   max_purchase: number;
@@ -35,13 +35,13 @@ export default function EditOfferModal({ isOpen, onClose, onSuccess, offerId }: 
     discounted_price: "",
     category: "Other",
     location: "",
-    image: "",
     max_vouchers: 100,
     min_purchase: 1,
     max_purchase: 10,
     redemption_instructions: "Present this voucher at the business location to redeem your deal.",
     expires_at: ""
   });
+  const [images, setImages] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(false);
 
@@ -64,13 +64,25 @@ export default function EditOfferModal({ isOpen, onClose, onSuccess, offerId }: 
         discounted_price: offer.discounted_price,
         category: offer.category,
         location: offer.location || "",
-        image: offer.image || "",
         max_vouchers: offer.max_vouchers,
         min_purchase: offer.min_purchase,
         max_purchase: offer.max_purchase,
         redemption_instructions: offer.redemption_instructions,
         expires_at: offer.expires_at ? new Date(offer.expires_at).toISOString().split('T')[0] : ""
       });
+      
+      // Set existing images
+      const existingImages = offer.images || [];
+      if (offer.main_image && !existingImages.some((img: any) => img.image_url === offer.main_image)) {
+        existingImages.unshift({
+          id: -1,
+          image_url: offer.main_image,
+          is_main: true,
+          order: -1,
+          alt_text: offer.title
+        });
+      }
+      setImages(existingImages);
     } catch (error) {
       console.error("Error fetching offer:", error);
     } finally {
@@ -91,10 +103,40 @@ export default function EditOfferModal({ isOpen, onClose, onSuccess, offerId }: 
       const submitData = {
         ...formData,
         discount_percentage: discountPercentage,
-        expires_at: new Date(formData.expires_at).toISOString()
+        expires_at: new Date(formData.expires_at).toISOString(),
+        main_image: images.find(img => img.is_main)?.image_url || images[0]?.image_url || null
       };
 
       await api.patch(`/api/deals/${offerId}/`, submitData);
+      
+      // Update images
+      if (images.length > 0) {
+        // Delete existing images and re-upload (simple approach)
+        try {
+          const existingImagesResponse = await api.get(`/api/deals/${offerId}/`);
+          const existingImages = existingImagesResponse.data.images || [];
+          
+          // Delete old images
+          for (const img of existingImages) {
+            if (img.id > 0) {
+              await api.delete(`/api/deals/${offerId}/images/${img.id}/delete/`);
+            }
+          }
+          
+          // Upload new images
+          for (const image of images) {
+            if (image.id !== -1) { // Skip the legacy main_image entry
+              await api.post(`/api/deals/${offerId}/images/`, {
+                image_url: image.image_url,
+                is_main: image.is_main,
+                alt_text: image.alt_text
+              });
+            }
+          }
+        } catch (imageError) {
+          console.error('Error updating images:', imageError);
+        }
+      }
       onSuccess();
       onClose();
     } catch (error: any) {
@@ -233,15 +275,13 @@ export default function EditOfferModal({ isOpen, onClose, onSuccess, offerId }: 
 
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-[rgb(var(--color-text))] mb-2">
-                  Image URL
+                  Deal Images
                 </label>
-                <input
-                  type="url"
-                  name="image"
-                  value={formData.image}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-[rgb(var(--color-border))] rounded-lg bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="https://example.com/image.jpg"
+                <DealImageUpload
+                  dealId={offerId}
+                  images={images}
+                  onImagesChange={setImages}
+                  maxImages={5}
                 />
               </div>
 
