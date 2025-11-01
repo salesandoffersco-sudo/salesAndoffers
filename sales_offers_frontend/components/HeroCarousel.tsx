@@ -278,17 +278,16 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
                   </div>
 
                   {/* Mobile Details Overlay - Show on tablets and mobile */}
-                  <div className={`lg:hidden absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 via-black/60 to-transparent text-white transition-all duration-500 ${
+                  <div className={`lg:hidden absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/95 via-black/70 to-transparent text-white transition-all duration-500 ${
                     index === currentIndex ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
                   }`}>
-                    <h3 className="text-base sm:text-lg font-bold mb-1">{item.title}</h3>
-                    <p className="text-xs text-gray-300 mb-2 line-clamp-2 leading-relaxed">{item.description}</p>
-                    <div className="flex justify-between items-center mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-base sm:text-lg font-bold">{item.price}</span>
-                        {item.originalPrice && (
-                          <span className="text-xs sm:text-sm text-gray-400 line-through">{item.originalPrice}</span>
-                        )}
+                    <div className="space-y-1">
+                      <h3 className="text-xs font-bold truncate leading-tight">{item.title}</h3>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold">{item.price}</span>
+                        <div className="flex text-yellow-400" style={{fontSize: '10px'}}>
+                          {generateStars(item.rating).slice(0, 3)}
+                        </div>
                       </div>
                       <div className="flex gap-1">
                         <button 
@@ -296,7 +295,7 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
                             e.stopPropagation();
                             handleViewDetails(item);
                           }}
-                          className="bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-bold hover:bg-blue-700 transition-colors"
+                          className="bg-blue-600 text-white px-2 py-1 rounded text-xs font-medium flex-1"
                         >
                           View
                         </button>
@@ -305,15 +304,12 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
                             e.stopPropagation();
                             handleAddToCart(item);
                           }}
-                          className="bg-white text-indigo-600 px-2 py-1 rounded-full text-xs font-bold hover:bg-gray-100 transition-colors flex items-center gap-1"
+                          className="bg-white text-indigo-600 px-2 py-1 rounded text-xs font-medium flex-1 flex items-center justify-center gap-1"
                         >
-                          <FiShoppingCart className="w-3 h-3" />
+                          <FiShoppingCart className="w-2 h-2" />
                           Cart
                         </button>
                       </div>
-                    </div>
-                    <div className="flex items-center text-yellow-400 text-sm">
-                      {generateStars(item.rating)}
                     </div>
                   </div>
                 </div>
