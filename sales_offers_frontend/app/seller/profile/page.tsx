@@ -43,8 +43,12 @@ export default function SellerProfilePage() {
     try {
       const response = await api.get('/api/sellers/profile/');
       setProfile(response.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching profile:", error);
+      // If profile doesn't exist, keep default empty profile
+      if (error.response?.status !== 404) {
+        alert("Failed to load profile data");
+      }
     } finally {
       setLoading(false);
     }
@@ -53,11 +57,18 @@ export default function SellerProfilePage() {
   const handleSave = async () => {
     setSaving(true);
     try {
+      // Validate required fields
+      if (!profile.company_name || !profile.email || !profile.phone || !profile.description || !profile.address) {
+        alert("Please fill in all required fields");
+        return;
+      }
+      
       await api.put('/api/sellers/profile/', profile);
       alert("Profile saved successfully!");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving profile:", error);
-      alert("Failed to save profile");
+      const message = error.response?.data?.message || error.message || "Failed to save profile";
+      alert(`Error: ${message}`);
     } finally {
       setSaving(false);
     }
