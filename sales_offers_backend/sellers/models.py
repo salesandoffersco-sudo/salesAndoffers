@@ -8,6 +8,7 @@ class Seller(models.Model):
     business_name = models.CharField(max_length=200)
     business_description = models.TextField()
     business_logo = models.URLField(blank=True, null=True)
+    cover_image = models.URLField(blank=True, null=True)
     rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.0)
     total_reviews = models.IntegerField(default=0)
     address = models.CharField(max_length=300)
@@ -95,7 +96,8 @@ class Payment(models.Model):
 class SellerProfile(models.Model):
     seller = models.OneToOneField(Seller, on_delete=models.CASCADE, related_name='profile')
     company_name = models.CharField(max_length=200)
-    company_logo = models.ImageField(upload_to='seller_logos/', null=True, blank=True)
+    company_logo = models.URLField(blank=True, null=True)
+    cover_image = models.URLField(blank=True, null=True)
     description = models.TextField()
     website = models.URLField(blank=True, null=True)
     phone = models.CharField(max_length=20)

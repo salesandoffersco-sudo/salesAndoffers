@@ -5,7 +5,8 @@ from .models import Seller
 class SellerProfile(models.Model):
     seller = models.OneToOneField(Seller, on_delete=models.CASCADE, related_name='profile')
     company_name = models.CharField(max_length=200)
-    company_logo = models.ImageField(upload_to='seller_logos/', null=True, blank=True)
+    company_logo = models.URLField(blank=True, null=True)
+    cover_image = models.URLField(blank=True, null=True)
     description = models.TextField()
     website = models.URLField(blank=True, null=True)
     phone = models.CharField(max_length=20)
