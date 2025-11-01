@@ -1,6 +1,6 @@
 "use client";
 
-// Enhanced blog listing with modern UI/UX
+// Enhanced blog system with categories, filtering, and responsive layout
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { FiHeart, FiMessageCircle, FiUser, FiCalendar, FiTrendingUp, FiEdit3, FiFilter, FiSearch } from "react-icons/fi";
