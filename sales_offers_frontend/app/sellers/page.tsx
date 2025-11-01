@@ -126,12 +126,12 @@ export default function SellersPage() {
             totalSales: seller.total_deals || 0,
             followers: seller.total_reviews || 0,
             location: seller.address,
-            avatar: seller.user?.profile_picture || seller.business_logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(seller.business_name)}&background=6366f1&color=fff`,
+            avatar: seller.business_logo || seller.user?.profile_picture || seller.user?.google_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(seller.business_name)}&background=6366f1&color=fff`,
             coverImage: seller.cover_image || `https://picsum.photos/320/128?random=${seller.id}`,
             verified: seller.is_verified,
             specialOffer: seller.is_verified ? '✓ Verified' : seller.total_deals > 20 ? '🔥 Hot Deals' : undefined,
             businessLogo: seller.business_logo,
-            userProfilePicture: seller.user?.profile_picture
+            userProfilePicture: seller.user?.profile_picture || seller.user?.google_picture
           }))}
         />
       )}
