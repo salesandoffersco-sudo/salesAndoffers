@@ -16,7 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+# Trigger deployment - updated seller image upload functionality
 
+# Main URL patterns
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/sellers/', include('sellers.urls')),
