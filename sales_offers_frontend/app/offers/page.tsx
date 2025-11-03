@@ -339,8 +339,8 @@ export default function OffersPage() {
                                 {/* Seller Info */}
                                 <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300">
                                   <ProfilePicture
-                                    src={offer.seller.user?.profile_picture}
-                                    alt={offer.seller.user?.first_name || offer.seller.business_name}
+                                    src={offer.seller.company_logo || offer.seller.user?.profile_picture}
+                                    alt={offer.seller.business_name}
                                     size="xs"
                                     clickable={true}
                                   />
@@ -461,8 +461,8 @@ export default function OffersPage() {
                         <div className="border-t border-gray-100 dark:border-gray-800 pt-4">
                           <div className="flex items-center gap-2 mb-3">
                             <ProfilePicture
-                              src={offer.seller.user?.profile_picture}
-                              alt={offer.seller.user?.first_name || offer.seller.business_name}
+                              src={offer.seller.company_logo || offer.seller.user?.profile_picture}
+                              alt={offer.seller.business_name}
                               size="sm"
                               clickable={true}
                             />

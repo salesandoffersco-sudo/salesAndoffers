@@ -343,7 +343,7 @@ export default function DealDetailsPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <ProfilePicture
-                    src={deal.seller.user?.profile_picture || deal.seller.user?.google_picture}
+                    src={deal.seller.company_logo || deal.seller.user?.profile_picture || deal.seller.user?.google_picture}
                     size="md"
                   />
                   <div>
