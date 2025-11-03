@@ -42,7 +42,10 @@ interface Deal {
     business_name: string;
     rating: number;
     address: string;
-    company_logo?: string;
+    profile?: {
+      company_logo?: string;
+      cover_image?: string;
+    };
     user?: {
       profile_picture?: string;
       google_picture?: string;
@@ -344,7 +347,7 @@ export default function DealDetailsPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <ProfilePicture
-                    src={deal.seller.company_logo || deal.seller.user?.profile_picture || deal.seller.user?.google_picture}
+                    src={deal.seller.profile?.company_logo || deal.seller.user?.profile_picture || deal.seller.user?.google_picture}
                     size="md"
                   />
                   <div>

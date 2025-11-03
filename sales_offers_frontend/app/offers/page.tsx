@@ -40,7 +40,10 @@ interface Offer {
     id: number;
     business_name: string;
     is_verified?: boolean;
-    company_logo?: string;
+    profile?: {
+      company_logo?: string;
+      cover_image?: string;
+    };
     user?: {
       profile_picture?: string;
       first_name?: string;
@@ -341,7 +344,7 @@ export default function OffersPage() {
                                 {/* Seller Info */}
                                 <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300">
                                   <ProfilePicture
-                                    src={offer.seller.company_logo || offer.seller.user?.profile_picture}
+                                    src={offer.seller.profile?.company_logo || offer.seller.user?.profile_picture}
                                     alt={offer.seller.business_name}
                                     size="xs"
                                     clickable={true}
@@ -463,7 +466,7 @@ export default function OffersPage() {
                         <div className="border-t border-gray-100 dark:border-gray-800 pt-4">
                           <div className="flex items-center gap-2 mb-3">
                             <ProfilePicture
-                              src={offer.seller.company_logo || offer.seller.user?.profile_picture}
+                              src={offer.seller.profile?.company_logo || offer.seller.user?.profile_picture}
                               alt={offer.seller.business_name}
                               size="sm"
                               clickable={true}
