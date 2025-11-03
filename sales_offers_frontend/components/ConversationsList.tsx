@@ -37,13 +37,15 @@ interface ConversationsListProps {
   selectedConversation: Conversation | null;
   onConversationSelect: (conversation: Conversation) => void;
   isMobile?: boolean;
+  loading?: boolean;
 }
 
 export default function ConversationsList({
   conversations,
   selectedConversation,
   onConversationSelect,
-  isMobile = false
+  isMobile = false,
+  loading = false
 }: ConversationsListProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -104,7 +106,11 @@ export default function ConversationsList({
 
       {/* Conversations List */}
       <div className="flex-1 overflow-y-auto">
-        {filteredConversations.length === 0 ? (
+        {loading ? (
+          <div className="flex items-center justify-center h-32">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+          </div>
+        ) : filteredConversations.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full p-8">
             <div className="w-16 h-16 bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/20 dark:to-blue-900/20 rounded-full flex items-center justify-center mb-4">
               <FiMessageCircle className="w-8 h-8 text-[rgb(var(--color-muted))]" />

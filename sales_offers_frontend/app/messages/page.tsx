@@ -6,8 +6,11 @@ import { FiArrowLeft, FiSearch, FiMoreVertical, FiSend, FiPaperclip, FiSmile, Fi
 import ConversationsList from "../../components/ConversationsList";
 import ChatArea from "../../components/ChatArea";
 import UserInfoSidebar from "../../components/UserInfoSidebar";
+import { messagingApi, type Conversation, type Message, type User } from "../../lib/api/messaging";
+import { getCurrentUserId } from "../../lib/auth";
 
-interface User {
+// Transform API data to component format
+interface ComponentUser {
   id: number;
   name: string;
   avatar?: string;
@@ -18,7 +21,7 @@ interface User {
   is_verified?: boolean;
 }
 
-interface Message {
+interface ComponentMessage {
   id: number;
   sender_id: number;
   content: string;
@@ -27,141 +30,94 @@ interface Message {
   is_read: boolean;
 }
 
-interface Conversation {
+interface ComponentConversation {
   id: number;
-  user: User;
-  last_message: Message;
+  user: ComponentUser;
+  last_message: ComponentMessage;
   unread_count: number;
   updated_at: string;
 }
 
-// Mock data
-const mockConversations: Conversation[] = [
-  {
-    id: 1,
-    user: {
-      id: 2,
-      name: "Sarah Johnson",
-      avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150",
-      role: "seller",
-      business_name: "Sarah's Electronics Store",
-      is_online: true,
-      is_verified: true
-    },
-    last_message: {
-      id: 1,
-      sender_id: 2,
-      content: "Hi! I have the iPhone 15 Pro in stock. Would you like to see more details?",
-      timestamp: "2024-01-15T10:30:00Z",
-      type: "text",
-      is_read: false
-    },
-    unread_count: 2,
-    updated_at: "2024-01-15T10:30:00Z"
-  },
-  {
-    id: 2,
-    user: {
-      id: 3,
-      name: "Mike Chen",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
-      role: "buyer",
-      is_online: false,
-      last_seen: "2024-01-15T09:15:00Z",
-      is_verified: false
-    },
-    last_message: {
-      id: 2,
-      sender_id: 1,
-      content: "Thanks for your interest in the laptop deal!",
-      timestamp: "2024-01-15T09:15:00Z",
-      type: "text",
-      is_read: true
-    },
-    unread_count: 0,
-    updated_at: "2024-01-15T09:15:00Z"
-  },
-  {
-    id: 3,
-    user: {
-      id: 4,
-      name: "Emma Wilson",
-      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150",
-      role: "seller",
-      business_name: "Wilson Fashion Hub",
-      is_online: true,
-      is_verified: true
-    },
-    last_message: {
-      id: 3,
-      sender_id: 4,
-      content: "The dress you inquired about is available in size M and L",
-      timestamp: "2024-01-14T16:45:00Z",
-      type: "text",
-      is_read: true
-    },
-    unread_count: 0,
-    updated_at: "2024-01-14T16:45:00Z"
-  }
-];
+// Transform API data to component format
+const transformUser = (apiUser: User): ComponentUser => ({
+  id: apiUser.id,
+  name: `${apiUser.first_name} ${apiUser.last_name}`.trim() || apiUser.username,
+  avatar: apiUser.profile_picture,
+  role: apiUser.is_seller ? 'seller' : 'buyer',
+  is_online: apiUser.is_online,
+  is_verified: true // Can be enhanced based on backend data
+});
 
-const mockMessages: Message[] = [
-  {
-    id: 1,
-    sender_id: 2,
-    content: "Hi! I saw your inquiry about the iPhone 15 Pro. I have it in stock!",
-    timestamp: "2024-01-15T10:00:00Z",
-    type: "text",
-    is_read: true
-  },
-  {
-    id: 2,
-    sender_id: 1,
-    content: "Great! What's the price and condition?",
-    timestamp: "2024-01-15T10:05:00Z",
-    type: "text",
-    is_read: true
-  },
-  {
-    id: 3,
-    sender_id: 2,
-    content: "It's brand new, sealed box. Price is KES 145,000. I can offer 10% discount for immediate purchase.",
-    timestamp: "2024-01-15T10:10:00Z",
-    type: "text",
-    is_read: true
-  },
-  {
-    id: 4,
-    sender_id: 1,
-    content: "That sounds good. Can you send me some photos?",
-    timestamp: "2024-01-15T10:15:00Z",
-    type: "text",
-    is_read: true
-  },
-  {
-    id: 5,
-    sender_id: 2,
-    content: "Hi! I have the iPhone 15 Pro in stock. Would you like to see more details?",
-    timestamp: "2024-01-15T10:30:00Z",
-    type: "text",
-    is_read: false
-  }
-];
+const transformMessage = (apiMessage: Message, currentUserId: number): ComponentMessage => ({
+  id: apiMessage.id,
+  sender_id: apiMessage.sender.id,
+  content: apiMessage.content,
+  timestamp: apiMessage.timestamp,
+  type: 'text',
+  is_read: apiMessage.is_read
+});
+
+const transformConversation = (apiConversation: Conversation, currentUserId: number): ComponentConversation => ({
+  id: apiConversation.id,
+  user: transformUser(apiConversation.other_participant),
+  last_message: transformMessage(apiConversation.last_message, currentUserId),
+  unread_count: apiConversation.unread_count,
+  updated_at: apiConversation.updated_at
+});
 
 export default function MessagesPage() {
-  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [selectedConversation, setSelectedConversation] = useState<ComponentConversation | null>(null);
+  const [conversations, setConversations] = useState<ComponentConversation[]>([]);
+  const [messages, setMessages] = useState<ComponentMessage[]>([]);
   const [currentView, setCurrentView] = useState<'conversations' | 'chat' | 'info'>('conversations');
   const [showUserInfo, setShowUserInfo] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const currentUserId = getCurrentUserId();
 
+  // Load conversations on mount
+  useEffect(() => {
+    loadConversations();
+  }, []);
+
+  // Load messages when conversation is selected
   useEffect(() => {
     if (selectedConversation) {
-      setMessages(mockMessages);
+      loadMessages(selectedConversation.id);
       setCurrentView('chat');
     }
   }, [selectedConversation]);
 
-  const handleConversationSelect = (conversation: Conversation) => {
+  const loadConversations = async () => {
+    try {
+      setLoading(true);
+      const apiConversations = await messagingApi.getConversations();
+      const transformedConversations = apiConversations.map(conv => 
+        transformConversation(conv, currentUserId)
+      );
+      setConversations(transformedConversations);
+    } catch (error) {
+      console.error('Failed to load conversations:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadMessages = async (conversationId: number) => {
+    try {
+      const apiMessages = await messagingApi.getMessages(conversationId);
+      const transformedMessages = apiMessages.map(msg => 
+        transformMessage(msg, currentUserId)
+      );
+      setMessages(transformedMessages.reverse()); // Reverse to show oldest first
+      
+      // Mark messages as read
+      await messagingApi.markMessagesRead(conversationId);
+    } catch (error) {
+      console.error('Failed to load messages:', error);
+    }
+  };
+
+  const handleConversationSelect = (conversation: ComponentConversation) => {
     setSelectedConversation(conversation);
     setShowUserInfo(false);
   };
@@ -177,16 +133,23 @@ export default function MessagesPage() {
     setShowUserInfo(true);
   };
 
-  const handleSendMessage = (content: string) => {
-    const newMessage: Message = {
-      id: messages.length + 1,
-      sender_id: 1,
-      content,
-      timestamp: new Date().toISOString(),
-      type: 'text',
-      is_read: false
-    };
-    setMessages([...messages, newMessage]);
+  const handleSendMessage = async (content: string) => {
+    if (!selectedConversation) return;
+    
+    try {
+      const apiMessage = await messagingApi.sendMessage({
+        conversation_id: selectedConversation.id,
+        content
+      });
+      
+      const newMessage = transformMessage(apiMessage, currentUserId);
+      setMessages(prev => [...prev, newMessage]);
+      
+      // Refresh conversations to update last message
+      loadConversations();
+    } catch (error) {
+      console.error('Failed to send message:', error);
+    }
   };
 
   return (
@@ -195,9 +158,10 @@ export default function MessagesPage() {
       <div className="hidden lg:flex w-full">
         <div className="w-80 flex-shrink-0 border-r border-[rgb(var(--color-border))]">
           <ConversationsList
-            conversations={mockConversations}
+            conversations={conversations}
             selectedConversation={selectedConversation}
             onConversationSelect={handleConversationSelect}
+            loading={loading}
           />
         </div>
 
@@ -243,10 +207,11 @@ export default function MessagesPage() {
       <div className="lg:hidden w-full flex flex-col">
         {currentView === 'conversations' && (
           <ConversationsList
-            conversations={mockConversations}
+            conversations={conversations}
             selectedConversation={selectedConversation}
             onConversationSelect={handleConversationSelect}
             isMobile={true}
+            loading={loading}
           />
         )}
 

@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { FiArrowLeft, FiPhone, FiVideo, FiInfo, FiSend, FiPaperclip, FiSmile, FiMoreVertical } from "react-icons/fi";
 import VerificationBadge from "./VerificationBadge";
+import { getCurrentUserId } from "../lib/auth";
 
 interface User {
   id: number;
@@ -199,7 +200,7 @@ export default function ChatArea({
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message, index) => {
-          const isCurrentUser = message.sender_id === 1;
+          const isCurrentUser = message.sender_id === 1; // This should be dynamic based on current user
           const showAvatar = index === 0 || messages[index - 1].sender_id !== message.sender_id;
           
           return (
