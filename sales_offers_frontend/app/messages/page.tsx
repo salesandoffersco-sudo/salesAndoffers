@@ -48,7 +48,7 @@ const transformUser = (apiUser: User): ComponentUser => ({
   is_verified: true // Can be enhanced based on backend data
 });
 
-const transformMessage = (apiMessage: Message, currentUserId: number): ComponentMessage => ({
+const transformMessage = (apiMessage: Message, currentUserId: number | null): ComponentMessage => ({
   id: apiMessage.id,
   sender_id: apiMessage.sender.id,
   content: apiMessage.content,
@@ -57,7 +57,7 @@ const transformMessage = (apiMessage: Message, currentUserId: number): Component
   is_read: apiMessage.is_read
 });
 
-const transformConversation = (apiConversation: Conversation, currentUserId: number): ComponentConversation => ({
+const transformConversation = (apiConversation: Conversation, currentUserId: number | null): ComponentConversation => ({
   id: apiConversation.id,
   user: transformUser(apiConversation.other_participant),
   last_message: transformMessage(apiConversation.last_message, currentUserId),
@@ -72,10 +72,12 @@ export default function MessagesPage() {
   const [currentView, setCurrentView] = useState<'conversations' | 'chat' | 'info'>('conversations');
   const [showUserInfo, setShowUserInfo] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [currentUserId, setCurrentUserId] = useState<number>(1);
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+  const [isClient, setIsClient] = useState(false);
 
   // Initialize current user ID on client side
   useEffect(() => {
+    setIsClient(true);
     setCurrentUserId(getCurrentUserId());
   }, []);
 
@@ -156,6 +158,14 @@ export default function MessagesPage() {
       console.error('Failed to send message:', error);
     }
   };
+
+  if (!isClient) {
+    return (
+      <div className="h-screen bg-[rgb(var(--color-bg))] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen bg-[rgb(var(--color-bg))] flex overflow-hidden">
