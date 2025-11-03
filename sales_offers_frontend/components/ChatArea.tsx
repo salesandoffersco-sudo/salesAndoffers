@@ -55,8 +55,11 @@ export default function ChatArea({
   currentUserId = null
 }: ChatAreaProps) {
   const [newMessage, setNewMessage] = useState("");
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     scrollToBottom();
@@ -91,6 +94,31 @@ export default function ChatArea({
       textareaRef.current.style.height = 'auto';
       textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 120) + 'px';
     }
+  };
+
+  const handleFileAttachment = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // For now, just show an alert. In a real app, you'd upload the file
+      alert(`File selected: ${file.name}. File upload functionality would be implemented here.`);
+    }
+  };
+
+  const handleEmojiClick = () => {
+    setShowEmojiPicker(!showEmojiPicker);
+  };
+
+  const addEmoji = (emoji: string) => {
+    setNewMessage(prev => prev + emoji);
+    setShowEmojiPicker(false);
+  };
+
+  const handleMoreMenu = () => {
+    setShowMoreMenu(!showMoreMenu);
   };
 
   const formatTime = (timestamp: string) => {
@@ -180,21 +208,49 @@ export default function ChatArea({
 
           {/* Action Buttons */}
           <div className="flex items-center space-x-2">
-            <button className="p-2 hover:bg-[rgb(var(--color-bg))] rounded-lg transition-colors">
+            <button 
+              onClick={() => alert('Voice call functionality would be implemented here')}
+              className="p-2 hover:bg-[rgb(var(--color-bg))] rounded-lg transition-colors"
+              title="Voice Call"
+            >
               <FiPhone className="w-5 h-5 text-[rgb(var(--color-muted))]" />
             </button>
-            <button className="p-2 hover:bg-[rgb(var(--color-bg))] rounded-lg transition-colors">
+            <button 
+              onClick={() => alert('Video call functionality would be implemented here')}
+              className="p-2 hover:bg-[rgb(var(--color-bg))] rounded-lg transition-colors"
+              title="Video Call"
+            >
               <FiVideo className="w-5 h-5 text-[rgb(var(--color-muted))]" />
             </button>
             <button 
               onClick={onShowUserInfo}
               className="p-2 hover:bg-[rgb(var(--color-bg))] rounded-lg transition-colors"
+              title="User Info"
             >
               <FiInfo className="w-5 h-5 text-[rgb(var(--color-muted))]" />
             </button>
-            <button className="p-2 hover:bg-[rgb(var(--color-bg))] rounded-lg transition-colors">
-              <FiMoreVertical className="w-5 h-5 text-[rgb(var(--color-muted))]" />
-            </button>
+            <div className="relative">
+              <button 
+                onClick={handleMoreMenu}
+                className="p-2 hover:bg-[rgb(var(--color-bg))] rounded-lg transition-colors"
+                title="More Options"
+              >
+                <FiMoreVertical className="w-5 h-5 text-[rgb(var(--color-muted))]" />
+              </button>
+              {showMoreMenu && (
+                <div className="absolute right-0 top-full mt-2 w-48 bg-[rgb(var(--color-card))] border border-[rgb(var(--color-border))] rounded-lg shadow-lg z-50">
+                  <button className="w-full px-4 py-2 text-left hover:bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] text-sm">
+                    Clear Chat
+                  </button>
+                  <button className="w-full px-4 py-2 text-left hover:bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] text-sm">
+                    Block User
+                  </button>
+                  <button className="w-full px-4 py-2 text-left hover:bg-[rgb(var(--color-bg))] text-red-600 text-sm">
+                    Report User
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -253,8 +309,19 @@ export default function ChatArea({
 
       {/* Message Input */}
       <div className="bg-[rgb(var(--color-card))] border-t border-[rgb(var(--color-border))] p-4">
+        <input
+          ref={fileInputRef}
+          type="file"
+          className="hidden"
+          onChange={handleFileSelect}
+          accept="image/*,video/*,audio/*,.pdf,.doc,.docx"
+        />
         <div className="flex items-end space-x-3">
-          <button className="p-2 hover:bg-[rgb(var(--color-bg))] rounded-lg transition-colors flex-shrink-0">
+          <button 
+            onClick={handleFileAttachment}
+            className="p-2 hover:bg-[rgb(var(--color-bg))] rounded-lg transition-colors flex-shrink-0"
+            title="Attach File"
+          >
             <FiPaperclip className="w-5 h-5 text-[rgb(var(--color-muted))]" />
           </button>
 
@@ -271,9 +338,30 @@ export default function ChatArea({
             />
           </div>
 
-          <button className="p-2 hover:bg-[rgb(var(--color-bg))] rounded-lg transition-colors flex-shrink-0">
-            <FiSmile className="w-5 h-5 text-[rgb(var(--color-muted))]" />
-          </button>
+          <div className="relative flex-shrink-0">
+            <button 
+              onClick={handleEmojiClick}
+              className="p-2 hover:bg-[rgb(var(--color-bg))] rounded-lg transition-colors"
+              title="Add Emoji"
+            >
+              <FiSmile className="w-5 h-5 text-[rgb(var(--color-muted))]" />
+            </button>
+            {showEmojiPicker && (
+              <div className="absolute bottom-full right-0 mb-2 p-3 bg-[rgb(var(--color-card))] border border-[rgb(var(--color-border))] rounded-lg shadow-lg z-50">
+                <div className="grid grid-cols-6 gap-2">
+                  {['😀', '😂', '😍', '🤔', '😢', '😡', '👍', '👎', '❤️', '🎉', '🔥', '💯'].map((emoji) => (
+                    <button
+                      key={emoji}
+                      onClick={() => addEmoji(emoji)}
+                      className="p-2 hover:bg-[rgb(var(--color-bg))] rounded text-lg"
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
 
           <button
             onClick={handleSend}

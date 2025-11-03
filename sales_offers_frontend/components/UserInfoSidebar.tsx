@@ -13,6 +13,14 @@ interface User {
   is_online: boolean;
   last_seen?: string;
   is_verified?: boolean;
+  rating?: number;
+  total_reviews?: number;
+  location?: string;
+  phone?: string;
+  email?: string;
+  website?: string;
+  description?: string;
+  member_since?: string;
 }
 
 interface UserInfoSidebarProps {
@@ -22,23 +30,7 @@ interface UserInfoSidebarProps {
   isMobile?: boolean;
 }
 
-// Mock additional user data
-const mockUserDetails = {
-  rating: 4.8,
-  totalReviews: 127,
-  memberSince: "2022-03-15",
-  location: "Nairobi, Kenya",
-  phone: "+254 712 345 678",
-  email: "sarah.johnson@example.com",
-  website: "www.sarahelectronics.co.ke",
-  description: "Trusted electronics dealer with over 5 years of experience. We offer genuine products with warranty and excellent customer service.",
-  totalSales: 1250,
-  responseTime: "Usually responds within 2 hours",
-  languages: ["English", "Swahili"],
-  businessHours: "Mon-Sat: 8:00 AM - 8:00 PM",
-  verificationDate: "2022-04-20",
-  badges: ["Top Seller", "Fast Responder", "Verified Business"]
-};
+
 
 export default function UserInfoSidebar({
   user,
@@ -144,12 +136,12 @@ export default function UserInfoSidebar({
                 <div className="flex items-center space-x-1">
                   <FiStar className="w-4 h-4 text-yellow-400 fill-current" />
                   <span className="font-bold text-[rgb(var(--color-text))]">
-                    {mockUserDetails.rating}
+                    {(user.rating || 0).toFixed(1)}
                   </span>
                 </div>
               </div>
               <p className="text-sm text-[rgb(var(--color-muted))]">
-                {mockUserDetails.totalReviews} reviews • {mockUserDetails.totalSales} sales
+                {user.total_reviews || 0} reviews
               </p>
             </div>
 
@@ -163,17 +155,17 @@ export default function UserInfoSidebar({
               <div className="space-y-2 text-sm">
                 <div className="flex items-center text-[rgb(var(--color-muted))]">
                   <FiMapPin className="w-4 h-4 mr-2 flex-shrink-0" />
-                  <span>{mockUserDetails.location}</span>
+                  <span>{user.location || 'Location not provided'}</span>
                 </div>
                 
                 <div className="flex items-center text-[rgb(var(--color-muted))]">
                   <FiClock className="w-4 h-4 mr-2 flex-shrink-0" />
-                  <span>{mockUserDetails.businessHours}</span>
+                  <span>Mon-Sat: 8:00 AM - 8:00 PM</span>
                 </div>
                 
                 <div className="flex items-center text-[rgb(var(--color-muted))]">
                   <FiMessageCircle className="w-4 h-4 mr-2 flex-shrink-0" />
-                  <span>{mockUserDetails.responseTime}</span>
+                  <span>Usually responds within 2 hours</span>
                 </div>
               </div>
             </div>
@@ -184,15 +176,15 @@ export default function UserInfoSidebar({
               <div className="space-y-2 text-sm">
                 <div className="flex items-center text-[rgb(var(--color-muted))]">
                   <FiPhone className="w-4 h-4 mr-2 flex-shrink-0" />
-                  <span>{mockUserDetails.phone}</span>
+                  <span>{user.phone || 'Not provided'}</span>
                 </div>
                 <div className="flex items-center text-[rgb(var(--color-muted))]">
                   <FiMail className="w-4 h-4 mr-2 flex-shrink-0" />
-                  <span>{mockUserDetails.email}</span>
+                  <span>{user.email || 'Not provided'}</span>
                 </div>
                 <div className="flex items-center text-[rgb(var(--color-muted))]">
                   <FiGlobe className="w-4 h-4 mr-2 flex-shrink-0" />
-                  <span>{mockUserDetails.website}</span>
+                  <span>{user.website || 'Not provided'}</span>
                 </div>
               </div>
             </div>
@@ -201,14 +193,14 @@ export default function UserInfoSidebar({
             <div className="space-y-3">
               <h4 className="font-semibold text-[rgb(var(--color-text))]">Achievements</h4>
               <div className="flex flex-wrap gap-2">
-                {mockUserDetails.badges.map((badge, index) => (
-                  <span 
-                    key={index}
-                    className="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-xs font-medium rounded-full"
-                  >
-                    {badge}
+                {user.is_verified && (
+                  <span className="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-xs font-medium rounded-full">
+                    Verified Business
                   </span>
-                ))}
+                )}
+                <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs font-medium rounded-full">
+                  Active Seller
+                </span>
               </div>
             </div>
           </>
@@ -224,12 +216,12 @@ export default function UserInfoSidebar({
               <div className="space-y-2 text-sm">
                 <div className="flex items-center text-[rgb(var(--color-muted))]">
                   <FiMapPin className="w-4 h-4 mr-2 flex-shrink-0" />
-                  <span>{mockUserDetails.location}</span>
+                  <span>{user.location || 'Location not provided'}</span>
                 </div>
                 
                 <div className="flex items-center text-[rgb(var(--color-muted))]">
                   <FiClock className="w-4 h-4 mr-2 flex-shrink-0" />
-                  <span>Member since {formatMemberSince(mockUserDetails.memberSince)}</span>
+                  <span>Member since {formatMemberSince(user.member_since || '2024-01-01')}</span>
                 </div>
               </div>
             </div>
@@ -246,7 +238,7 @@ export default function UserInfoSidebar({
               </span>
             </div>
             <p className="text-sm text-green-600 dark:text-green-400">
-              Identity verified on {new Date(mockUserDetails.verificationDate).toLocaleDateString()}
+              Identity verified
             </p>
           </div>
         )}
@@ -256,7 +248,7 @@ export default function UserInfoSidebar({
           <div className="space-y-3">
             <h4 className="font-semibold text-[rgb(var(--color-text))]">About</h4>
             <p className="text-sm text-[rgb(var(--color-muted))] leading-relaxed">
-              {mockUserDetails.description}
+              {user.description || 'No description provided.'}
             </p>
           </div>
         )}
