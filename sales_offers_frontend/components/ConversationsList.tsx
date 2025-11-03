@@ -20,8 +20,9 @@ interface Message {
   sender_id: number;
   content: string;
   timestamp: string;
-  type: 'text' | 'image' | 'file';
+  type: 'text' | 'image' | 'file' | 'offer';
   is_read: boolean;
+  attachment?: any;
 }
 
 interface Conversation {
