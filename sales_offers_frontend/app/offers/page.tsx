@@ -40,6 +40,7 @@ interface Offer {
     id: number;
     business_name: string;
     is_verified?: boolean;
+    company_logo?: string;
     user?: {
       profile_picture?: string;
       first_name?: string;

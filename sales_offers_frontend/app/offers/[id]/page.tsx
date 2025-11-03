@@ -42,6 +42,7 @@ interface Deal {
     business_name: string;
     rating: number;
     address: string;
+    company_logo?: string;
     user?: {
       profile_picture?: string;
       google_picture?: string;
