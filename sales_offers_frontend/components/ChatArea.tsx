@@ -118,14 +118,26 @@ export default function ChatArea({
 
   const handleSendFile = async (file: File) => {
     try {
-      // Create a temporary URL for the file
-      const fileUrl = URL.createObjectURL(file);
+      // Upload file to Vercel Blob
+      const formData = new FormData();
+      formData.append('file', file);
       
-      // Create attachment data
+      const uploadResponse = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!uploadResponse.ok) {
+        throw new Error('Failed to upload file');
+      }
+      
+      const { url } = await uploadResponse.json();
+      
+      // Create attachment data with uploaded URL
       const attachment = {
         type: 'file' as const,
         name: file.name,
-        url: fileUrl,
+        url: url,
         size: file.size,
         mimeType: file.type
       };
@@ -135,6 +147,7 @@ export default function ChatArea({
       
     } catch (error) {
       console.error('Failed to send file:', error);
+      alert('Failed to upload file. Please try again.');
     }
   };
 
