@@ -8,6 +8,7 @@ import Button from "../../../components/Button";
 import VerificationBadge from "../../../components/VerificationBadge";
 import TrustIndicators from "../../../components/TrustIndicators";
 import ProfilePicture from "../../../components/ProfilePicture";
+import ContactButton from "../../../components/ContactButton";
 import { api } from "../../../lib/api";
 
 interface Seller {
@@ -175,6 +176,19 @@ export default function SellerDetailPage() {
               <p className="text-[rgb(var(--color-muted))] mb-4">{seller.business_description}</p>
               
               <TrustIndicators className="mb-6" />
+              
+              <ContactButton
+                recipientId={seller.user?.id || 0}
+                recipientName={seller.business_name}
+                context={{
+                  type: 'seller',
+                  title: seller.business_name,
+                  id: seller.id
+                }}
+                variant="primary"
+                size="lg"
+                className="mb-6"
+              />
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {seller.address && (

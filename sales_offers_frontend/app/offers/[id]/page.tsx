@@ -10,6 +10,7 @@ import { useCart } from "../../../contexts/CartContext";
 import { API_BASE_URL } from "../../../lib/api";
 import ProfilePicture from "../../../components/ProfilePicture";
 import DealImageGallery from "../../../components/DealImageGallery";
+import ContactButton from "../../../components/ContactButton";
 
 interface Deal {
   id: number;
@@ -373,9 +374,22 @@ export default function DealDetailsPage() {
                     </div>
                   </div>
                 </div>
-                <Link href={`/sellers/${deal.seller.id}`}>
-                  <Button variant="outline" size="sm">View Profile</Button>
-                </Link>
+                <div className="flex space-x-2">
+                  <Link href={`/sellers/${deal.seller.id}`}>
+                    <Button variant="outline" size="sm">View Profile</Button>
+                  </Link>
+                  <ContactButton
+                    recipientId={deal.seller.user?.id || deal.seller.id}
+                    recipientName={deal.seller.business_name}
+                    context={{
+                      type: 'offer',
+                      title: deal.title,
+                      id: deal.id
+                    }}
+                    variant="primary"
+                    size="sm"
+                  />
+                </div>
               </div>
             </div>
           </div>
