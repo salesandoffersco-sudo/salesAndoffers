@@ -52,7 +52,7 @@ interface Conversation {
 interface ChatAreaProps {
   conversation: Conversation;
   messages: Message[];
-  onSendMessage: (content: string) => void;
+  onSendMessage: (content: string, attachment?: any) => void;
   onShowUserInfo: () => void;
   showBackButton: boolean;
   onBack: () => void;
@@ -121,22 +121,17 @@ export default function ChatArea({
       // Create a temporary URL for the file
       const fileUrl = URL.createObjectURL(file);
       
-      // Create attachment message
-      const attachmentMessage = {
+      // Create attachment data
+      const attachment = {
         type: 'file' as const,
-        content: `Sent a file: ${file.name}`,
-        attachment: {
-          type: 'file' as const,
-          name: file.name,
-          url: fileUrl,
-          size: file.size,
-          mimeType: file.type
-        }
+        name: file.name,
+        url: fileUrl,
+        size: file.size,
+        mimeType: file.type
       };
       
-      // In a real app, you would upload the file to a server first
-      // For now, we'll just send the message with the local file URL
-      onSendMessage(attachmentMessage.content);
+      // Send message with attachment
+      onSendMessage(`📎 ${file.name}`, attachment);
       
     } catch (error) {
       console.error('Failed to send file:', error);
@@ -145,18 +140,14 @@ export default function ChatArea({
 
   const handleSendOffer = async (offer: any) => {
     try {
-      const offerMessage = {
+      const attachment = {
         type: 'offer' as const,
-        content: `Shared an offer: ${offer.title}`,
-        attachment: {
-          type: 'offer' as const,
-          name: offer.title,
-          url: `/offers/${offer.id}`,
-          offer: offer
-        }
+        name: offer.title,
+        url: `/offers/${offer.id}`,
+        offer: offer
       };
       
-      onSendMessage(offerMessage.content);
+      onSendMessage(`🏷️ ${offer.title}`, attachment);
       
     } catch (error) {
       console.error('Failed to send offer:', error);

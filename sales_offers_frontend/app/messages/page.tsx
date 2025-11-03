@@ -144,22 +144,43 @@ export default function MessagesPage() {
     setShowUserInfo(true);
   };
 
-  const handleSendMessage = async (content: string) => {
+  const handleSendMessage = async (content: string, attachment?: any) => {
     if (!selectedConversation) return;
     
     try {
+      // Create local message immediately for UI
+      const localMessage: ComponentMessage = {
+        id: Date.now(), // Temporary ID
+        sender_id: currentUserId || 1,
+        content,
+        timestamp: new Date().toISOString(),
+        type: attachment ? (attachment.type === 'offer' ? 'offer' : 'file') : 'text',
+        is_read: false,
+        attachment
+      };
+      
+      // Add to UI immediately
+      setMessages(prev => [...prev, localMessage]);
+      
+      // Send to backend (for now just send the text content)
       const apiMessage = await messagingApi.sendMessage({
         conversation_id: selectedConversation.id,
         content
       });
       
-      const newMessage = transformMessage(apiMessage, currentUserId);
-      setMessages(prev => [...prev, newMessage]);
+      // Update the local message with the real API response
+      setMessages(prev => prev.map(msg => 
+        msg.id === localMessage.id 
+          ? { ...transformMessage(apiMessage, currentUserId), attachment }
+          : msg
+      ));
       
       // Refresh conversations to update last message
       loadConversations();
     } catch (error) {
       console.error('Failed to send message:', error);
+      // Remove the failed message from UI
+      setMessages(prev => prev.filter(msg => msg.id !== Date.now()));
     }
   };
 
