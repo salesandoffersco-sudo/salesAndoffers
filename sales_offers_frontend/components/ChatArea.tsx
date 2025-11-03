@@ -154,7 +154,7 @@ export default function ChatArea({
                 {conversation.user.is_verified && (
                   <VerificationBadge 
                     isVerified={true} 
-                    type={conversation.user.role} 
+                    type={conversation.user.role === 'seller' ? 'seller' : 'user'} 
                     size="sm" 
                   />
                 )}

@@ -114,7 +114,7 @@ export default function UserInfoSidebar({
             {user.is_verified && (
               <VerificationBadge 
                 isVerified={true} 
-                type={user.role} 
+                type={user.role === 'seller' ? 'seller' : 'user'} 
                 size="md" 
               />
             )}
