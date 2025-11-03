@@ -41,6 +41,7 @@ interface ChatAreaProps {
   showBackButton: boolean;
   onBack: () => void;
   isMobile?: boolean;
+  currentUserId?: number;
 }
 
 export default function ChatArea({
@@ -50,7 +51,8 @@ export default function ChatArea({
   onShowUserInfo,
   showBackButton,
   onBack,
-  isMobile = false
+  isMobile = false,
+  currentUserId
 }: ChatAreaProps) {
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -200,7 +202,7 @@ export default function ChatArea({
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message, index) => {
-          const isCurrentUser = message.sender_id === 1; // This should be dynamic based on current user
+          const isCurrentUser = message.sender_id === (currentUserId || getCurrentUserId());
           const showAvatar = index === 0 || messages[index - 1].sender_id !== message.sender_id;
           
           return (

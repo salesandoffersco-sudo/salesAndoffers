@@ -179,6 +179,7 @@ export default function MessagesPage() {
               onShowUserInfo={handleShowUserInfo}
               showBackButton={false}
               onBack={() => {}}
+              currentUserId={currentUserId}
             />
           ) : (
             <div className="flex-1 flex items-center justify-center">
@@ -229,6 +230,7 @@ export default function MessagesPage() {
             showBackButton={true}
             onBack={handleBackToConversations}
             isMobile={true}
+            currentUserId={currentUserId}
           />
         )}
 
