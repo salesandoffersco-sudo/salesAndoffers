@@ -121,8 +121,11 @@ export default function AttachmentModal({
                 <h4 className="text-lg font-medium text-[rgb(var(--color-text))] mb-2">
                   Choose a file to send
                 </h4>
-                <p className="text-sm text-[rgb(var(--color-muted))] mb-4">
+                <p className="text-sm text-[rgb(var(--color-muted))] mb-2">
                   Images, videos, documents, and more
+                </p>
+                <p className="text-xs text-orange-600 dark:text-orange-400 mb-4 bg-orange-50 dark:bg-orange-900/20 p-2 rounded">
+                  ⏰ Files will be automatically deleted after 24 hours
                 </p>
                 <Button
                   onClick={() => fileInputRef.current?.click()}
