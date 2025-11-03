@@ -34,4 +34,5 @@ urlpatterns = [
     path('api/verification/', include('verification.urls')),
     path('api/admin/', include('admin_system.urls')),
     path('api/categories/', include('categories.urls')),
+    path('api/messages/', include('messaging.urls')),
 ]

@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'verification',
     'admin_system',
     'categories',
+    'messaging',
 ]
 
 MIDDLEWARE = [
