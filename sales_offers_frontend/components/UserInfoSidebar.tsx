@@ -126,6 +126,40 @@ export default function UserInfoSidebar({
           </p>
         </div>
 
+        {/* Business Info Section for Sellers */}
+        {user.role === 'seller' && user.business_name && (
+          <div className="bg-[rgb(var(--color-bg))] rounded-xl p-4">
+            <div className="flex items-center space-x-3 mb-3">
+              <div className="w-12 h-12 rounded-lg overflow-hidden bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0">
+                {user.avatar ? (
+                  <img 
+                    src={user.avatar} 
+                    alt={user.business_name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-white font-bold text-lg">
+                    {user.business_name.charAt(0).toUpperCase()}
+                  </span>
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className="font-semibold text-[rgb(var(--color-text))] truncate">
+                  {user.business_name}
+                </h4>
+                <p className="text-sm text-[rgb(var(--color-muted))]">
+                  Business
+                </p>
+              </div>
+            </div>
+            {user.description && (
+              <p className="text-sm text-[rgb(var(--color-muted))] leading-relaxed">
+                {user.description}
+              </p>
+            )}
+          </div>
+        )}
+
         {/* Role-specific Information */}
         {user.role === 'seller' ? (
           <>
