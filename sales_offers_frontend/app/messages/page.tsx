@@ -7,7 +7,7 @@ import ConversationsList from "../../components/ConversationsList";
 import ChatArea from "../../components/ChatArea";
 import UserInfoSidebar from "../../components/UserInfoSidebar";
 import { messagingApi, type Conversation, type Message, type User } from "../../lib/api/messaging";
-import { getCurrentUserId } from "../../lib/auth";
+import { getCurrentUserId, getCurrentUserIdWithFallback } from "../../lib/auth";
 
 // Transform API data to component format
 interface ComponentUser {
@@ -77,8 +77,12 @@ export default function MessagesPage() {
 
   // Initialize current user ID on client side
   useEffect(() => {
-    setIsClient(true);
-    setCurrentUserId(getCurrentUserId());
+    const initializeUser = async () => {
+      setIsClient(true);
+      const userId = await getCurrentUserIdWithFallback();
+      setCurrentUserId(userId);
+    };
+    initializeUser();
   }, []);
 
   // Load conversations on mount
