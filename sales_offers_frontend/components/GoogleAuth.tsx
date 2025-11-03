@@ -43,6 +43,7 @@ export default function GoogleAuth({ onSuccess, buttonText = "Continue with Goog
         if (response.ok) {
           const data = await response.json();
           localStorage.setItem("token", data.token);
+          localStorage.setItem("userId", data.user.id.toString());
           localStorage.setItem("username", data.user.username);
           localStorage.setItem("userProfile", JSON.stringify({
             name: user.displayName,
@@ -51,7 +52,8 @@ export default function GoogleAuth({ onSuccess, buttonText = "Continue with Goog
           window.dispatchEvent(new Event("authChange"));
           onSuccess?.(data);
         } else {
-          console.error('Backend authentication failed:', await response.text());
+          const errorText = await response.text();
+          console.error('Backend authentication failed:', errorText);
         }
       }
     } catch (error) {
