@@ -40,6 +40,8 @@ def send_message(request):
     conversation_id = request.data.get('conversation_id')
     recipient_id = request.data.get('recipient_id')
     content = request.data.get('content')
+    message_type = request.data.get('message_type', 'text')
+    attachment_data = request.data.get('attachment_data')
     
     if not content:
         return Response({'error': 'Content is required'}, status=status.HTTP_400_BAD_REQUEST)
@@ -72,7 +74,9 @@ def send_message(request):
     message = Message.objects.create(
         conversation=conversation,
         sender=request.user,
-        content=content
+        content=content,
+        message_type=message_type,
+        attachment_data=attachment_data
     )
     
     # Update conversation timestamp

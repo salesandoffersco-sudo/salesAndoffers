@@ -32,6 +32,8 @@ export interface Message {
   id: number;
   sender: User;
   content: string;
+  message_type: string;
+  attachment_data?: any;
   timestamp: string;
   is_read: boolean;
 }
@@ -60,7 +62,7 @@ export const messagingApi = {
   },
 
   // Send a message
-  sendMessage: async (data: { conversation_id?: number; recipient_id?: number; content: string }): Promise<Message> => {
+  sendMessage: async (data: { conversation_id?: number; recipient_id?: number; content: string; message_type?: string; attachment_data?: any }): Promise<Message> => {
     const response = await api.post('/send/', data);
     return response.data;
   },

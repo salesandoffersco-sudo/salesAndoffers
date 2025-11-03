@@ -54,8 +54,9 @@ const transformMessage = (apiMessage: Message, currentUserId: number | null): Co
   sender_id: apiMessage.sender.id,
   content: apiMessage.content,
   timestamp: apiMessage.timestamp,
-  type: 'text',
-  is_read: apiMessage.is_read
+  type: apiMessage.message_type as 'text' | 'image' | 'file' | 'offer',
+  is_read: apiMessage.is_read,
+  attachment: apiMessage.attachment_data
 });
 
 const transformConversation = (apiConversation: Conversation, currentUserId: number | null): ComponentConversation => ({
@@ -163,10 +164,12 @@ export default function MessagesPage() {
       // Add to UI immediately
       setMessages(prev => [...prev, localMessage]);
       
-      // Send to backend (for now just send the text content)
+      // Send to backend with attachment data
       const apiMessage = await messagingApi.sendMessage({
         conversation_id: selectedConversation.id,
-        content
+        content,
+        message_type: attachment ? (attachment.type === 'offer' ? 'offer' : 'file') : 'text',
+        attachment_data: attachment
       });
       
       // Update the local message with the real API response
