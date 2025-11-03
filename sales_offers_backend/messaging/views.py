@@ -79,6 +79,18 @@ def send_message(request):
         attachment_data=attachment_data
     )
     
+    # Create notification for other participants
+    from accounts.models import Notification
+    other_participants = conversation.participants.exclude(id=request.user.id)
+    for participant in other_participants:
+        Notification.objects.create(
+            user=participant,
+            title=f'New message from {request.user.first_name or request.user.username}',
+            message=content[:100] + ('...' if len(content) > 100 else ''),
+            type='message',
+            related_conversation_id=conversation.id
+        )
+    
     # Update conversation timestamp
     conversation.save()
     

@@ -37,6 +37,7 @@ class Notification(models.Model):
         ('favorite', 'Favorite Update'),
         ('system', 'System'),
         ('promotion', 'Promotion'),
+        ('message', 'New Message'),
     ]
     
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -45,6 +46,7 @@ class Notification(models.Model):
     type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='system')
     is_read = models.BooleanField(default=False)
     related_offer_id = models.IntegerField(null=True, blank=True)
+    related_conversation_id = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

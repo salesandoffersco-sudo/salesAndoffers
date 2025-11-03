@@ -8,10 +8,11 @@ interface Notification {
   id: number;
   title: string;
   message: string;
-  type: 'offer' | 'favorite' | 'system' | 'promotion' | 'welcome';
+  type: 'offer' | 'favorite' | 'system' | 'promotion' | 'welcome' | 'message';
   is_read: boolean;
   created_at: string;
   related_offer_id?: number;
+  related_conversation_id?: number;
 }
 
 export default function NotificationBell() {
@@ -152,6 +153,7 @@ export default function NotificationBell() {
       case 'favorite': return <FiHeart className="text-red-500" />;
       case 'promotion': return <FiTrendingUp className="text-green-500" />;
       case 'welcome': return <FiUser className="text-purple-500" />;
+      case 'message': return <FiBell className="text-green-600" />;
       case 'admin_notification': return <FiBell className="text-orange-500" />;
       default: return <FiBell className="text-gray-500" />;
     }
@@ -209,7 +211,12 @@ export default function NotificationBell() {
                   className={`p-4 border-b border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-bg))] transition-colors cursor-pointer ${
                     !notification.is_read ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''
                   }`}
-                  onClick={() => !notification.is_read && markAsRead(notification.id)}
+                  onClick={() => {
+                    if (!notification.is_read) markAsRead(notification.id);
+                    if (notification.type === 'message' && notification.related_conversation_id) {
+                      window.location.href = '/messages';
+                    }
+                  }}
                 >
                   <div className="flex items-start space-x-3">
                     <div className="flex-shrink-0 mt-1">
