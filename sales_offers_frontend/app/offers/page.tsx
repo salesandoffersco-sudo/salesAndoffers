@@ -1,5 +1,6 @@
 "use client";
 
+// Updated to show business logos instead of profile pictures
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { FiHeart, FiClock, FiTag, FiGrid, FiList, FiFilter, FiChevronLeft, FiChevronRight, FiShoppingCart, FiUser } from "react-icons/fi";
