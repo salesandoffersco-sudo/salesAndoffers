@@ -1,5 +1,6 @@
 "use client";
 
+// Comprehensive messaging system with responsive three-column layout
 import { useState, useEffect } from "react";
 import { FiArrowLeft, FiSearch, FiMoreVertical, FiSend, FiPaperclip, FiSmile, FiPhone, FiVideo, FiInfo } from "react-icons/fi";
 import ConversationsList from "../../components/ConversationsList";
