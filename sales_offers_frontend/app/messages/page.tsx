@@ -72,7 +72,12 @@ export default function MessagesPage() {
   const [currentView, setCurrentView] = useState<'conversations' | 'chat' | 'info'>('conversations');
   const [showUserInfo, setShowUserInfo] = useState(false);
   const [loading, setLoading] = useState(true);
-  const currentUserId = getCurrentUserId();
+  const [currentUserId, setCurrentUserId] = useState<number>(1);
+
+  // Initialize current user ID on client side
+  useEffect(() => {
+    setCurrentUserId(getCurrentUserId());
+  }, []);
 
   // Load conversations on mount
   useEffect(() => {
