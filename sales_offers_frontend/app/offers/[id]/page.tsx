@@ -48,6 +48,7 @@ interface Deal {
       cover_image?: string;
     };
     user?: {
+      id: number;
       profile_picture?: string;
       google_picture?: string;
     };
