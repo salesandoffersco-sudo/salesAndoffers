@@ -11,6 +11,8 @@ interface MessageAttachmentProps {
     url: string;
     size?: number;
     mimeType?: string;
+    expired?: boolean;
+    message?: string;
     offer?: {
       id: number;
       title: string;
@@ -23,6 +25,23 @@ interface MessageAttachmentProps {
 
 export default function MessageAttachment({ attachment }: MessageAttachmentProps) {
   const [showPreview, setShowPreview] = useState(false);
+  
+  // Handle expired attachments
+  if (attachment.expired) {
+    return (
+      <div className="max-w-xs bg-[rgb(var(--color-card))] border border-[rgb(var(--color-border))] rounded-xl p-4">
+        <div className="text-center">
+          <FiFile className="w-12 h-12 text-[rgb(var(--color-muted))] mx-auto mb-2" />
+          <h4 className="font-medium text-[rgb(var(--color-text))] mb-2">
+            File Expired
+          </h4>
+          <p className="text-sm text-[rgb(var(--color-muted))]">
+            This file has expired and is no longer available
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const getFileIcon = (mimeType?: string) => {
     if (!mimeType) return FiFile;

@@ -23,10 +23,25 @@ class UserSerializer(serializers.ModelSerializer):
 
 class MessageSerializer(serializers.ModelSerializer):
     sender = UserSerializer(read_only=True)
+    is_attachment_expired = serializers.SerializerMethodField()
     
     class Meta:
         model = Message
-        fields = ['id', 'sender', 'content', 'message_type', 'attachment_data', 'timestamp', 'is_read']
+        fields = ['id', 'sender', 'content', 'message_type', 'attachment_data', 'expires_at', 'is_expired', 'is_attachment_expired', 'timestamp', 'is_read']
+    
+    def get_is_attachment_expired(self, obj):
+        return obj.is_attachment_expired()
+    
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        # Hide attachment data if expired
+        if instance.is_attachment_expired():
+            data['attachment_data'] = {
+                'expired': True,
+                'message': 'This file has expired and is no longer available',
+                'type': instance.attachment_data.get('type') if instance.attachment_data else 'file'
+            }
+        return data
 
 class ConversationSerializer(serializers.ModelSerializer):
     participants = UserSerializer(many=True, read_only=True)
