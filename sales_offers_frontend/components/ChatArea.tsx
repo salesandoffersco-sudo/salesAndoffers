@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import { FiArrowLeft, FiPhone, FiVideo, FiInfo, FiSend, FiPaperclip, FiSmile, FiMoreVertical } from "react-icons/fi";
 import VerificationBadge from "./VerificationBadge";
+import AttachmentModal from "./AttachmentModal";
+import MessageAttachment from "./MessageAttachment";
 import { getCurrentUserId } from "../lib/auth";
 
 interface User {
@@ -21,8 +23,22 @@ interface Message {
   sender_id: number;
   content: string;
   timestamp: string;
-  type: 'text' | 'image' | 'file';
+  type: 'text' | 'image' | 'file' | 'offer';
   is_read: boolean;
+  attachment?: {
+    type: 'file' | 'offer';
+    name: string;
+    url: string;
+    size?: number;
+    mimeType?: string;
+    offer?: {
+      id: number;
+      title: string;
+      discounted_price: string;
+      main_image?: string;
+      discount_percentage: number;
+    };
+  };
 }
 
 interface Conversation {
@@ -57,9 +73,9 @@ export default function ChatArea({
   const [newMessage, setNewMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const [showAttachmentModal, setShowAttachmentModal] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     scrollToBottom();
@@ -97,14 +113,53 @@ export default function ChatArea({
   };
 
   const handleFileAttachment = () => {
-    fileInputRef.current?.click();
+    setShowAttachmentModal(true);
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // For now, just show an alert. In a real app, you'd upload the file
-      alert(`File selected: ${file.name}. File upload functionality would be implemented here.`);
+  const handleSendFile = async (file: File) => {
+    try {
+      // Create a temporary URL for the file
+      const fileUrl = URL.createObjectURL(file);
+      
+      // Create attachment message
+      const attachmentMessage = {
+        type: 'file' as const,
+        content: `Sent a file: ${file.name}`,
+        attachment: {
+          type: 'file' as const,
+          name: file.name,
+          url: fileUrl,
+          size: file.size,
+          mimeType: file.type
+        }
+      };
+      
+      // In a real app, you would upload the file to a server first
+      // For now, we'll just send the message with the local file URL
+      onSendMessage(attachmentMessage.content);
+      
+    } catch (error) {
+      console.error('Failed to send file:', error);
+    }
+  };
+
+  const handleSendOffer = async (offer: any) => {
+    try {
+      const offerMessage = {
+        type: 'offer' as const,
+        content: `Shared an offer: ${offer.title}`,
+        attachment: {
+          type: 'offer' as const,
+          name: offer.title,
+          url: `/offers/${offer.id}`,
+          offer: offer
+        }
+      };
+      
+      onSendMessage(offerMessage.content);
+      
+    } catch (error) {
+      console.error('Failed to send offer:', error);
     }
   };
 
@@ -288,17 +343,32 @@ export default function ChatArea({
                 </div>
 
                 {/* Message Bubble */}
-                <div className={`relative px-4 py-2 rounded-2xl ${
+                <div className={`relative ${
+                  message.attachment ? 'p-0' : 'px-4 py-2'
+                } rounded-2xl ${
                   isCurrentUser
                     ? 'bg-purple-600 text-white rounded-br-md'
                     : 'bg-[rgb(var(--color-card))] text-[rgb(var(--color-text))] border border-[rgb(var(--color-border))] rounded-bl-md'
                 }`}>
-                  <p className="text-sm leading-relaxed">{message.content}</p>
-                  <p className={`text-xs mt-1 ${
-                    isCurrentUser ? 'text-purple-100' : 'text-[rgb(var(--color-muted))]'
-                  }`}>
-                    {formatTime(message.timestamp)}
-                  </p>
+                  {message.attachment ? (
+                    <div className="p-2">
+                      <MessageAttachment attachment={message.attachment} />
+                      <p className={`text-xs mt-2 ${
+                        isCurrentUser ? 'text-purple-100' : 'text-[rgb(var(--color-muted))]'
+                      }`}>
+                        {formatTime(message.timestamp)}
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-sm leading-relaxed">{message.content}</p>
+                      <p className={`text-xs mt-1 ${
+                        isCurrentUser ? 'text-purple-100' : 'text-[rgb(var(--color-muted))]'
+                      }`}>
+                        {formatTime(message.timestamp)}
+                      </p>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -309,13 +379,6 @@ export default function ChatArea({
 
       {/* Message Input */}
       <div className="bg-[rgb(var(--color-card))] border-t border-[rgb(var(--color-border))] p-4">
-        <input
-          ref={fileInputRef}
-          type="file"
-          className="hidden"
-          onChange={handleFileSelect}
-          accept="image/*,video/*,audio/*,.pdf,.doc,.docx"
-        />
         <div className="flex items-end space-x-3">
           <button 
             onClick={handleFileAttachment}
@@ -379,6 +442,14 @@ export default function ChatArea({
           </button>
         </div>
       </div>
+
+      {/* Attachment Modal */}
+      <AttachmentModal
+        isOpen={showAttachmentModal}
+        onClose={() => setShowAttachmentModal(false)}
+        onSendFile={handleSendFile}
+        onSendOffer={handleSendOffer}
+      />
     </div>
   );
 }
