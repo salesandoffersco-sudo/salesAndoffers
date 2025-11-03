@@ -202,7 +202,9 @@ export default function ChatArea({
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message, index) => {
-          const isCurrentUser = currentUserId ? message.sender_id === currentUserId : message.sender_id === getCurrentUserId();
+          const actualCurrentUserId = currentUserId || getCurrentUserId();
+          const isCurrentUser = message.sender_id === actualCurrentUserId;
+          console.log('Message:', message.id, 'sender_id:', message.sender_id, 'currentUserId:', actualCurrentUserId, 'isCurrentUser:', isCurrentUser);
           const showAvatar = index === 0 || messages[index - 1].sender_id !== message.sender_id;
           
           return (

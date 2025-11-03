@@ -48,14 +48,17 @@ const transformUser = (apiUser: User): ComponentUser => ({
   is_verified: true // Can be enhanced based on backend data
 });
 
-const transformMessage = (apiMessage: Message, currentUserId: number | null): ComponentMessage => ({
-  id: apiMessage.id,
-  sender_id: apiMessage.sender.id,
-  content: apiMessage.content,
-  timestamp: apiMessage.timestamp,
-  type: 'text',
-  is_read: apiMessage.is_read
-});
+const transformMessage = (apiMessage: Message, currentUserId: number | null): ComponentMessage => {
+  console.log('Transforming message:', apiMessage.id, 'sender:', apiMessage.sender.id, 'currentUser:', currentUserId);
+  return {
+    id: apiMessage.id,
+    sender_id: apiMessage.sender.id,
+    content: apiMessage.content,
+    timestamp: apiMessage.timestamp,
+    type: 'text',
+    is_read: apiMessage.is_read
+  };
+};
 
 const transformConversation = (apiConversation: Conversation, currentUserId: number | null): ComponentConversation => ({
   id: apiConversation.id,
