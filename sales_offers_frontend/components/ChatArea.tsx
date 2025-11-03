@@ -347,17 +347,20 @@ export default function ChatArea({
               <FiSmile className="w-5 h-5 text-[rgb(var(--color-muted))]" />
             </button>
             {showEmojiPicker && (
-              <div className="absolute bottom-full right-0 mb-2 p-3 bg-[rgb(var(--color-card))] border border-[rgb(var(--color-border))] rounded-lg shadow-lg z-50">
-                <div className="grid grid-cols-6 gap-2">
-                  {['😀', '😂', '😍', '🤔', '😢', '😡', '👍', '👎', '❤️', '🎉', '🔥', '💯'].map((emoji) => (
-                    <button
-                      key={emoji}
-                      onClick={() => addEmoji(emoji)}
-                      className="p-2 hover:bg-[rgb(var(--color-bg))] rounded text-lg"
-                    >
-                      {emoji}
-                    </button>
-                  ))}
+              <div className="absolute bottom-full right-0 mb-2 w-64 bg-[rgb(var(--color-card))] border border-[rgb(var(--color-border))] rounded-xl shadow-xl z-50">
+                <div className="p-4">
+                  <h4 className="text-sm font-medium text-[rgb(var(--color-text))] mb-3">Frequently Used</h4>
+                  <div className="grid grid-cols-8 gap-1">
+                    {['😀', '😂', '😍', '🤔', '😢', '😡', '👍', '👎', '❤️', '🎉', '🔥', '💯', '🙏', '👏', '😎', '🥰'].map((emoji) => (
+                      <button
+                        key={emoji}
+                        onClick={() => addEmoji(emoji)}
+                        className="w-8 h-8 flex items-center justify-center hover:bg-[rgb(var(--color-bg))] rounded-lg transition-colors text-lg"
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
