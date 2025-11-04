@@ -6,77 +6,79 @@ import Button from "./Button";
 import { API_BASE_URL } from "../lib/api";
 
 interface Store {
-  name: string;
-  logo_url: string;
-  color: string;
-  website: string;
+  id: number;
+  store_name: string;
+  store_url: string;
+  price: number;
+  is_available: boolean;
+  store_info?: {
+    name: string;
+    logo: string;
+    color: string;
+  };
 }
 
 interface StoreSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelect: (storeKey: string, storeInfo: Store) => void;
+  stores: Store[];
+  dealTitle: string;
 }
 
-export default function StoreSelectionModal({ isOpen, onClose, onSelect }: StoreSelectionModalProps) {
-  const [stores, setStores] = useState<Record<string, Store>>({});
+export default function StoreSelectionModal({ isOpen, onClose, stores, dealTitle }: StoreSelectionModalProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (isOpen) {
-      fetchStores();
+  // Fallback stores if none provided
+  const fallbackStores = [
+    {
+      id: 1,
+      store_name: 'Jumia',
+      store_url: 'https://jumia.co.ke',
+      price: 15000,
+      is_available: true,
+      store_info: {
+        name: 'Jumia',
+        logo: 'https://logo.clearbit.com/jumia.com.ng',
+        color: '#f68b1e'
+      }
+    },
+    {
+      id: 2,
+      store_name: 'Kilimall',
+      store_url: 'https://kilimall.co.ke',
+      price: 14500,
+      is_available: true,
+      store_info: {
+        name: 'Kilimall',
+        logo: 'https://logo.clearbit.com/kilimall.co.ke',
+        color: '#ff6b35'
+      }
+    },
+    {
+      id: 3,
+      store_name: 'Amazon',
+      store_url: 'https://amazon.com',
+      price: 16200,
+      is_available: true,
+      store_info: {
+        name: 'Amazon',
+        logo: 'https://logo.clearbit.com/amazon.com',
+        color: '#ff9900'
+      }
     }
-  }, [isOpen]);
+  ];
 
-  const fetchStores = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/deals/stores/`);
-      const data = await response.json();
-      setStores(data);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching stores:", error);
-      // Fallback to hardcoded stores
-      setStores({
-        jumia: {
-          name: 'Jumia',
-          logo_url: 'https://logo.clearbit.com/jumia.co.ke',
-          color: '#f68b1e',
-          website: 'https://jumia.co.ke'
-        },
-        kilimall: {
-          name: 'Kilimall',
-          logo_url: 'https://logo.clearbit.com/kilimall.co.ke',
-          color: '#e74c3c',
-          website: 'https://kilimall.co.ke'
-        },
-        amazon: {
-          name: 'Amazon',
-          logo_url: 'https://logo.clearbit.com/amazon.com',
-          color: '#ff9900',
-          website: 'https://amazon.com'
-        },
-        aliexpress: {
-          name: 'AliExpress',
-          logo_url: 'https://logo.clearbit.com/aliexpress.com',
-          color: '#ff6a00',
-          website: 'https://aliexpress.com'
-        },
-        ebay: {
-          name: 'eBay',
-          logo_url: 'https://logo.clearbit.com/ebay.com',
-          color: '#0064d2',
-          website: 'https://ebay.com'
-        }
-      });
-      setLoading(false);
-    }
-  };
-
-  const filteredStores = Object.entries(stores).filter(([key, store]) =>
-    store.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const displayStores = stores.length > 0 ? stores : fallbackStores;
+  
+  const filteredStores = displayStores.filter(store =>
+    store.store_name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    store.is_available
   );
+
+  const handleStoreClick = (store: Store) => {
+    window.open(store.store_url, '_blank');
+    onClose();
+  };
 
   if (!isOpen) return null;
 
@@ -84,7 +86,10 @@ export default function StoreSelectionModal({ isOpen, onClose, onSelect }: Store
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-[rgb(var(--color-card))] rounded-xl max-w-2xl w-full max-h-[80vh] overflow-hidden border border-[rgb(var(--color-border))]">
         <div className="flex items-center justify-between p-6 border-b border-[rgb(var(--color-border))]">
-          <h2 className="text-xl font-semibold text-[rgb(var(--color-text))]">Select Store</h2>
+          <div>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Compare Prices</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{dealTitle}</p>
+          </div>
           <button
             onClick={onClose}
             className="p-2 hover:bg-[rgb(var(--color-ui))] rounded-lg transition-colors"
@@ -105,53 +110,62 @@ export default function StoreSelectionModal({ isOpen, onClose, onSelect }: Store
             />
           </div>
 
-          {loading ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto"></div>
-              <p className="mt-2 text-[rgb(var(--color-muted))]">Loading stores...</p>
+          {filteredStores.length === 0 ? (
+            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+              No stores found matching your search.
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
-              {filteredStores.map(([key, store]) => (
+            <div className="space-y-3">
+              {filteredStores.map((store) => (
                 <button
-                  key={key}
-                  onClick={() => onSelect(key, store)}
-                  className="flex items-center gap-4 p-4 border border-[rgb(var(--color-border))] rounded-lg hover:border-purple-500 hover:bg-[rgb(var(--color-ui))] transition-all duration-200 text-left"
+                  key={store.id}
+                  onClick={() => handleStoreClick(store)}
+                  className="w-full flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
                 >
-                  <div className="w-12 h-12 flex items-center justify-center bg-white rounded-lg border">
-                    <img
-                      src={store.logo_url}
-                      alt={store.name}
-                      className="max-w-full max-h-full object-contain"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = 'https://via.placeholder.com/48x48/6366f1/ffffff?text=Store';
-                      }}
-                    />
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-600 flex items-center justify-center">
+                      {store.store_info?.logo ? (
+                        <img
+                          src={store.store_info.logo}
+                          alt={store.store_name}
+                          className="w-8 h-8 object-contain"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            target.parentElement!.innerHTML = store.store_name.charAt(0);
+                          }}
+                        />
+                      ) : (
+                        <span className="text-lg font-bold text-gray-600 dark:text-gray-300">
+                          {store.store_name.charAt(0)}
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-left">
+                      <h3 className="font-semibold text-gray-900 dark:text-white">{store.store_name}</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">Available now</p>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-[rgb(var(--color-text))]">{store.name}</h3>
-                    <p className="text-sm text-[rgb(var(--color-muted))]">
-                      {store.website !== '#' ? store.website : 'Custom store'}
-                    </p>
+                  <div className="flex items-center space-x-3">
+                    <div className="text-right">
+                      <p className="text-lg font-bold text-purple-600 dark:text-purple-400">
+                        KSh {store.price.toLocaleString()}
+                      </p>
+                    </div>
+                    <FiExternalLink className="w-4 h-4 text-gray-400 group-hover:text-purple-600 transition-colors" />
                   </div>
-                  <FiExternalLink className="w-4 h-4 text-[rgb(var(--color-muted))]" />
                 </button>
               ))}
             </div>
           )}
 
-          {!loading && filteredStores.length === 0 && (
-            <div className="text-center py-8">
-              <p className="text-[rgb(var(--color-muted))]">No stores found matching "{searchTerm}"</p>
-            </div>
-          )}
+
         </div>
 
-        <div className="flex justify-end gap-3 p-6 border-t border-[rgb(var(--color-border))]">
-          <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
+        <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+          <p className="text-xs text-gray-600 dark:text-gray-300 text-center">
+            Prices are updated regularly. Click on a store to visit their website.
+          </p>
         </div>
       </div>
     </div>
