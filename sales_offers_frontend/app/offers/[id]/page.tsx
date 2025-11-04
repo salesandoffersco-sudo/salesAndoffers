@@ -10,15 +10,19 @@ import { API_BASE_URL } from "../../../lib/api";
 import ProfilePicture from "../../../components/ProfilePicture";
 import DealImageGallery from "../../../components/DealImageGallery";
 import ContactButton from "../../../components/ContactButton";
-import StoreComparisonTable from "../../../components/StoreComparisonTable";
+import StoreSelectionModal from "../../../components/StoreSelectionModal";
 
 interface StoreLink {
   id: number;
   store_name: string;
   store_url: string;
-  price: number | null;
+  price: number;
   is_available: boolean;
-  click_count?: number;
+  store_info?: {
+    name: string;
+    logo: string;
+    color: string;
+  };
 }
 
 interface Deal {
@@ -64,6 +68,7 @@ export default function DealDetailsPage() {
   const [deal, setDeal] = useState<Deal | null>(null);
   const [loading, setLoading] = useState(true);
   const [isFavorited, setIsFavorited] = useState(false);
+  const [showStoreModal, setShowStoreModal] = useState(false);
 
   useEffect(() => {
     if (params.id) {
@@ -226,18 +231,48 @@ export default function DealDetailsPage() {
                 </Button>
               </div>
               
-              {deal.store_links && deal.store_links.length > 0 ? (
-                <StoreComparisonTable 
-                  storeLinks={deal.store_links} 
-                  dealTitle={deal.title}
-                />
-              ) : (
-                <div className="text-center py-8 text-[rgb(var(--color-muted))]">
-                  <FiExternalLink className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                  <p>No store links available for this deal.</p>
-                  <p className="text-sm mt-2">Contact the seller for more information.</p>
-                </div>
-              )}
+              <div className="space-y-4">
+                {deal.store_links && deal.store_links.length > 0 ? (
+                  <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {deal.store_links.slice(0, 4).map((store) => (
+                        <div key={store.id} className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 rounded bg-gray-100 dark:bg-gray-600 flex items-center justify-center">
+                              {store.store_info?.logo ? (
+                                <img src={store.store_info.logo} alt={store.store_name} className="w-6 h-6 object-contain" />
+                              ) : (
+                                <span className="text-xs font-bold">{store.store_name.charAt(0)}</span>
+                              )}
+                            </div>
+                            <span className="font-medium text-sm">{store.store_name}</span>
+                          </div>
+                          <span className="font-bold text-purple-600">KSh {store.price.toLocaleString()}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <Button 
+                      variant="primary" 
+                      className="w-full"
+                      onClick={() => setShowStoreModal(true)}
+                    >
+                      Compare All {deal.store_links.length} Stores
+                    </Button>
+                  </>
+                ) : (
+                  <div className="text-center py-8 text-[rgb(var(--color-muted))]">
+                    <FiExternalLink className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                    <p>No store links available for this deal.</p>
+                    <Button 
+                      variant="primary" 
+                      className="mt-4"
+                      onClick={() => setShowStoreModal(true)}
+                    >
+                      View Sample Stores
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="bg-[rgb(var(--color-card))] rounded-xl p-6 border border-[rgb(var(--color-border))]">
@@ -299,6 +334,13 @@ export default function DealDetailsPage() {
           </div>
         </div>
       </div>
+      
+      <StoreSelectionModal
+        isOpen={showStoreModal}
+        onClose={() => setShowStoreModal(false)}
+        stores={deal.store_links || []}
+        dealTitle={deal.title}
+      />
     </div>
   );
 }

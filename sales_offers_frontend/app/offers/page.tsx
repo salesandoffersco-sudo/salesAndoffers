@@ -22,6 +22,8 @@ interface Offer {
   original_price: string;
   discounted_price: string;
   discount_percentage: number;
+  price_range?: string;
+  store_count?: number;
   category: string;
   expires_at: string;
   image?: string;
@@ -326,14 +328,13 @@ export default function OffersPage() {
                                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-3">
                                   <div className="flex items-center gap-2 flex-wrap">
                                     <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                                      KES {offer.discounted_price}
+                                      {offer.price_range || `KES ${offer.discounted_price}`}
                                     </span>
-                                    <span className="text-gray-400 line-through text-sm">
-                                      KES {offer.original_price}
-                                    </span>
-                                    <span className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-2 py-1 rounded-full text-xs font-bold">
-                                      {offer.discount_percentage}% OFF
-                                    </span>
+                                    {offer.store_count && (
+                                      <span className="bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 px-2 py-1 rounded-full text-xs font-semibold">
+                                        {offer.store_count} store{offer.store_count !== 1 ? 's' : ''}
+                                      </span>
+                                    )}
                                   </div>
                                   <div className="flex items-center text-gray-500 dark:text-gray-400 text-xs">
                                     <FiClock className="mr-1" />
@@ -448,14 +449,13 @@ export default function OffersPage() {
                         
                         <div className="flex items-center space-x-2 mb-4">
                           <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                            KES {offer.discounted_price}
+                            {offer.price_range || `KES ${offer.discounted_price}`}
                           </span>
-                          <span className="text-gray-400 line-through text-lg">
-                            KES {offer.original_price}
-                          </span>
-                          <span className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
-                            {offer.discount_percentage}% OFF
-                          </span>
+                          {offer.store_count && (
+                            <span className="bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 px-3 py-1 rounded-full text-sm font-semibold">
+                              {offer.store_count} store{offer.store_count !== 1 ? 's' : ''}
+                            </span>
+                          )}
                         </div>
                         
                         <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm mb-4">
