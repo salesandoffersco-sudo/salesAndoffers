@@ -59,6 +59,21 @@ class Deal(models.Model):
         return min(prices) if prices else None
     
     @property
+    def highest_price(self):
+        prices = [link.price for link in self.store_links.filter(is_available=True) if link.price]
+        return max(prices) if prices else None
+    
+    @property
+    def price_range(self):
+        low = self.lowest_price
+        high = self.highest_price
+        if low and high:
+            if low == high:
+                return f"KSh {low:,.0f}"
+            return f"KSh {low:,.0f} - {high:,.0f}"
+        return "Price varies"
+    
+    @property
     def click_count(self):
         return sum(link.clicks.count() for link in self.store_links.all())
 
