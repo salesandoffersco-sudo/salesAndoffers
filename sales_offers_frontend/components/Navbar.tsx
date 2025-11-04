@@ -8,7 +8,7 @@ import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import ThemeToggle from "./ThemeToggle";
 import NotificationBell from "./NotificationBell";
-import CartIcon from "./CartIcon";
+import { FiHeart } from "react-icons/fi"; // Replace cart with favorites
 import { useNavbar } from "../contexts/NavbarContext";
 import { API_BASE_URL } from "../lib/api";
 
@@ -163,7 +163,7 @@ export default function Navbar() {
           </div>
           <div className="hidden md:flex items-center space-x-8 flex-1 justify-center">
             <Link href="/offers" className="text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] transition-colors font-medium">
-              Browse Offers
+              Browse Deals
             </Link>
             <Link href="/sellers" className="text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] transition-colors font-medium">
               Sellers
@@ -182,7 +182,11 @@ export default function Navbar() {
           </div>
           <div className="hidden md:flex items-center space-x-4">
             <ThemeToggle />
-            <CartIcon />
+            {isLoggedIn && (
+              <Link href="/favorites" className="p-2 text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] transition-colors relative">
+                <FiHeart className="w-5 h-5" />
+              </Link>
+            )}
             {isLoggedIn && <NotificationBell />}
             {isLoggedIn ? (
               <div className="relative" ref={dropdownRef}>
@@ -225,18 +229,11 @@ export default function Navbar() {
                       Favorites
                     </Link>
                     <Link
-                      href="/orders"
+                      href="/favorites"
                       className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                       onClick={() => setDropdownOpen(false)}
                     >
-                      My Orders
-                    </Link>
-                    <Link
-                      href="/transactions"
-                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                      onClick={() => setDropdownOpen(false)}
-                    >
-                      Purchase History
+                      My Favorites
                     </Link>
                     <Link
                       href="/messages"
@@ -303,7 +300,11 @@ export default function Navbar() {
             )}
           </div>
           <div className="md:hidden flex items-center space-x-3">
-            <CartIcon />
+            {isLoggedIn && (
+              <Link href="/favorites" className="p-2 text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] transition-colors">
+                <FiHeart className="w-5 h-5" />
+              </Link>
+            )}
             {isLoggedIn && <NotificationBell />}
             <button onClick={toggleMenu} className="p-2 text-[rgb(var(--color-muted))] focus:outline-none">
               <FiMenu className="h-6 w-6" />
@@ -345,7 +346,7 @@ export default function Navbar() {
                   className="block px-3 py-2 rounded-lg text-sm font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
                   onClick={toggleMenu}
                 >
-                  Browse Offers
+                  Browse Deals
                 </Link>
                 <Link
                   href="/sellers"
@@ -425,7 +426,7 @@ export default function Navbar() {
                         className="block px-3 py-2 rounded-lg text-sm font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
                         onClick={toggleMenu}
                       >
-                        Favorites
+                        My Favorites
                       </Link>
                       <Link
                         href="/messages"
@@ -467,28 +468,7 @@ export default function Navbar() {
                         className="block px-3 py-2 rounded-lg text-sm font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
                         onClick={toggleMenu}
                       >
-                        My Offers
-                      </Link>
-                      <Link
-                        href="/seller/withdrawals"
-                        className="block px-3 py-2 rounded-lg text-sm font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
-                        onClick={toggleMenu}
-                      >
-                        Withdrawals
-                      </Link>
-                      <Link
-                        href="/orders"
-                        className="block px-3 py-2 rounded-lg text-sm font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
-                        onClick={toggleMenu}
-                      >
-                        My Orders
-                      </Link>
-                      <Link
-                        href="/transactions"
-                        className="block px-3 py-2 rounded-lg text-sm font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
-                        onClick={toggleMenu}
-                      >
-                        Purchase History
+                        My Advertisements
                       </Link>
                       {canAccessAdmin() && (
                         <Link

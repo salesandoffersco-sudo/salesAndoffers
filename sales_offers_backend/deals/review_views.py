@@ -3,43 +3,35 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Avg
-from .models import Review, Deal, Voucher
+from .models import Review, Deal  # Removed Voucher for affiliate platform
 from sellers.models import Seller
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_review(request):
-    """Create a review for a deal"""
+    """Create a review for a deal - affiliate platform"""
     try:
-        voucher_id = request.data.get('voucher_id')
         deal_id = request.data.get('deal_id')
         rating = int(request.data.get('rating'))
         title = request.data.get('title')
         comment = request.data.get('comment')
         
         # Validate inputs
-        if not all([voucher_id, deal_id, rating, title, comment]):
+        if not all([deal_id, rating, title, comment]):
             return Response({'error': 'All fields are required'}, status=400)
         
         if rating < 1 or rating > 5:
             return Response({'error': 'Rating must be between 1 and 5'}, status=400)
         
-        # Get voucher and verify ownership
-        voucher = Voucher.objects.get(id=voucher_id, customer=request.user)
         deal = Deal.objects.get(id=deal_id)
         
-        # Check if voucher is redeemed
-        if voucher.status != 'redeemed':
-            return Response({'error': 'Can only review redeemed vouchers'}, status=400)
+        # Check if review already exists for this user and deal
+        if Review.objects.filter(deal=deal, customer=request.user).exists():
+            return Response({'error': 'Review already exists for this deal'}, status=400)
         
-        # Check if review already exists
-        if Review.objects.filter(voucher=voucher, customer=request.user).exists():
-            return Response({'error': 'Review already exists for this voucher'}, status=400)
-        
-        # Create review
+        # Create review (no voucher requirement in affiliate platform)
         review = Review.objects.create(
             deal=deal,
-            voucher=voucher,
             customer=request.user,
             rating=rating,
             title=title,
@@ -57,8 +49,6 @@ def create_review(request):
             'created_at': review.created_at
         })
         
-    except Voucher.DoesNotExist:
-        return Response({'error': 'Voucher not found'}, status=404)
     except Deal.DoesNotExist:
         return Response({'error': 'Deal not found'}, status=404)
     except Exception as e:

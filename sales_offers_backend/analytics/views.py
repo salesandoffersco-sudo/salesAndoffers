@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from django.db.models import Count, Sum, Avg, Q
 from django.utils import timezone
 from datetime import datetime, timedelta
-from deals.models import Deal, Voucher
+from deals.models import Deal, StoreLink, ClickTracking  # Removed Voucher for affiliate platform
 from sellers.models import Seller, Subscription
 from blog.models import BlogPost
 from accounts.models import User
@@ -21,39 +21,38 @@ def seller_analytics(request, seller_id=None):
         subscription = getattr(request.user, 'current_subscription', None)
         plan_name = subscription.plan.name if subscription else 'Basic'
         
-        # Base analytics for all plans
+        # Base analytics for affiliate platform
         deals = Deal.objects.filter(seller=seller)
-        vouchers = Voucher.objects.filter(deal__seller=seller)
+        clicks = ClickTracking.objects.filter(store_link__deal__seller=seller)
         
         base_data = {
-            'total_deals': deals.count(),
-            'active_deals': deals.filter(is_active=True, status='approved').count(),
-            'total_vouchers_sold': vouchers.filter(status__in=['paid', 'redeemed']).count(),
-            'total_revenue': float(vouchers.filter(status__in=['paid', 'redeemed']).aggregate(Sum('total_amount'))['total_amount__sum'] or 0),
-            'vouchers_redeemed': vouchers.filter(status='redeemed').count(),
+            'total_advertisements': deals.count(),
+            'active_advertisements': deals.filter(is_published=True, status='approved').count(),
+            'total_clicks': clicks.count(),
+            'total_stores': StoreLink.objects.filter(deal__seller=seller).count(),
+            'active_stores': StoreLink.objects.filter(deal__seller=seller, is_available=True).count(),
         }
         
         # Enhanced analytics for Pro and Enterprise
         if plan_name in ['Pro', 'Enterprise']:
             # Last 30 days data
             thirty_days_ago = timezone.now() - timedelta(days=30)
-            recent_vouchers = vouchers.filter(purchased_at__gte=thirty_days_ago)
+            recent_clicks = clicks.filter(clicked_at__gte=thirty_days_ago)
             
             base_data.update({
-                'monthly_revenue': float(recent_vouchers.filter(status__in=['paid', 'redeemed']).aggregate(Sum('total_amount'))['total_amount__sum'] or 0),
-                'monthly_vouchers': recent_vouchers.filter(status__in=['paid', 'redeemed']).count(),
-                'conversion_rate': calculate_conversion_rate(deals),
-                'avg_deal_value': float(vouchers.filter(status__in=['paid', 'redeemed']).aggregate(Avg('total_amount'))['total_amount__avg'] or 0),
+                'monthly_clicks': recent_clicks.count(),
+                'click_through_rate': calculate_click_rate(deals),
+                'avg_clicks_per_ad': clicks.count() / deals.count() if deals.count() > 0 else 0,
                 'top_performing_deals': get_top_deals(seller, 5),
             })
         
         # Advanced analytics for Enterprise only
         if plan_name == 'Enterprise':
             base_data.update({
-                'daily_revenue_chart': get_daily_revenue_chart(seller, 30),
-                'category_performance': get_category_performance(seller),
-                'customer_demographics': get_customer_demographics(seller),
-                'seasonal_trends': get_seasonal_trends(seller),
+                'daily_clicks_chart': get_daily_clicks_chart(seller, 30),
+                'store_performance': get_store_performance(seller),
+                'user_demographics': get_user_demographics(seller),
+                'click_trends': get_click_trends(seller),
                 'competitor_analysis': get_competitor_analysis(seller),
             })
         
@@ -75,22 +74,22 @@ def deal_analytics(request, deal_id):
         subscription = getattr(request.user, 'current_subscription', None)
         plan_name = subscription.plan.name if subscription else 'Basic'
         
-        vouchers = Voucher.objects.filter(deal=deal)
+        clicks = ClickTracking.objects.filter(store_link__deal=deal)
         
         data = {
             'deal_id': deal.id,
             'deal_title': deal.title,
-            'total_vouchers': vouchers.filter(status__in=['paid', 'redeemed']).count(),
-            'revenue': float(vouchers.filter(status__in=['paid', 'redeemed']).aggregate(Sum('total_amount'))['total_amount__sum'] or 0),
-            'redeemed': vouchers.filter(status='redeemed').count(),
-            'redemption_rate': calculate_deal_redemption_rate(deal),
+            'total_clicks': clicks.count(),
+            'store_links': deal.store_links.count(),
+            'active_stores': deal.store_links.filter(is_available=True).count(),
+            'click_rate': calculate_deal_click_rate(deal),
         }
         
         # Enhanced analytics for Pro and Enterprise
         if plan_name in ['Pro', 'Enterprise']:
             data.update({
-                'daily_sales': get_deal_daily_sales(deal, 30),
-                'customer_feedback': get_deal_feedback(deal),
+                'daily_clicks': get_deal_daily_clicks(deal, 30),
+                'store_breakdown': get_deal_store_breakdown(deal),
                 'peak_hours': get_deal_peak_hours(deal),
             })
         
@@ -99,83 +98,80 @@ def deal_analytics(request, deal_id):
     except (Seller.DoesNotExist, Deal.DoesNotExist):
         return Response({'error': 'Deal not found'}, status=404)
 
-def calculate_conversion_rate(deals):
-    """Calculate conversion rate from deal views to purchases"""
-    # Simplified calculation - in real app, track views
+def calculate_click_rate(deals):
+    """Calculate click rate for deals"""
     total_deals = deals.count()
-    deals_with_sales = deals.filter(vouchers__status__in=['paid', 'redeemed']).distinct().count()
-    return (deals_with_sales / total_deals * 100) if total_deals > 0 else 0
+    deals_with_clicks = deals.filter(store_links__clicks__isnull=False).distinct().count()
+    return (deals_with_clicks / total_deals * 100) if total_deals > 0 else 0
 
 def get_top_deals(seller, limit):
-    """Get top performing deals by revenue"""
+    """Get top performing deals by clicks"""
     deals = Deal.objects.filter(seller=seller).annotate(
-        revenue=Sum('vouchers__total_amount', filter=Q(vouchers__status__in=['paid', 'redeemed']))
-    ).order_by('-revenue')[:limit]
+        click_count=Count('store_links__clicks')
+    ).order_by('-click_count')[:limit]
     
     return [{
         'id': deal.id,
         'title': deal.title,
-        'revenue': float(deal.revenue or 0),
-        'vouchers_sold': deal.vouchers.filter(status__in=['paid', 'redeemed']).count()
+        'clicks': deal.click_count,
+        'stores': deal.store_links.count()
     } for deal in deals]
 
-def get_daily_revenue_chart(seller, days):
-    """Get daily revenue data for charts"""
+def get_daily_clicks_chart(seller, days):
+    """Get daily clicks data for charts"""
     data = []
     for i in range(days):
         date = timezone.now().date() - timedelta(days=i)
-        revenue = Voucher.objects.filter(
-            deal__seller=seller,
-            purchased_at__date=date,
-            status__in=['paid', 'redeemed']
-        ).aggregate(Sum('total_amount'))['total_amount__sum'] or 0
+        clicks = ClickTracking.objects.filter(
+            store_link__deal__seller=seller,
+            clicked_at__date=date
+        ).count()
         
         data.append({
             'date': date.isoformat(),
-            'revenue': float(revenue)
+            'clicks': clicks
         })
     
     return list(reversed(data))
 
-def get_category_performance(seller):
-    """Get performance by deal category"""
-    categories = Deal.objects.filter(seller=seller).values('category').annotate(
-        deals_count=Count('id'),
-        revenue=Sum('vouchers__total_amount', filter=Q(vouchers__status__in=['paid', 'redeemed']))
-    ).order_by('-revenue')
+def get_store_performance(seller):
+    """Get performance by store"""
+    stores = StoreLink.objects.filter(deal__seller=seller).values('store_name').annotate(
+        deals_count=Count('deal', distinct=True),
+        clicks=Count('clicks')
+    ).order_by('-clicks')
     
     return [{
-        'category': cat['category'],
-        'deals': cat['deals_count'],
-        'revenue': float(cat['revenue'] or 0)
-    } for cat in categories]
+        'store': store['store_name'],
+        'deals': store['deals_count'],
+        'clicks': store['clicks']
+    } for store in stores]
 
-def get_customer_demographics(seller):
-    """Get customer demographics data"""
-    # Simplified demographics - in real app, collect more user data
-    customers = User.objects.filter(vouchers__deal__seller=seller).distinct()
+def get_user_demographics(seller):
+    """Get user demographics data"""
+    # Users who clicked on this seller's deals
+    users = User.objects.filter(clicktracking__store_link__deal__seller=seller).distinct()
     return {
-        'total_customers': customers.count(),
-        'repeat_customers': customers.filter(vouchers__deal__seller=seller).annotate(
-            purchase_count=Count('vouchers')
-        ).filter(purchase_count__gt=1).count()
+        'total_users': users.count(),
+        'repeat_clickers': users.annotate(
+            click_count=Count('clicktracking')
+        ).filter(click_count__gt=1).count()
     }
 
-def get_seasonal_trends(seller):
-    """Get seasonal trends data"""
+def get_click_trends(seller):
+    """Get click trends data"""
     months_data = []
     for i in range(12):
         month_start = timezone.now().replace(day=1) - timedelta(days=30*i)
-        revenue = Voucher.objects.filter(
-            deal__seller=seller,
-            purchased_at__month=month_start.month,
-            purchased_at__year=month_start.year,
-            status__in=['paid', 'redeemed']
-        ).aggregate(Sum('total_amount'))['total_amount__sum'] or 0
+        clicks = ClickTracking.objects.filter(
+            store_link__deal__seller=seller,
+            clicked_at__month=month_start.month,
+            clicked_at__year=month_start.year
+        ).count()
         
         months_data.append({
             'month': month_start.strftime('%B %Y'),
-            'revenue': float(revenue)
+            'clicks': clicks
         })
     
     return list(reversed(months_data))
@@ -193,37 +189,41 @@ def get_competitor_analysis(seller):
         'avg_discount': 25.5  # Simplified
     }
 
-def calculate_deal_redemption_rate(deal):
-    """Calculate redemption rate for a specific deal"""
-    total_vouchers = deal.vouchers.filter(status__in=['paid', 'redeemed']).count()
-    redeemed_vouchers = deal.vouchers.filter(status='redeemed').count()
-    return (redeemed_vouchers / total_vouchers * 100) if total_vouchers > 0 else 0
+def calculate_deal_click_rate(deal):
+    """Calculate click rate for a specific deal"""
+    total_stores = deal.store_links.count()
+    stores_with_clicks = deal.store_links.filter(clicks__isnull=False).distinct().count()
+    return (stores_with_clicks / total_stores * 100) if total_stores > 0 else 0
 
-def get_deal_daily_sales(deal, days):
-    """Get daily sales data for a deal"""
+def get_deal_daily_clicks(deal, days):
+    """Get daily clicks data for a deal"""
     data = []
     for i in range(days):
         date = timezone.now().date() - timedelta(days=i)
-        sales = deal.vouchers.filter(
-            purchased_at__date=date,
-            status__in=['paid', 'redeemed']
+        clicks = ClickTracking.objects.filter(
+            store_link__deal=deal,
+            clicked_at__date=date
         ).count()
         
         data.append({
             'date': date.isoformat(),
-            'sales': sales
+            'clicks': clicks
         })
     
     return list(reversed(data))
 
-def get_deal_feedback(deal):
-    """Get customer feedback for a deal"""
-    # Simplified feedback - in real app, implement rating system
-    return {
-        'average_rating': 4.2,
-        'total_reviews': 15,
-        'positive_feedback': 85
-    }
+def get_deal_store_breakdown(deal):
+    """Get store breakdown for a deal"""
+    stores = deal.store_links.annotate(
+        click_count=Count('clicks')
+    ).order_by('-click_count')
+    
+    return [{
+        'store_name': store.store_name,
+        'clicks': store.click_count,
+        'price': float(store.price) if store.price else None,
+        'is_available': store.is_available
+    } for store in stores]
 
 def get_deal_peak_hours(deal):
     """Get peak purchase hours for a deal"""

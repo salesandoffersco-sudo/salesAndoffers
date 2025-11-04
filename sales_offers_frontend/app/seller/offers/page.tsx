@@ -218,7 +218,7 @@ export default function SellerOffersPage() {
                       </Link>
                       
                       <Link href={`/offers/${offer.id}`}>
-                        <Button variant="outline" size="sm" title="View Offer" className="min-w-0 px-2 sm:px-4">
+                        <Button variant="outline" size="sm" title="View Advertisement" className="min-w-0 px-2 sm:px-4">
                           <FiEye className="w-4 h-4" />
                         </Button>
                       </Link>
@@ -230,7 +230,7 @@ export default function SellerOffersPage() {
                           setEditingOfferId(offer.id);
                           setShowEditModal(true);
                         }}
-                        title="Edit Offer"
+                        title="Edit Advertisement"
                         className="min-w-0 px-2 sm:px-4"
                       >
                         <FiEdit className="w-4 h-4" />
@@ -240,7 +240,7 @@ export default function SellerOffersPage() {
                         variant="outline" 
                         size="sm" 
                         onClick={() => deleteOffer(offer.id)}
-                        title="Delete Offer"
+                        title="Delete Advertisement"
                         className="text-red-500 hover:text-red-700 min-w-0 px-2 sm:px-4"
                       >
                         <FiTrash2 className="w-4 h-4" />

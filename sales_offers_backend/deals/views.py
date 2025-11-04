@@ -2,8 +2,8 @@ from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from .models import Deal, Voucher, DealImage
-from .serializers import DealSerializer, VoucherSerializer, DealImageSerializer
+from .models import Deal, DealImage, StoreLink, ClickTracking  # Removed Voucher
+from .serializers import DealSerializer, DealImageSerializer, StoreLinkSerializer, ClickTrackingSerializer  # Removed VoucherSerializer
 from sellers.models import Seller
 from sellers.serializers import SellerSerializer
 from accounts.models import User
@@ -27,7 +27,7 @@ class DealListView(generics.ListCreateAPIView):
         return Deal.objects.filter(
             status='approved',
             seller__profile__is_published=True,
-            is_active=True
+            is_published=True  # Changed from is_active to is_published
         ).select_related('seller__profile')
     
     def perform_create(self, serializer):
@@ -74,16 +74,16 @@ class DealListView(generics.ListCreateAPIView):
                 ).first()
                 
                 if subscription:
-                    current_offers = Deal.objects.filter(seller=seller, is_active=True).count()
+                    current_offers = Deal.objects.filter(seller=seller, is_published=True).count()
                     max_offers = subscription.plan.max_offers
                     
                     if max_offers != -1 and current_offers >= max_offers:
-                        raise ValidationError({'error': f'You have reached your plan limit of {max_offers} offers. Upgrade your plan to create more.'})
+                        raise ValidationError({'error': f'You have reached your plan limit of {max_offers} advertisements. Upgrade your plan to create more.'})
                 else:
-                    # No subscription - limit to 1 offer
-                    current_offers = Deal.objects.filter(seller=seller, is_active=True).count()
+                    # No subscription - limit to 1 advertisement
+                    current_offers = Deal.objects.filter(seller=seller, is_published=True).count()
                     if current_offers >= 1:
-                        raise ValidationError({'error': 'Subscribe to a plan to create more offers.'})
+                        raise ValidationError({'error': 'Subscribe to a plan to create more advertisements.'})
             except Exception as e:
                 # If subscription check fails, allow creation but log the error
                 pass
@@ -109,8 +109,8 @@ class DealDetailView(generics.RetrieveUpdateAPIView):
                 return Deal.objects.filter(seller=seller)
             except Seller.DoesNotExist:
                 pass
-        # For public access, only show active approved deals
-        return Deal.objects.filter(is_active=True, status='approved')
+        # For public access, only show published approved deals
+        return Deal.objects.filter(is_published=True, status='approved')
     
     def perform_update(self, serializer):
         # Only allow sellers to update their own deals
@@ -139,7 +139,7 @@ def seller_detail(request, seller_id):
 def seller_offers(request, seller_id):
     try:
         seller = Seller.objects.get(id=seller_id)
-        offers = Deal.objects.filter(seller=seller, is_active=True, status='approved')
+        offers = Deal.objects.filter(seller=seller, is_published=True, status='approved')
         serializer = DealSerializer(offers, many=True)
         return Response(serializer.data)
     except Seller.DoesNotExist:
@@ -160,19 +160,18 @@ def my_deals(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def deal_analytics(request, deal_id):
-    """Get analytics for a specific deal"""
+    """Get analytics for a specific deal - affiliate platform"""
     try:
         seller = Seller.objects.get(user=request.user)
         deal = Deal.objects.get(id=deal_id, seller=seller)
         
-        vouchers = Voucher.objects.filter(deal=deal)
         analytics = {
-            'total_vouchers': deal.max_vouchers,
-            'vouchers_sold': deal.vouchers_sold,
-            'vouchers_available': deal.vouchers_available,
-            'vouchers_redeemed': vouchers.filter(status='redeemed').count(),
-            'total_revenue': sum(v.total_amount for v in vouchers.filter(status__in=['paid', 'redeemed'])),
-            'pending_vouchers': vouchers.filter(status='pending').count(),
+            'total_stores': deal.store_count,
+            'total_clicks': deal.click_count,
+            'lowest_price': deal.lowest_price,
+            'store_links': deal.store_links.count(),
+            'active_stores': deal.store_links.filter(is_available=True).count(),
+            'inactive_stores': deal.store_links.filter(is_available=False).count(),
         }
         
         return Response(analytics)
@@ -272,3 +271,37 @@ def update_deal_image(request, deal_id, image_id):
         
     except (Seller.DoesNotExist, Deal.DoesNotExist, DealImage.DoesNotExist):
         return Response({'error': 'Image not found'}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def track_click(request):
+    """Track click on store link"""
+    try:
+        store_link_id = request.data.get('store_link_id')
+        
+        if not store_link_id:
+            return Response({'error': 'store_link_id is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        store_link = StoreLink.objects.get(id=store_link_id)
+        
+        # Get client IP
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip_address = x_forwarded_for.split(',')[0]
+        else:
+            ip_address = request.META.get('REMOTE_ADDR')
+        
+        # Create click tracking record
+        ClickTracking.objects.create(
+            store_link=store_link,
+            user=request.user,
+            ip_address=ip_address,
+            user_agent=request.META.get('HTTP_USER_AGENT', '')
+        )
+        
+        return Response({'success': True}, status=status.HTTP_201_CREATED)
+        
+    except StoreLink.DoesNotExist:
+        return Response({'error': 'Store link not found'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -46,14 +46,14 @@ export default function Home() {
           </div>
           
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-[rgb(var(--color-fg))] mb-6 leading-tight">
-            Discover Amazing{" "}
+            Compare Prices{" "}
             <span className="text-gradient bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Deals & Offers
+              Across Multiple Stores
             </span>
           </h1>
           <p className="text-xl md:text-2xl text-[rgb(var(--color-muted))] mb-8 max-w-4xl mx-auto leading-relaxed">
-            Connect with verified sellers, explore exclusive offers, and save big on your favorite products. 
-            Join thousands of satisfied customers in Kenya's premier marketplace!
+            Find the best deals from trusted sellers across Jumia, Kilimall, Amazon and more. 
+            Compare prices and shop smart with Kenya's premier price comparison platform!
           </p>
           
           {/* Trust Indicators */}
@@ -65,13 +65,13 @@ export default function Home() {
             <Link href="/offers" passHref>
               <Button as="a" size="lg" variant="primary" className="min-w-[200px] bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-300">
                 <FiZap className="w-5 h-5 mr-2" />
-                Explore Offers
+                Browse Deals
               </Button>
             </Link>
             <Link href="/seller/dashboard" passHref>
               <Button as="a" size="lg" variant="outline" className="min-w-[200px] border-2 border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white transition-all duration-300">
                 <FiShoppingBag className="w-5 h-5 mr-2" />
-                Start Selling
+                Advertise Now
               </Button>
             </Link>
           </div>
@@ -87,8 +87,8 @@ export default function Home() {
               <div className="text-sm text-[rgb(var(--color-muted))] mt-1">Verified Sellers</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-green-600 dark:text-green-400">100K+</div>
-              <div className="text-sm text-[rgb(var(--color-muted))] mt-1">Active Deals</div>
+              <div className="text-3xl font-bold text-green-600 dark:text-green-400">10+</div>
+              <div className="text-sm text-[rgb(var(--color-muted))] mt-1">Partner Stores</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-orange-600 dark:text-orange-400">4.9★</div>
@@ -115,10 +115,10 @@ export default function Home() {
               <FiTag className="text-white text-3xl" />
             </div>
             <h3 className="text-2xl font-bold text-[rgb(var(--color-fg))] mb-4 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
-              Exclusive Deals
+              Price Comparison
             </h3>
             <p className="text-[rgb(var(--color-muted))] leading-relaxed">
-              Access exclusive offers and discounts from verified sellers across multiple categories. Save up to 70% on premium products.
+              Compare prices across multiple stores including Jumia, Kilimall, Amazon and more. Find the best deals with one click.
             </p>
             <div className="mt-4">
               <TrustIndicators size="sm" variant="minimal" showAll={false} />
@@ -130,10 +130,10 @@ export default function Home() {
               <FiUsers className="text-white text-3xl" />
             </div>
             <h3 className="text-2xl font-bold text-[rgb(var(--color-fg))] mb-4 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-              Verified Sellers
+              Trusted Stores
             </h3>
             <p className="text-[rgb(var(--color-muted))] leading-relaxed">
-              Shop with confidence from our community of verified and rated sellers. Every seller is background-checked and business-verified.
+              Shop from Kenya's most trusted online stores. We partner with verified retailers to bring you the best shopping experience.
             </p>
             <div className="mt-4 flex items-center gap-2">
               <FiShield className="w-4 h-4 text-green-600" />
@@ -146,10 +146,10 @@ export default function Home() {
               <FiTrendingUp className="text-white text-3xl" />
             </div>
             <h3 className="text-2xl font-bold text-[rgb(var(--color-fg))] mb-4 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
-              Best Prices
+              Best Deals
             </h3>
             <p className="text-[rgb(var(--color-muted))] leading-relaxed">
-              Compare prices and find the best deals on products you love. Our price-match guarantee ensures you get the lowest prices.
+              Never miss a great deal again. Our platform highlights the best prices and helps you save money on every purchase.
             </p>
             <div className="mt-4 flex items-center gap-2">
               <FiStar className="w-4 h-4 text-yellow-500" />
@@ -176,10 +176,10 @@ export default function Home() {
             </div>
             
             <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-              Ready to Start Saving?
+              Ready to Find Better Deals?
             </h2>
             <p className="text-xl md:text-2xl mb-8 opacity-90 max-w-3xl mx-auto leading-relaxed">
-              Join Kenya's most trusted marketplace today and unlock access to thousands of exclusive offers from verified sellers.
+              Join Kenya's smartest shoppers and start comparing prices across multiple stores to save money on every purchase.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
@@ -192,7 +192,7 @@ export default function Home() {
               <Link href="/offers" passHref>
                 <Button as="a" size="lg" variant="outline" className="border-white text-white hover:bg-white/10 min-w-[200px] font-semibold">
                   <FiShoppingBag className="w-5 h-5 mr-2" />
-                  Browse Deals
+                  Compare Prices
                 </Button>
               </Link>
             </div>
@@ -205,7 +205,7 @@ export default function Home() {
               </div>
               <div className="flex items-center gap-2">
                 <FiUsers className="w-4 h-4" />
-                <span>Verified Sellers</span>
+                <span>Trusted Stores</span>
               </div>
               <div className="flex items-center gap-2">
                 <FiStar className="w-4 h-4" />
