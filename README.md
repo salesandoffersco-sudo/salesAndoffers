@@ -54,3 +54,5 @@ Deploy to Render by connecting this repository and using the `sales_offers_backe
 - Django REST Framework
 - SQLite (development)
 - CORS headers
+
+<!-- Deployment trigger: Platform ready for production deployment -->
