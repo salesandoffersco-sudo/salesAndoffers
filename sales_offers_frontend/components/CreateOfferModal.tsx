@@ -5,6 +5,7 @@ import React from "react";
 import { FiX, FiCalendar } from "react-icons/fi";
 import Button from "./Button";
 import DealImageUpload from "./DealImageUpload";
+import StoreLinkManager from "./StoreLinkManager";
 import { api } from "../lib/api";
 
 interface CreateOfferModalProps {
@@ -270,6 +271,13 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
               onImagesChange={setImages}
               maxImages={5}
             />
+          </div>
+
+          <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700/50">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+              Store Links
+            </label>
+            <StoreLinkManager dealId={null} />
           </div>
 
           <div>

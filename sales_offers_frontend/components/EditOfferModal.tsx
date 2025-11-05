@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { FiX } from "react-icons/fi";
 import Button from "./Button";
 import DealImageUpload from "./DealImageUpload";
+import StoreLinkManager from "./StoreLinkManager";
 import { api } from "../lib/api";
 
 interface EditOfferModalProps {
@@ -283,6 +284,13 @@ export default function EditOfferModal({ isOpen, onClose, onSuccess, offerId }: 
                   onImagesChange={setImages}
                   maxImages={5}
                 />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-[rgb(var(--color-text))] mb-2">
+                  Store Links
+                </label>
+                <StoreLinkManager dealId={offerId} />
               </div>
 
               <div>

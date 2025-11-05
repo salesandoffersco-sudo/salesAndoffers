@@ -3,7 +3,7 @@
 // Updated to show business logos instead of profile pictures
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { FiHeart, FiClock, FiTag, FiGrid, FiList, FiFilter, FiChevronLeft, FiChevronRight, FiShoppingCart, FiUser } from "react-icons/fi";
+import { FiHeart, FiClock, FiTag, FiGrid, FiList, FiFilter, FiChevronLeft, FiChevronRight, FiBarChart3, FiUser } from "react-icons/fi";
 import axios from "axios";
 import Button from "../../components/Button";
 import ProfilePicture from "../../components/ProfilePicture";
@@ -377,9 +377,8 @@ export default function OffersPage() {
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => handleAddToCart(offer)}
                                   >
-                                    <FiShoppingCart className="w-4 h-4" />
+                                    <FiBarChart3 className="w-4 h-4" />
                                   </Button>
                                   <Link href={`/offers/${offer.id}`}>
                                     <Button variant="primary" size="sm">
@@ -481,11 +480,10 @@ export default function OffersPage() {
                             <Button
                               variant="outline"
                               size="md"
-                              onClick={() => handleAddToCart(offer)}
                               className="flex-1"
                             >
-                              <FiShoppingCart className="w-4 h-4 mr-1" />
-                              Add to Cart
+                              <FiBarChart3 className="w-4 h-4 mr-1" />
+                              Compare Prices
                             </Button>
                             <Link href={`/offers/${offer.id}`} className="flex-1">
                               <Button variant="primary" size="md" className="w-full">

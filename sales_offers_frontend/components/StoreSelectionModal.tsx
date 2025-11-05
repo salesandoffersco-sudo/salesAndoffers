@@ -21,12 +21,15 @@ interface Store {
 interface StoreSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  stores: Store[];
+  stores?: Store[];
   dealTitle: string;
+  mode?: 'view' | 'add';
+  onAddStore?: (store: { name: string; url: string; price: number; logo?: string }) => void;
 }
 
-export default function StoreSelectionModal({ isOpen, onClose, stores, dealTitle }: StoreSelectionModalProps) {
+export default function StoreSelectionModal({ isOpen, onClose, stores = [], dealTitle, mode = 'view', onAddStore }: StoreSelectionModalProps) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [newStore, setNewStore] = useState({ name: '', url: '', price: 0, logo: '' });
 
   // Fallback stores if none provided
   const fallbackStores = [
@@ -99,74 +102,138 @@ export default function StoreSelectionModal({ isOpen, onClose, stores, dealTitle
         </div>
 
         <div className="p-6">
-          <div className="relative mb-6">
-            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[rgb(var(--color-muted))]" />
-            <input
-              type="text"
-              placeholder="Search stores..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-[rgb(var(--color-border))] rounded-lg bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            />
-          </div>
-
-          {filteredStores.length === 0 ? (
-            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-              No stores found matching your search.
+          {mode === 'add' ? (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Store Name</label>
+                <input
+                  type="text"
+                  value={newStore.name}
+                  onChange={(e) => setNewStore({...newStore, name: e.target.value})}
+                  className="w-full px-3 py-2 border border-[rgb(var(--color-border))] rounded-lg bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] focus:ring-2 focus:ring-purple-500"
+                  placeholder="e.g., Jumia, Amazon"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Product URL</label>
+                <input
+                  type="url"
+                  value={newStore.url}
+                  onChange={(e) => setNewStore({...newStore, url: e.target.value})}
+                  className="w-full px-3 py-2 border border-[rgb(var(--color-border))] rounded-lg bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] focus:ring-2 focus:ring-purple-500"
+                  placeholder="https://store.com/product"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Price (KSh)</label>
+                <input
+                  type="number"
+                  value={newStore.price}
+                  onChange={(e) => setNewStore({...newStore, price: Number(e.target.value)})}
+                  className="w-full px-3 py-2 border border-[rgb(var(--color-border))] rounded-lg bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] focus:ring-2 focus:ring-purple-500"
+                  placeholder="15000"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Logo URL (Optional)</label>
+                <input
+                  type="url"
+                  value={newStore.logo}
+                  onChange={(e) => setNewStore({...newStore, logo: e.target.value})}
+                  className="w-full px-3 py-2 border border-[rgb(var(--color-border))] rounded-lg bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] focus:ring-2 focus:ring-purple-500"
+                  placeholder="https://logo.clearbit.com/store.com"
+                />
+              </div>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  if (newStore.name && newStore.url && newStore.price && onAddStore) {
+                    onAddStore(newStore);
+                    setNewStore({ name: '', url: '', price: 0, logo: '' });
+                    onClose();
+                  }
+                }}
+                className="w-full"
+              >
+                Add Store
+              </Button>
             </div>
           ) : (
-            <div className="space-y-3">
-              {filteredStores.map((store) => (
-                <button
-                  key={store.id}
-                  onClick={() => handleStoreClick(store)}
-                  className="w-full flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
-                >
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-600 flex items-center justify-center">
-                      {store.store_info?.logo ? (
-                        <img
-                          src={store.store_info.logo}
-                          alt={store.store_name}
-                          className="w-8 h-8 object-contain"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
-                            target.parentElement!.innerHTML = store.store_name.charAt(0);
-                          }}
-                        />
-                      ) : (
-                        <span className="text-lg font-bold text-gray-600 dark:text-gray-300">
-                          {store.store_name.charAt(0)}
-                        </span>
-                      )}
+            <>
+              <div className="relative mb-6">
+                <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[rgb(var(--color-muted))]" />
+                <input
+                  type="text"
+                  placeholder="Search stores..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-[rgb(var(--color-border))] rounded-lg bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                />
+              </div>
+            </>
+          )}
+
+          {mode === 'view' && (
+            filteredStores.length === 0 ? (
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                No stores found matching your search.
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {filteredStores.map((store) => (
+                  <button
+                    key={store.id}
+                    onClick={() => handleStoreClick(store)}
+                    className="w-full flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
+                  >
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-600 flex items-center justify-center">
+                        {store.store_info?.logo ? (
+                          <img
+                            src={store.store_info.logo}
+                            alt={store.store_name}
+                            className="w-8 h-8 object-contain"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = 'none';
+                              target.parentElement!.innerHTML = store.store_name.charAt(0);
+                            }}
+                          />
+                        ) : (
+                          <span className="text-lg font-bold text-gray-600 dark:text-gray-300">
+                            {store.store_name.charAt(0)}
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-left">
+                        <h3 className="font-semibold text-gray-900 dark:text-white">{store.store_name}</h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">Available now</p>
+                      </div>
                     </div>
-                    <div className="text-left">
-                      <h3 className="font-semibold text-gray-900 dark:text-white">{store.store_name}</h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">Available now</p>
+                    <div className="flex items-center space-x-3">
+                      <div className="text-right">
+                        <p className="text-lg font-bold text-purple-600 dark:text-purple-400">
+                          KSh {store.price.toLocaleString()}
+                        </p>
+                      </div>
+                      <FiExternalLink className="w-4 h-4 text-gray-400 group-hover:text-purple-600 transition-colors" />
                     </div>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="text-right">
-                      <p className="text-lg font-bold text-purple-600 dark:text-purple-400">
-                        KSh {store.price.toLocaleString()}
-                      </p>
-                    </div>
-                    <FiExternalLink className="w-4 h-4 text-gray-400 group-hover:text-purple-600 transition-colors" />
-                  </div>
-                </button>
-              ))}
-            </div>
+                  </button>
+                ))}
+              </div>
+            )
           )}
 
 
         </div>
 
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
-          <p className="text-xs text-gray-600 dark:text-gray-300 text-center">
-            Prices are updated regularly. Click on a store to visit their website.
-          </p>
-        </div>
+        {mode === 'view' && (
+          <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+            <p className="text-xs text-gray-600 dark:text-gray-300 text-center">
+              Prices are updated regularly. Click on a store to visit their website.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
