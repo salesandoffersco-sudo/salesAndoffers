@@ -38,7 +38,7 @@ interface Offer {
   discounted_price: string;
   original_price: string;
   discount_percentage: number;
-  is_active: boolean;
+  is_published: boolean;
   created_at: string;
 }
 
@@ -81,7 +81,7 @@ export default function SellerDashboardPage() {
       const [plansRes, statsRes, offersRes] = await Promise.all([
         api.get('/api/sellers/subscription-plans/'),
         api.get('/api/sellers/stats/'),
-        api.get('/api/sellers/offers/')
+api.get('/api/sellers/offers/')
       ]);
 
       setPlans(plansRes.data);
@@ -315,8 +315,8 @@ export default function SellerDashboardPage() {
                       <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-1">
                         <span className="text-purple-600 dark:text-purple-400 font-medium whitespace-nowrap">KES {offer.discounted_price}</span>
                         <span className="text-[rgb(var(--color-muted))] line-through whitespace-nowrap">KES {offer.original_price}</span>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${offer.is_active ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'}`}>
-                          {offer.is_active ? 'Active' : 'Inactive'}
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${offer.is_published ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'}`}>
+                          {offer.is_published ? 'Published' : 'Draft'}
                         </span>
                       </div>
                     </div>

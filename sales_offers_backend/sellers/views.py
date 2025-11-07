@@ -52,7 +52,7 @@ def seller_stats(request):
     try:
         seller = Seller.objects.get(user=request.user)
         total_offers = Deal.objects.filter(seller=seller).count()
-        active_offers = Deal.objects.filter(seller=seller, is_active=True).count()
+        active_offers = Deal.objects.filter(seller=seller, is_published=True).count()
         
         # Get active subscription info
         subscription = Subscription.objects.filter(
@@ -115,7 +115,7 @@ def seller_offers(request, seller_id=None):
         # Public view of seller offers
         try:
             seller = Seller.objects.get(id=seller_id)
-            offers = Deal.objects.filter(seller=seller, is_active=True)
+            offers = Deal.objects.filter(seller=seller, is_published=True)
             from deals.serializers import DealSerializer
             serializer = DealSerializer(offers, many=True)
             return Response(serializer.data)
@@ -140,10 +140,10 @@ def manage_seller_offer(request, offer_id):
         offer = Deal.objects.get(id=offer_id, seller=seller)
         
         if request.method == 'PATCH':
-            # Update offer (toggle active status, etc.)
-            is_active = request.data.get('is_active')
-            if is_active is not None:
-                offer.is_active = is_active
+            # Update offer (toggle published status, etc.)
+            is_published = request.data.get('is_published')
+            if is_published is not None:
+                offer.is_published = is_published
                 offer.save()
             
             from deals.serializers import DealSerializer
