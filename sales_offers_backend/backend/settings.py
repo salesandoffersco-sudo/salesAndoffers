@@ -36,9 +36,9 @@ INSTALLED_APPS = [
     'accounts',
     'sellers',
     'deals',
-    'payments',
-    'merchants',
-    'transactions',
+    # 'payments',  # Removed - no direct payments in affiliate model
+    # 'merchants', # Removed - no separate merchant system
+    # 'transactions', # Removed - no voucher transactions
     'newsletter',
     'blog',
     'analytics',
