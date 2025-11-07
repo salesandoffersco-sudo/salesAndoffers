@@ -84,8 +84,9 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# Database configuration
 if os.environ.get('DATABASE_URL'):
-    # Production database (PostgreSQL)
+    # Production database (Supabase PostgreSQL)
     import dj_database_url
     DATABASES = {
         'default': dj_database_url.parse(os.environ.get('DATABASE_URL'))
