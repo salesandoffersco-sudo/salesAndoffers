@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { FiChevronLeft, FiChevronRight, FiStar, FiBarChart3 } from 'react-icons/fi';
+import { FiChevronLeft, FiChevronRight, FiStar, FiTrendingUp } from 'react-icons/fi';
 import { useCart } from '../contexts/CartContext';
 
 interface CarouselItem {
@@ -267,7 +267,7 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
                       }}
                       className="bg-white text-indigo-600 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
                     >
-                      <FiBarChart3 className="w-4 h-4 mr-2 inline" />
+                      <FiTrendingUp className="w-4 h-4 mr-2 inline" />
                       Compare Prices
                     </button>
                   </div>
@@ -304,7 +304,7 @@ export default function HeroCarousel({ items, className = '' }: HeroCarouselProp
                           }}
                           className="bg-white text-indigo-600 px-2 py-1 rounded-md text-xs font-medium flex-1 flex items-center justify-center gap-1"
                         >
-                          <FiBarChart3 className="w-2 h-2" />
+                          <FiTrendingUp className="w-2 h-2" />
                           Compare
                         </button>
                       </div>
