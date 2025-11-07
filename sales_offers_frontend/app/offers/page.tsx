@@ -13,6 +13,7 @@ import FilterSidebar from "../../components/FilterSidebar";
 import HeroCarousel from "../../components/HeroCarousel";
 import VerificationBadge from "../../components/VerificationBadge";
 import TrustIndicators from "../../components/TrustIndicators";
+import StoreSelectionModal from "../../components/StoreSelectionModal";
 import { API_BASE_URL } from "../../lib/api";
 
 interface Offer {
@@ -63,22 +64,14 @@ export default function OffersPage() {
   const [filters, setFilters] = useState<any>({});
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [page, setPage] = useState(1);
+  const [showStoreModal, setShowStoreModal] = useState(false);
+  const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
   const pageSize = 12;
   const { addToCart } = useCart();
 
-  const handleAddToCart = (offer: Offer) => {
-    addToCart({
-      dealId: offer.id,
-      title: offer.title,
-      originalPrice: parseFloat(offer.original_price),
-      discountedPrice: parseFloat(offer.discounted_price),
-      discountPercentage: offer.discount_percentage,
-      maxPurchase: 10, // Default values since not in offer interface
-      minPurchase: 1,
-      availableVouchers: 100,
-      expiresAt: offer.expires_at,
-      seller: offer.seller
-    });
+  const handleComparePrices = (offer: Offer) => {
+    setSelectedOffer(offer);
+    setShowStoreModal(true);
   };
 
   const [favoriteLoading, setFavoriteLoading] = useState<number | null>(null);
@@ -377,6 +370,7 @@ export default function OffersPage() {
                                   <Button
                                     variant="outline"
                                     size="sm"
+                                    onClick={() => handleComparePrices(offer)}
                                   >
                                     <FiTrendingUp className="w-4 h-4" />
                                   </Button>
@@ -481,6 +475,7 @@ export default function OffersPage() {
                               variant="outline"
                               size="md"
                               className="flex-1"
+                              onClick={() => handleComparePrices(offer)}
                             >
                               <FiTrendingUp className="w-4 h-4 mr-1" />
                               Compare Prices
@@ -524,6 +519,15 @@ export default function OffersPage() {
           </div>
         </div>
       </div>
+      
+      {selectedOffer && (
+        <StoreSelectionModal
+          isOpen={showStoreModal}
+          onClose={() => setShowStoreModal(false)}
+          stores={[]}
+          dealTitle={selectedOffer.title}
+        />
+      )}
     </div>
   );
 }
