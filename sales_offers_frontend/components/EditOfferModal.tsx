@@ -43,6 +43,7 @@ export default function EditOfferModal({ isOpen, onClose, onSuccess, offerId }: 
     expires_at: ""
   });
   const [images, setImages] = useState<any[]>([]);
+  const [storeLinks, setStoreLinks] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(false);
 
@@ -288,8 +289,8 @@ export default function EditOfferModal({ isOpen, onClose, onSuccess, offerId }: 
 
               <div className="md:col-span-2">
                 <StoreLinkManager 
-                  storeLinks={[]} 
-                  onChange={() => {}} 
+                  storeLinks={storeLinks} 
+                  onChange={setStoreLinks} 
                 />
               </div>
 
