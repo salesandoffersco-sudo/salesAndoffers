@@ -287,10 +287,10 @@ export default function EditOfferModal({ isOpen, onClose, onSuccess, offerId }: 
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-[rgb(var(--color-text))] mb-2">
-                  Store Links
-                </label>
-                <StoreLinkManager dealId={offerId} />
+                <StoreLinkManager 
+                  storeLinks={[]} 
+                  onChange={() => {}} 
+                />
               </div>
 
               <div>
