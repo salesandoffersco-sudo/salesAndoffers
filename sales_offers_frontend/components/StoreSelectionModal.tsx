@@ -72,10 +72,6 @@ export default function StoreSelectionModal({ isOpen, onClose, stores = [], deal
     }
   ];
 
-  // Debug logging
-  console.log('StoreSelectionModal - stores:', stores);
-  console.log('StoreSelectionModal - loading:', loading);
-  
   const displayStores = stores.length > 0 ? stores : (loading ? [] : fallbackStores);
   
   const filteredStores = displayStores.filter(store =>

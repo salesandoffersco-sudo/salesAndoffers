@@ -285,6 +285,30 @@ def deal_stores(request, deal_id):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+def create_store_link(request, deal_id):
+    """Create a store link for a deal"""
+    try:
+        seller = Seller.objects.get(user=request.user)
+        deal = Deal.objects.get(id=deal_id, seller=seller)
+        
+        store_link = StoreLink.objects.create(
+            deal=deal,
+            store_name=request.data.get('store_name'),
+            store_url=request.data.get('store_url'),
+            price=request.data.get('price'),
+            is_available=request.data.get('is_available', True)
+        )
+        
+        serializer = StoreLinkSerializer(store_link)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+    except (Seller.DoesNotExist, Deal.DoesNotExist):
+        return Response({'error': 'Deal not found'}, status=404)
+    except Exception as e:
+        return Response({'error': str(e)}, status=400)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def track_click(request):
     """Track click on store link"""
     try:

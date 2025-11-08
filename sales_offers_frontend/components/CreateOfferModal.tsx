@@ -84,6 +84,18 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
         }
       }
       
+      // Create store links for the deal
+      if (storeLinks.length > 0) {
+        for (const store of storeLinks) {
+          await api.post(`/api/deals/${dealId}/store-links/`, {
+            store_name: store.name,
+            store_url: store.url,
+            price: store.price,
+            is_available: store.isAvailable !== false
+          });
+        }
+      }
+      
       onSuccess();
       onClose();
       setFormData({
@@ -97,6 +109,8 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
         max_vouchers: 100,
       });
       setImages([]);
+      setStoreLinks([]);
+      setStoreLinks([]);
     } catch (err: any) {
       const errorData = err.response?.data;
       if (errorData?.action_required === 'setup_profile') {

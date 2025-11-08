@@ -85,6 +85,15 @@ export default function EditOfferModal({ isOpen, onClose, onSuccess, offerId }: 
         });
       }
       setImages(existingImages);
+      
+      // Set existing store links
+      const existingStoreLinks = (offer.store_links || []).map((link: any) => ({
+        name: link.store_name,
+        url: link.store_url,
+        price: link.price,
+        isAvailable: link.is_available
+      }));
+      setStoreLinks(existingStoreLinks);
     } catch (error) {
       console.error("Error fetching offer:", error);
     } finally {
