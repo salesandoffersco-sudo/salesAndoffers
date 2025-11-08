@@ -69,9 +69,23 @@ export default function OffersPage() {
   const pageSize = 12;
   const { addToCart } = useCart();
 
-  const handleComparePrices = (offer: Offer) => {
+  const [storeData, setStoreData] = useState<any[]>([]);
+  const [loadingStores, setLoadingStores] = useState(false);
+
+  const handleComparePrices = async (offer: Offer) => {
     setSelectedOffer(offer);
-    setShowStoreModal(true);
+    setLoadingStores(true);
+    
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/deals/${offer.id}/stores/`);
+      setStoreData(response.data);
+    } catch (error) {
+      console.error("Error fetching store data:", error);
+      setStoreData([]);
+    } finally {
+      setLoadingStores(false);
+      setShowStoreModal(true);
+    }
   };
 
   const [favoriteLoading, setFavoriteLoading] = useState<number | null>(null);
@@ -371,8 +385,13 @@ export default function OffersPage() {
                                     variant="outline"
                                     size="sm"
                                     onClick={() => handleComparePrices(offer)}
+                                    disabled={loadingStores && selectedOffer?.id === offer.id}
                                   >
-                                    <FiTrendingUp className="w-4 h-4" />
+                                    {loadingStores && selectedOffer?.id === offer.id ? (
+                                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current" />
+                                    ) : (
+                                      <FiTrendingUp className="w-4 h-4" />
+                                    )}
                                   </Button>
                                   <Link href={`/offers/${offer.id}`}>
                                     <Button variant="primary" size="sm">
@@ -476,8 +495,13 @@ export default function OffersPage() {
                               size="md"
                               className="flex-1"
                               onClick={() => handleComparePrices(offer)}
+                              disabled={loadingStores && selectedOffer?.id === offer.id}
                             >
-                              <FiTrendingUp className="w-4 h-4 mr-1" />
+                              {loadingStores && selectedOffer?.id === offer.id ? (
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-1" />
+                              ) : (
+                                <FiTrendingUp className="w-4 h-4 mr-1" />
+                              )}
                               Compare Prices
                             </Button>
                             <Link href={`/offers/${offer.id}`} className="flex-1">
@@ -523,9 +547,13 @@ export default function OffersPage() {
       {selectedOffer && (
         <StoreSelectionModal
           isOpen={showStoreModal}
-          onClose={() => setShowStoreModal(false)}
-          stores={[]}
+          onClose={() => {
+            setShowStoreModal(false);
+            setStoreData([]);
+          }}
+          stores={storeData}
           dealTitle={selectedOffer.title}
+          loading={loadingStores}
         />
       )}
     </div>

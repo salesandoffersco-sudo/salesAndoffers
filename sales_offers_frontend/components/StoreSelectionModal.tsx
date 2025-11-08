@@ -24,10 +24,11 @@ interface StoreSelectionModalProps {
   stores?: Store[];
   dealTitle: string;
   mode?: 'view' | 'add';
+  loading?: boolean;
   onAddStore?: (store: { name: string; url: string; price: number; logo?: string }) => void;
 }
 
-export default function StoreSelectionModal({ isOpen, onClose, stores = [], dealTitle, mode = 'view', onAddStore }: StoreSelectionModalProps) {
+export default function StoreSelectionModal({ isOpen, onClose, stores = [], dealTitle, mode = 'view', loading = false, onAddStore }: StoreSelectionModalProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [newStore, setNewStore] = useState({ name: '', url: '', price: 0, logo: '' });
 
@@ -78,7 +79,24 @@ export default function StoreSelectionModal({ isOpen, onClose, stores = [], deal
     store.is_available
   );
 
-  const handleStoreClick = (store: Store) => {
+  const handleStoreClick = async (store: Store) => {
+    // Track the click
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        await fetch(`${API_BASE_URL}/api/deals/track-click/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`
+          },
+          body: JSON.stringify({ store_link_id: store.id })
+        });
+      }
+    } catch (error) {
+      console.error('Error tracking click:', error);
+    }
+    
     window.open(store.store_url, '_blank');
     onClose();
   };
@@ -174,9 +192,14 @@ export default function StoreSelectionModal({ isOpen, onClose, stores = [], deal
           )}
 
           {mode === 'view' && (
-            filteredStores.length === 0 ? (
+            loading ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
+                <p className="text-gray-500 dark:text-gray-400">Loading stores...</p>
+              </div>
+            ) : filteredStores.length === 0 ? (
               <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                No stores found matching your search.
+                {stores.length === 0 ? "No stores available for this deal." : "No stores found matching your search."}
               </div>
             ) : (
               <div className="space-y-3">

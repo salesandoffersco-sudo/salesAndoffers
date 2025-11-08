@@ -272,6 +272,17 @@ def update_deal_image(request, deal_id, image_id):
     except (Seller.DoesNotExist, Deal.DoesNotExist, DealImage.DoesNotExist):
         return Response({'error': 'Image not found'}, status=status.HTTP_404_NOT_FOUND)
 
+@api_view(['GET'])
+def deal_stores(request, deal_id):
+    """Get store links for a specific deal"""
+    try:
+        deal = Deal.objects.get(id=deal_id, is_published=True, status='approved')
+        store_links = StoreLink.objects.filter(deal=deal, is_available=True)
+        serializer = StoreLinkSerializer(store_links, many=True)
+        return Response(serializer.data)
+    except Deal.DoesNotExist:
+        return Response({'error': 'Deal not found'}, status=404)
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def track_click(request):
