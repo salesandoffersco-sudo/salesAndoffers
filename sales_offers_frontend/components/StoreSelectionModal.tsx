@@ -72,7 +72,11 @@ export default function StoreSelectionModal({ isOpen, onClose, stores = [], deal
     }
   ];
 
-  const displayStores = stores.length > 0 ? stores : fallbackStores;
+  // Debug logging
+  console.log('StoreSelectionModal - stores:', stores);
+  console.log('StoreSelectionModal - loading:', loading);
+  
+  const displayStores = stores.length > 0 ? stores : (loading ? [] : fallbackStores);
   
   const filteredStores = displayStores.filter(store =>
     store.store_name.toLowerCase().includes(searchTerm.toLowerCase()) &&

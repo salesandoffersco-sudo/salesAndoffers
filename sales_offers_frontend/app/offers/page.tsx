@@ -75,16 +75,18 @@ export default function OffersPage() {
   const handleComparePrices = async (offer: Offer) => {
     setSelectedOffer(offer);
     setLoadingStores(true);
+    setShowStoreModal(true);
     
     try {
+      console.log('Fetching stores for deal:', offer.id);
       const response = await axios.get(`${API_BASE_URL}/api/deals/${offer.id}/stores/`);
+      console.log('Store data response:', response.data);
       setStoreData(response.data);
     } catch (error) {
       console.error("Error fetching store data:", error);
       setStoreData([]);
     } finally {
       setLoadingStores(false);
-      setShowStoreModal(true);
     }
   };
 
