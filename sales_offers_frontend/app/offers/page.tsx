@@ -212,12 +212,12 @@ export default function OffersPage() {
         id: offer.id,
         title: offer.title,
         description: offer.description,
-        discounted_price: parseFloat(offer.discounted_price),
-        original_price: parseFloat(offer.original_price),
+        discounted_price: offer.price_range ? parseFloat(offer.price_range.split('-')[0].replace(/[^0-9.]/g, '')) : parseFloat(offer.discounted_price || '0'),
+        original_price: parseFloat(offer.original_price || '0'),
         average_rating: 4.5,
         main_image: offer.main_image || offer.image || `https://picsum.photos/400/600?random=${offer.id}`,
         category: offer.category,
-        discount_percentage: offer.discount_percentage
+        discount_percentage: offer.discount_percentage || 0
       }))
     : [];
 

@@ -234,9 +234,10 @@ export default function SellerDetailPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {deals.map((deal) => (
-                <div
+                <Link
                   key={deal.id}
-                  className="bg-[rgb(var(--color-card))] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-[rgb(var(--color-border))]"
+                  href={`/offers/${deal.id}`}
+                  className="bg-[rgb(var(--color-card))] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-[rgb(var(--color-border))] block cursor-pointer"
                 >
                   {/* Deal Image */}
                   {deal.main_image && (
@@ -275,13 +276,11 @@ export default function SellerDetailPage() {
                       </span>
                     </div>
                     
-                    <Link href={`/offers/${deal.id}`}>
-                      <Button variant="primary" size="md" className="w-full">
-                        View Deal
-                      </Button>
-                    </Link>
+                    <Button variant="primary" size="md" className="w-full">
+                      View Deal
+                    </Button>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}
