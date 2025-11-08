@@ -14,7 +14,7 @@ class StoreLinkSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = StoreLink
-        fields = ['id', 'store_name', 'store_url', 'price', 'is_available', 'click_count', 'store_info', 'created_at']
+        fields = ['id', 'store_name', 'store_url', 'price', 'coupon_code', 'coupon_discount', 'is_available', 'click_count', 'store_info', 'created_at']
     
     def get_click_count(self, obj):
         return obj.clicks.count()

@@ -73,6 +73,8 @@ export default function EditOfferModal({ isOpen, onClose, onSuccess, offerId }: 
         store_name: link.store_name,
         store_url: link.store_url,
         price: link.price,
+        coupon_code: link.coupon_code || '',
+        coupon_discount: link.coupon_discount || '',
         is_available: link.is_available
       }));
       setStoreLinks(existingStoreLinks);
@@ -133,6 +135,8 @@ export default function EditOfferModal({ isOpen, onClose, onSuccess, offerId }: 
               store_name: store.store_name,
               store_url: store.store_url,
               price: store.price,
+              coupon_code: store.coupon_code,
+              coupon_discount: store.coupon_discount,
               is_available: store.is_available
             });
           }
@@ -243,6 +247,7 @@ export default function EditOfferModal({ isOpen, onClose, onSuccess, offerId }: 
                   <option value="Food">Food & Beverages</option>
                   <option value="Home">Home & Garden</option>
                   <option value="Services">Services</option>
+                  <option value="Coupons">Coupons & Deals</option>
                   <option value="Other">Other</option>
                 </select>
               </div>

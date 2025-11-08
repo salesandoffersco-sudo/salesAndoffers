@@ -82,6 +82,8 @@ class StoreLink(models.Model):
     store_name = models.CharField(max_length=100)  # Jumia, Kilimall, Amazon, etc.
     store_url = models.URLField(max_length=500)
     price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    coupon_code = models.CharField(max_length=50, blank=True)  # e.g., "SAVE20", "JUMIA15"
+    coupon_discount = models.CharField(max_length=20, blank=True)  # e.g., "20%", "KSh 500"
     is_available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -10,6 +10,8 @@ interface Store {
   store_name: string;
   store_url: string;
   price: number;
+  coupon_code?: string;
+  coupon_discount?: string;
   is_available: boolean;
   store_info?: {
     name: string;
@@ -230,7 +232,9 @@ export default function StoreSelectionModal({ isOpen, onClose, stores = [], deal
                       </div>
                       <div className="text-left">
                         <h3 className="font-semibold text-gray-900 dark:text-white">{store.store_name}</h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">Available now</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                          {store.coupon_code ? `Code: ${store.coupon_code}` : 'Available now'}
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-3">
@@ -238,6 +242,11 @@ export default function StoreSelectionModal({ isOpen, onClose, stores = [], deal
                         <p className="text-lg font-bold text-purple-600 dark:text-purple-400">
                           KSh {store.price.toLocaleString()}
                         </p>
+                        {store.coupon_discount && (
+                          <p className="text-sm text-green-600 font-medium">
+                            Save {store.coupon_discount}
+                          </p>
+                        )}
                       </div>
                       <FiExternalLink className="w-4 h-4 text-gray-400 group-hover:text-purple-600 transition-colors" />
                     </div>

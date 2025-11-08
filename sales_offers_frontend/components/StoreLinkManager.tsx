@@ -8,6 +8,8 @@ interface StoreLink {
   store_name: string;
   store_url: string;
   price: number | null;
+  coupon_code?: string;
+  coupon_discount?: string;
   is_available: boolean;
 }
 
@@ -36,6 +38,8 @@ export default function StoreLinkManager({ storeLinks, onChange, className = "" 
       store_name: '',
       store_url: '',
       price: null,
+      coupon_code: '',
+      coupon_discount: '',
       is_available: true,
     };
     onChange([...storeLinks, newStoreLink]);
@@ -218,6 +222,42 @@ export default function StoreLinkManager({ storeLinks, onChange, className = "" 
                   />
                   <p className="text-xs text-[rgb(var(--color-muted))] mt-1">
                     Optional - helps users compare prices
+                  </p>
+                </div>
+
+                {/* Coupon Code */}
+                <div>
+                  <label className="block text-sm font-medium text-[rgb(var(--color-fg))] mb-2">
+                    Coupon Code
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g., SAVE20, JUMIA15"
+                    value={storeLink.coupon_code || ''}
+                    onChange={(e) => updateStoreLink(index, 'coupon_code', e.target.value)}
+                    className="w-full px-3 py-2 border border-[rgb(var(--color-border))] rounded-lg focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:border-transparent bg-[rgb(var(--color-bg))] text-[rgb(var(--color-fg))]"
+                  />
+                  <p className="text-xs text-[rgb(var(--color-muted))] mt-1">
+                    Optional - discount code for this store
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                {/* Coupon Discount */}
+                <div>
+                  <label className="block text-sm font-medium text-[rgb(var(--color-fg))] mb-2">
+                    Coupon Discount
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g., 20%, KSh 500"
+                    value={storeLink.coupon_discount || ''}
+                    onChange={(e) => updateStoreLink(index, 'coupon_discount', e.target.value)}
+                    className="w-full px-3 py-2 border border-[rgb(var(--color-border))] rounded-lg focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:border-transparent bg-[rgb(var(--color-bg))] text-[rgb(var(--color-fg))]"
+                  />
+                  <p className="text-xs text-[rgb(var(--color-muted))] mt-1">
+                    Optional - discount amount/percentage
                   </p>
                 </div>
               </div>

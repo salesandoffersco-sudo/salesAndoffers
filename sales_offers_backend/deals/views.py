@@ -296,6 +296,8 @@ def create_store_link(request, deal_id):
             store_name=request.data.get('store_name'),
             store_url=request.data.get('store_url'),
             price=request.data.get('price'),
+            coupon_code=request.data.get('coupon_code', ''),
+            coupon_discount=request.data.get('coupon_discount', ''),
             is_available=request.data.get('is_available', True)
         )
         

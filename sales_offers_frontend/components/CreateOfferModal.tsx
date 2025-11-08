@@ -91,6 +91,8 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
             store_name: store.store_name,
             store_url: store.store_url,
             price: store.price,
+            coupon_code: store.coupon_code,
+            coupon_discount: store.coupon_discount,
             is_available: store.is_available
           });
         }
@@ -273,6 +275,7 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
               <option value="Food">Food & Beverages</option>
               <option value="Home">Home & Garden</option>
               <option value="Services">Services</option>
+              <option value="Coupons">Coupons & Deals</option>
               <option value="Other">Other</option>
             </select>
           </div>
