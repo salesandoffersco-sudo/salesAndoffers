@@ -88,10 +88,10 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
       if (storeLinks.length > 0) {
         for (const store of storeLinks) {
           await api.post(`/api/deals/${dealId}/store-links/`, {
-            store_name: store.name,
-            store_url: store.url,
+            store_name: store.store_name,
+            store_url: store.store_url,
             price: store.price,
-            is_available: store.isAvailable !== false
+            is_available: store.is_available
           });
         }
       }

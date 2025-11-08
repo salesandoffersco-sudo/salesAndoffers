@@ -70,10 +70,10 @@ export default function EditOfferModal({ isOpen, onClose, onSuccess, offerId }: 
       
       // Set existing store links
       const existingStoreLinks = (offer.store_links || []).map((link: any) => ({
-        name: link.store_name,
-        url: link.store_url,
+        store_name: link.store_name,
+        store_url: link.store_url,
         price: link.price,
-        isAvailable: link.is_available
+        is_available: link.is_available
       }));
       setStoreLinks(existingStoreLinks);
     } catch (error) {
@@ -130,10 +130,10 @@ export default function EditOfferModal({ isOpen, onClose, onSuccess, offerId }: 
           // Note: We'll need a delete endpoint, for now just create new ones
           for (const store of storeLinks) {
             await api.post(`/api/deals/${offerId}/store-links/`, {
-              store_name: store.name,
-              store_url: store.url,
+              store_name: store.store_name,
+              store_url: store.store_url,
               price: store.price,
-              is_available: store.isAvailable !== false
+              is_available: store.is_available
             });
           }
         } catch (storeError) {
