@@ -17,14 +17,8 @@ interface EditOfferModalProps {
 interface OfferData {
   title: string;
   description: string;
-  original_price: string;
-  discounted_price: string;
+  best_price: string;
   category: string;
-  location: string;
-  max_vouchers: number;
-  min_purchase: number;
-  max_purchase: number;
-  redemption_instructions: string;
   expires_at: string;
 }
 
@@ -32,14 +26,8 @@ export default function EditOfferModal({ isOpen, onClose, onSuccess, offerId }: 
   const [formData, setFormData] = useState<OfferData>({
     title: "",
     description: "",
-    original_price: "",
-    discounted_price: "",
+    best_price: "",
     category: "Other",
-    location: "",
-    max_vouchers: 100,
-    min_purchase: 1,
-    max_purchase: 10,
-    redemption_instructions: "Present this voucher at the business location to redeem your deal.",
     expires_at: ""
   });
   const [images, setImages] = useState<any[]>([]);
@@ -62,15 +50,9 @@ export default function EditOfferModal({ isOpen, onClose, onSuccess, offerId }: 
       setFormData({
         title: offer.title,
         description: offer.description,
-        original_price: offer.original_price,
-        discounted_price: offer.discounted_price,
+        best_price: offer.best_price || "",
         category: offer.category,
-        location: offer.location || "",
-        max_vouchers: offer.max_vouchers,
-        min_purchase: offer.min_purchase,
-        max_purchase: offer.max_purchase,
-        redemption_instructions: offer.redemption_instructions,
-        expires_at: offer.expires_at ? new Date(offer.expires_at).toISOString().split('T')[0] : ""
+        expires_at: offer.expires_at ? new Date(offer.expires_at).toISOString().slice(0, 16) : ""
       });
       
       // Set existing images
@@ -106,15 +88,8 @@ export default function EditOfferModal({ isOpen, onClose, onSuccess, offerId }: 
     setLoading(true);
 
     try {
-      const discountPercentage = Math.round(
-        ((parseFloat(formData.original_price) - parseFloat(formData.discounted_price)) / 
-         parseFloat(formData.original_price)) * 100
-      );
-
       const submitData = {
         ...formData,
-        discount_percentage: discountPercentage,
-        expires_at: new Date(formData.expires_at).toISOString(),
         main_image: images.find(img => img.is_main)?.image_url || images[0]?.image_url || null
       };
 
@@ -148,6 +123,24 @@ export default function EditOfferModal({ isOpen, onClose, onSuccess, offerId }: 
           console.error('Error updating images:', imageError);
         }
       }
+      
+      // Update store links - delete existing and create new ones
+      if (storeLinks.length > 0) {
+        try {
+          // Note: We'll need a delete endpoint, for now just create new ones
+          for (const store of storeLinks) {
+            await api.post(`/api/deals/${offerId}/store-links/`, {
+              store_name: store.name,
+              store_url: store.url,
+              price: store.price,
+              is_available: store.isAvailable !== false
+            });
+          }
+        } catch (storeError) {
+          console.error('Error updating store links:', storeError);
+        }
+      }
+      
       onSuccess();
       onClose();
     } catch (error: any) {
@@ -220,33 +213,17 @@ export default function EditOfferModal({ isOpen, onClose, onSuccess, offerId }: 
 
               <div>
                 <label className="block text-sm font-medium text-[rgb(var(--color-text))] mb-2">
-                  Original Price (KES) *
+                  Best Price (KES)
                 </label>
                 <input
                   type="number"
-                  name="original_price"
-                  value={formData.original_price}
+                  name="best_price"
+                  value={formData.best_price}
                   onChange={handleChange}
-                  required
                   min="0"
                   step="0.01"
                   className="w-full px-4 py-2 border border-[rgb(var(--color-border))] rounded-lg bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-[rgb(var(--color-text))] mb-2">
-                  Discounted Price (KES) *
-                </label>
-                <input
-                  type="number"
-                  name="discounted_price"
-                  value={formData.discounted_price}
-                  onChange={handleChange}
-                  required
-                  min="0"
-                  step="0.01"
-                  className="w-full px-4 py-2 border border-[rgb(var(--color-border))] rounded-lg bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  placeholder="Optional - will be calculated from store prices"
                 />
               </div>
 
@@ -272,15 +249,15 @@ export default function EditOfferModal({ isOpen, onClose, onSuccess, offerId }: 
 
               <div>
                 <label className="block text-sm font-medium text-[rgb(var(--color-text))] mb-2">
-                  Location
+                  Expires At *
                 </label>
                 <input
-                  type="text"
-                  name="location"
-                  value={formData.location}
+                  type="datetime-local"
+                  name="expires_at"
+                  value={formData.expires_at}
                   onChange={handleChange}
+                  required
                   className="w-full px-4 py-2 border border-[rgb(var(--color-border))] rounded-lg bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="Business location"
                 />
               </div>
 
@@ -303,78 +280,7 @@ export default function EditOfferModal({ isOpen, onClose, onSuccess, offerId }: 
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-[rgb(var(--color-text))] mb-2">
-                  Max Vouchers *
-                </label>
-                <input
-                  type="number"
-                  name="max_vouchers"
-                  value={formData.max_vouchers}
-                  onChange={handleChange}
-                  required
-                  min="1"
-                  className="w-full px-4 py-2 border border-[rgb(var(--color-border))] rounded-lg bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium text-[rgb(var(--color-text))] mb-2">
-                  Expires At *
-                </label>
-                <input
-                  type="date"
-                  name="expires_at"
-                  value={formData.expires_at}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-2 border border-[rgb(var(--color-border))] rounded-lg bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-[rgb(var(--color-text))] mb-2">
-                  Min Purchase *
-                </label>
-                <input
-                  type="number"
-                  name="min_purchase"
-                  value={formData.min_purchase}
-                  onChange={handleChange}
-                  required
-                  min="1"
-                  className="w-full px-4 py-2 border border-[rgb(var(--color-border))] rounded-lg bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-[rgb(var(--color-text))] mb-2">
-                  Max Purchase *
-                </label>
-                <input
-                  type="number"
-                  name="max_purchase"
-                  value={formData.max_purchase}
-                  onChange={handleChange}
-                  required
-                  min="1"
-                  className="w-full px-4 py-2 border border-[rgb(var(--color-border))] rounded-lg bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-[rgb(var(--color-text))] mb-2">
-                  Redemption Instructions
-                </label>
-                <textarea
-                  name="redemption_instructions"
-                  value={formData.redemption_instructions}
-                  onChange={handleChange}
-                  rows={3}
-                  className="w-full px-4 py-2 border border-[rgb(var(--color-border))] rounded-lg bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="Instructions for customers to redeem this offer"
-                />
-              </div>
             </div>
 
             <div className="flex justify-end space-x-3 pt-6 border-t border-[rgb(var(--color-border))]">
