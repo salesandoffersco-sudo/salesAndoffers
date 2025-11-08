@@ -25,12 +25,12 @@ urlpatterns = [
     path('api/accounts/', include('accounts.urls')),
     path('api/deals/', include('deals.urls')),
     path('api/offers/', include('deals.urls')),  # Keep for backward compatibility
-    path('api/payments/', include('payments.urls')),
-    path('api/merchants/', include('merchants.urls')),
+    # path('api/payments/', include('payments.urls')),  # Removed - no direct payments in affiliate model
+    # path('api/merchants/', include('merchants.urls')),  # Removed - no separate merchant system
     path('api/newsletter/', include('newsletter.urls')),
     path('api/blog/', include('blog.urls')),
     path('api/analytics/', include('analytics.urls')),
-    path('api/transactions/', include('transactions.urls')),
+    # path('api/transactions/', include('transactions.urls')),  # Removed - no voucher transactions
     path('api/verification/', include('verification.urls')),
     path('api/admin/', include('admin_system.urls')),
     path('api/categories/', include('categories.urls')),
