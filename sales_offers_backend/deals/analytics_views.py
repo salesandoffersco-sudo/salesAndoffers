@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from django.db.models import Count, Sum
 from django.utils import timezone
 from datetime import timedelta
-from .models import Deal, ClickTracking
+from .models import Deal
 from sellers.models import Seller
 
 @api_view(['GET'])
