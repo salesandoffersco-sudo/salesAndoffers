@@ -2,8 +2,8 @@ from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from .models import Deal, DealImage, StoreLink, ClickTracking  # Removed Voucher
-from .serializers import DealSerializer, DealImageSerializer, StoreLinkSerializer, ClickTrackingSerializer  # Removed VoucherSerializer
+from .models import Deal, DealImage, StoreLink  # Removed Voucher, ClickTracking
+from .serializers import DealSerializer, DealImageSerializer, StoreLinkSerializer  # Removed VoucherSerializer, ClickTrackingSerializer
 from sellers.models import Seller
 from sellers.serializers import SellerSerializer
 from accounts.models import User
@@ -312,7 +312,7 @@ def create_store_link(request, deal_id):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def track_click(request):
-    """Track click on store link"""
+    """Track click on store link (mock for now)"""
     try:
         store_link_id = request.data.get('store_link_id')
         
@@ -321,20 +321,8 @@ def track_click(request):
         
         store_link = StoreLink.objects.get(id=store_link_id)
         
-        # Get client IP
-        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-        if x_forwarded_for:
-            ip_address = x_forwarded_for.split(',')[0]
-        else:
-            ip_address = request.META.get('REMOTE_ADDR')
-        
-        # Create click tracking record
-        ClickTracking.objects.create(
-            store_link=store_link,
-            user=request.user,
-            ip_address=ip_address,
-            user_agent=request.META.get('HTTP_USER_AGENT', '')
-        )
+        # Mock click tracking - just return success
+        # In production, this would create a ClickTracking record
         
         return Response({'success': True}, status=status.HTTP_201_CREATED)
         
