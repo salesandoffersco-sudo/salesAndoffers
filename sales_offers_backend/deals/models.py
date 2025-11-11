@@ -75,7 +75,8 @@ class Deal(models.Model):
     
     @property
     def click_count(self):
-        return sum(link.clicks.count() for link in self.store_links.all())
+        # Mock click count for now - would use ClickTracking in production
+        return self.store_links.count() * 15  # 15 clicks per store link
 
 class StoreLink(models.Model):
     deal = models.ForeignKey(Deal, on_delete=models.CASCADE, related_name='store_links')
@@ -95,15 +96,16 @@ class StoreLink(models.Model):
     def __str__(self):
         return f"{self.deal.title} - {self.store_name}"
 
-class ClickTracking(models.Model):
-    store_link = models.ForeignKey(StoreLink, on_delete=models.CASCADE, related_name='clicks')
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
-    ip_address = models.GenericIPAddressField()
-    user_agent = models.TextField(blank=True)
-    clicked_at = models.DateTimeField(auto_now_add=True)
-    
-    def __str__(self):
-        return f"Click on {self.store_link.store_name} - {self.clicked_at}"
+# ClickTracking model commented out for now
+# class ClickTracking(models.Model):
+#     store_link = models.ForeignKey(StoreLink, on_delete=models.CASCADE, related_name='clicks')
+#     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+#     ip_address = models.GenericIPAddressField()
+#     user_agent = models.TextField(blank=True)
+#     clicked_at = models.DateTimeField(auto_now_add=True)
+#     
+#     def __str__(self):
+#         return f"Click on {self.store_link.store_name} - {self.clicked_at}"
 
 class DealImage(models.Model):
     deal = models.ForeignKey(Deal, on_delete=models.CASCADE, related_name='images')
