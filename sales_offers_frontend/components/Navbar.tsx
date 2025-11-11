@@ -171,9 +171,6 @@ export default function Navbar() {
             <Link href="/blog" className="text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] transition-colors font-medium">
               Blog
             </Link>
-            <Link href="/about" className="text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] transition-colors font-medium">
-              About
-            </Link>
             {canAccessAdmin() && (
               <Link href="/admin/dashboard" className="text-purple-600 dark:text-purple-400 transition-colors font-semibold">
                 Admin
@@ -361,13 +358,6 @@ export default function Navbar() {
                   onClick={toggleMenu}
                 >
                   Blog
-                </Link>
-                <Link
-                  href="/about"
-                  className="block px-3 py-2 rounded-lg text-sm font-medium text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card))] transition-colors"
-                  onClick={toggleMenu}
-                >
-                  About
                 </Link>
                 <Link
                   href="/help"
