@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Deal, DealImage, StoreLink, ClickTracking  # Removed Voucher
+from .models import Deal, DealImage, StoreLink  # Removed Voucher, ClickTracking
 from sellers.serializers import SellerSerializer
 from .store_logos import get_store_info
 
@@ -17,7 +17,8 @@ class StoreLinkSerializer(serializers.ModelSerializer):
         fields = ['id', 'store_name', 'store_url', 'price', 'coupon_code', 'coupon_discount', 'is_available', 'click_count', 'store_info', 'created_at']
     
     def get_click_count(self, obj):
-        return obj.clicks.count()
+        # Mock click count for now
+        return obj.id * 5  # Simple mock based on ID
     
     def get_store_info(self, obj):
         return get_store_info(obj.store_name)
@@ -41,11 +42,12 @@ class DealSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['store_count', 'lowest_price', 'highest_price', 'price_range', 'click_count', 'images', 'store_links']
 
-class ClickTrackingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ClickTracking
-        fields = ['id', 'store_link', 'user', 'ip_address', 'clicked_at']
-        read_only_fields = ['clicked_at']
+# ClickTrackingSerializer commented out for now
+# class ClickTrackingSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = ClickTracking
+#         fields = ['id', 'store_link', 'user', 'ip_address', 'clicked_at']
+#         read_only_fields = ['clicked_at']
 
 # Voucher serializer commented out for affiliate platform
 # class VoucherSerializer(serializers.ModelSerializer):
