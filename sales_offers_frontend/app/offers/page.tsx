@@ -180,6 +180,7 @@ export default function OffersPage() {
         { id: 'Food', label: 'Food & Beverages', count: 28 },
         { id: 'Home', label: 'Home & Garden', count: 19 },
         { id: 'Services', label: 'Services', count: 15 },
+        { id: 'Coupons', label: 'Coupons & Deals', count: 12 },
         { id: 'Other', label: 'Other', count: 8 }
       ]
     },

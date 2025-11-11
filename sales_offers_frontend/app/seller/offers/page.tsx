@@ -12,17 +12,16 @@ interface Offer {
   id: number;
   title: string;
   description: string;
-  original_price: string;
-  discounted_price: string;
-  discount_percentage: number;
+  best_price?: string;
   category: string;
   image?: string;
-  is_active: boolean;
+  main_image?: string;
+  is_published: boolean;
   status: string;
   created_at: string;
   expires_at: string;
-  vouchers_sold: number;
-  vouchers_available: number;
+  store_count?: number;
+  click_count?: number;
 }
 
 export default function SellerOffersPage() {
@@ -51,12 +50,12 @@ export default function SellerOffersPage() {
 
   const toggleOfferStatus = async (offerId: number, currentStatus: boolean) => {
     try {
-      await api.patch(`/api/sellers/offers/${offerId}/`, {
-        is_active: !currentStatus
+      await api.patch(`/api/deals/${offerId}/`, {
+        is_published: !currentStatus
       });
       setOffers(offers.map(offer => 
         offer.id === offerId 
-          ? { ...offer, is_active: !currentStatus }
+          ? { ...offer, is_published: !currentStatus }
           : offer
       ));
     } catch (error) {
@@ -68,7 +67,7 @@ export default function SellerOffersPage() {
     if (!confirm("Are you sure you want to delete this offer?")) return;
     
     try {
-      await api.delete(`/api/sellers/offers/${offerId}/`);
+      await api.delete(`/api/deals/${offerId}/`);
       setOffers(offers.filter(offer => offer.id !== offerId));
     } catch (error) {
       console.error("Error deleting offer:", error);
@@ -78,8 +77,8 @@ export default function SellerOffersPage() {
   const filteredOffers = offers.filter(offer => {
     const matchesSearch = offer.title.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === "all" || 
-      (statusFilter === "active" && offer.is_active) ||
-      (statusFilter === "inactive" && !offer.is_active);
+      (statusFilter === "active" && offer.is_published) ||
+      (statusFilter === "inactive" && !offer.is_published);
     return matchesSearch && matchesStatus;
   });
 
@@ -152,9 +151,9 @@ export default function SellerOffersPage() {
                 <div className="flex flex-col lg:flex-row lg:items-start gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 sm:gap-4 mb-3">
-                      {offer.image && (
+                      {(offer.main_image || offer.image) && (
                         <img 
-                          src={offer.image} 
+                          src={offer.main_image || offer.image} 
                           alt={offer.title}
                           className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-lg flex-shrink-0"
                         />
@@ -169,21 +168,21 @@ export default function SellerOffersPage() {
                     
                     <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 text-sm">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-[rgb(var(--color-muted))]">Price:</span>
-                        <span className="font-semibold text-purple-600">KES {offer.discounted_price}</span>
-                        <span className="text-[rgb(var(--color-muted))] line-through">KES {offer.original_price}</span>
-                        <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs whitespace-nowrap">
-                          {offer.discount_percentage}% OFF
-                        </span>
+                        {offer.best_price && (
+                          <>
+                            <span className="text-[rgb(var(--color-muted))]">Best Price:</span>
+                            <span className="font-semibold text-purple-600">KSh {offer.best_price}</span>
+                          </>
+                        )}
                       </div>
                       <div className="flex items-center gap-4 sm:gap-6">
                         <div className="flex items-center gap-2">
-                          <span className="text-[rgb(var(--color-muted))]">Sold:</span>
-                          <span className="font-semibold">{offer.vouchers_sold}</span>
+                          <span className="text-[rgb(var(--color-muted))]">Stores:</span>
+                          <span className="font-semibold">{offer.store_count || 0}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-[rgb(var(--color-muted))]">Available:</span>
-                          <span className="font-semibold">{offer.vouchers_available}</span>
+                          <span className="text-[rgb(var(--color-muted))]">Clicks:</span>
+                          <span className="font-semibold">{offer.click_count || 0}</span>
                         </div>
                       </div>
                     </div>
@@ -191,20 +190,20 @@ export default function SellerOffersPage() {
                   
                   <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-start sm:items-center gap-3 lg:ml-4">
                     <div className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
-                      offer.is_active 
+                      offer.is_published 
                         ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
                         : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
                     }`}>
-                      {offer.is_active ? 'Active' : 'Inactive'}
+                      {offer.is_published ? 'Published' : 'Draft'}
                     </div>
                     
                     <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
                       <button
-                        onClick={() => toggleOfferStatus(offer.id, offer.is_active)}
+                        onClick={() => toggleOfferStatus(offer.id, offer.is_published)}
                         className="p-2 hover:bg-[rgb(var(--color-ui))] rounded-lg transition-colors flex-shrink-0"
-                        title={offer.is_active ? 'Deactivate offer' : 'Activate offer'}
+                        title={offer.is_published ? 'Unpublish offer' : 'Publish offer'}
                       >
-                        {offer.is_active ? (
+                        {offer.is_published ? (
                           <FiToggleRight className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
                         ) : (
                           <FiToggleLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />

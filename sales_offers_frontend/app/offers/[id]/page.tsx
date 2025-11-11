@@ -17,6 +17,8 @@ interface StoreLink {
   store_name: string;
   store_url: string;
   price: number;
+  coupon_code?: string;
+  coupon_discount?: string;
   is_available: boolean;
   store_info?: {
     name: string;
@@ -99,10 +101,9 @@ export default function DealDetailsPage() {
     }
 
     try {
-      // Add to favorites API call
       await axios.post(
-        `${API_BASE_URL}/api/favorites/`,
-        { deal_id: deal?.id },
+        `${API_BASE_URL}/api/accounts/deals/${deal?.id}/favorite/`,
+        {},
         { headers: { Authorization: `Token ${token}` } }
       );
       setIsFavorited(true);
@@ -245,9 +246,19 @@ export default function DealDetailsPage() {
                                 <span className="text-xs font-bold">{store.store_name.charAt(0)}</span>
                               )}
                             </div>
-                            <span className="font-medium text-sm">{store.store_name}</span>
+                            <div>
+                              <span className="font-medium text-sm">{store.store_name}</span>
+                              {store.coupon_code && (
+                                <p className="text-xs text-green-600">Code: {store.coupon_code}</p>
+                              )}
+                            </div>
                           </div>
-                          <span className="font-bold text-purple-600">KSh {store.price.toLocaleString()}</span>
+                          <div className="text-right">
+                            <span className="font-bold text-purple-600">KSh {store.price.toLocaleString()}</span>
+                            {store.coupon_discount && (
+                              <p className="text-xs text-green-600">Save {store.coupon_discount}</p>
+                            )}
+                          </div>
                         </div>
                       ))}
                     </div>
