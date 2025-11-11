@@ -9,13 +9,14 @@ import {
 } from 'react-icons/fi';
 
 interface AnalyticsData {
-  totalRevenue: number;
-  monthlyRevenue: number;
+  totalClicks: number;
+  monthlyClicks: number;
   totalDeals: number;
   activeDeals: number;
-  conversionRate: number;
+  clickThroughRate: number;
   growth: number;
   plan: string;
+  estimatedCommission: number;
 }
 
 interface AnalyticsWidgetProps {
@@ -64,13 +65,14 @@ export default function AnalyticsWidget({ className = '' }: AnalyticsWidgetProps
         if (response.ok) {
           const result = await response.json();
           setData({
-            totalRevenue: result.total_revenue || 0,
-            monthlyRevenue: result.monthly_revenue || 0,
-            totalDeals: result.total_deals || 0,
-            activeDeals: result.active_deals || 0,
-            conversionRate: result.conversion_rate || 0,
-            growth: 12.5, // Mock growth data
-            plan: result.plan || 'Basic'
+            totalClicks: result.total_clicks || 0,
+            monthlyClicks: result.monthly_clicks || 0,
+            totalDeals: result.total_offers || 0,
+            activeDeals: result.active_offers || 0,
+            clickThroughRate: result.click_through_rate || 0,
+            growth: result.click_growth || 0,
+            plan: result.subscription?.plan_name || 'Basic',
+            estimatedCommission: result.estimated_commission || 0
           });
         }
       } catch (error) {
@@ -112,8 +114,8 @@ export default function AnalyticsWidget({ className = '' }: AnalyticsWidgetProps
               <FiBarChart className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Analytics Overview</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Your performance at a glance</p>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Affiliate Analytics</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Your click performance at a glance</p>
             </div>
           </div>
           <Link 
@@ -130,24 +132,24 @@ export default function AnalyticsWidget({ className = '' }: AnalyticsWidgetProps
       <div className="p-6 space-y-4">
         <MiniStatCard
           icon={FiDollarSign}
-          label="Total Revenue"
-          value={`KES ${(data?.totalRevenue || 0).toLocaleString()}`}
+          label="Est. Commission"
+          value={`$${(data?.estimatedCommission || 0).toFixed(2)}`}
           change={data?.growth}
           color="bg-green-500"
         />
         
         <MiniStatCard
-          icon={FiShoppingBag}
-          label="Active Deals"
-          value={data?.activeDeals || 0}
+          icon={FiBarChart}
+          label="Total Clicks"
+          value={data?.totalClicks || 0}
           color="bg-blue-500"
         />
         
         {data?.plan !== 'Basic' && (
           <MiniStatCard
             icon={FiTrendingUp}
-            label="Conversion Rate"
-            value={`${(data?.conversionRate || 0).toFixed(1)}%`}
+            label="Click-Through Rate"
+            value={`${(data?.clickThroughRate || 0).toFixed(1)}%`}
             change={5.2}
             color="bg-purple-500"
           />
@@ -167,7 +169,7 @@ export default function AnalyticsWidget({ className = '' }: AnalyticsWidgetProps
               </span>
             </div>
             <p className="text-xs text-purple-700 dark:text-purple-400 mb-3">
-              Get detailed insights, conversion tracking, and performance metrics
+              Get detailed insights, click tracking, and commission analytics
             </p>
             <Link 
               href="/pricing"

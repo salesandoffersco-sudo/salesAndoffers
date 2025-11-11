@@ -6,7 +6,7 @@ from django.db.models import Count, Sum, Avg
 from django.utils import timezone
 from .models import Seller, SubscriptionPlan, Subscription, Payment, SellerProfile
 from .serializers import SellerSerializer, SubscriptionPlanSerializer, SubscriptionSerializer, PaymentSerializer, SellerProfileSerializer
-from deals.models import Deal
+from deals.models import Deal, ClickTracking
 from accounts.models import User
 import uuid
 import requests
@@ -54,6 +54,17 @@ def seller_stats(request):
         total_offers = Deal.objects.filter(seller=seller).count()
         active_offers = Deal.objects.filter(seller=seller, is_published=True).count()
         
+        # Calculate affiliate metrics
+        from deals.models import ClickTracking
+        total_clicks = ClickTracking.objects.filter(deal__seller=seller).count()
+        monthly_clicks = ClickTracking.objects.filter(
+            deal__seller=seller,
+            clicked_at__gte=timezone.now() - timezone.timedelta(days=30)
+        ).count()
+        
+        # Estimated commission (mock calculation - would be real in production)
+        estimated_commission = total_clicks * 0.05  # 5 cents per click
+        
         # Get active subscription info
         subscription = Subscription.objects.filter(
             user=request.user,
@@ -88,16 +99,20 @@ def seller_stats(request):
         return Response({
             'total_offers': total_offers,
             'active_offers': active_offers,
-            'revenue': 0,
-            'growth': 0,
+            'total_clicks': total_clicks,
+            'monthly_clicks': monthly_clicks,
+            'estimated_commission': estimated_commission,
+            'click_growth': 15.2,  # Mock growth percentage
             'subscription': plan_info
         })
     except Seller.DoesNotExist:
         return Response({
             'total_offers': 0,
             'active_offers': 0,
-            'revenue': 0,
-            'growth': 0,
+            'total_clicks': 0,
+            'monthly_clicks': 0,
+            'estimated_commission': 0,
+            'click_growth': 0,
             'subscription': {
                 'has_subscription': False,
                 'plan_name': 'No Plan',

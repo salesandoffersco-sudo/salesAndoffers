@@ -4,12 +4,15 @@ from .views import (
     upload_deal_image, delete_deal_image, update_deal_image, track_click, deal_stores, create_store_link
 )
 from .review_views import create_review, get_deal_reviews
+from . import analytics_views
 
 urlpatterns = [
     path('', DealListView.as_view(), name='deal-list'),
     path('<int:pk>/', DealDetailView.as_view(), name='deal-detail'),
     path('my-deals/', my_deals, name='my-deals'),
     path('<int:deal_id>/analytics/', deal_analytics, name='deal-analytics'),
+    path('analytics/seller/', analytics_views.seller_analytics, name='seller-analytics'),
+    path('analytics/deal/<int:deal_id>/', analytics_views.deal_analytics, name='deal-analytics-detailed'),
     path('<int:deal_id>/stores/', deal_stores, name='deal-stores'),
     path('<int:deal_id>/store-links/', create_store_link, name='create-store-link'),
     path('sellers/<int:seller_id>/', seller_detail, name='seller-detail'),

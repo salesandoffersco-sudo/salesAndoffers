@@ -64,7 +64,7 @@ export default function UserDashboard() {
       <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl font-bold mb-2">Welcome back, {username}! 👋</h1>
-          <p className="text-xl opacity-90">Discover amazing deals and manage your preferences</p>
+          <p className="text-xl opacity-90">Compare prices, find deals, and save money across stores</p>
         </div>
       </div>
 
@@ -88,7 +88,7 @@ export default function UserDashboard() {
           <div className="bg-[rgb(var(--color-card))] p-6 rounded-xl shadow-sm border border-[rgb(var(--color-border))]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[rgb(var(--color-muted))] text-sm font-medium">Viewed Offers</p>
+                <p className="text-[rgb(var(--color-muted))] text-sm font-medium">Deals Viewed</p>
                 <p className="text-3xl font-bold text-[rgb(var(--color-text))] mt-2">{stats.viewed_offers}</p>
               </div>
               <div className="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-lg">
@@ -100,7 +100,7 @@ export default function UserDashboard() {
           <div className="bg-[rgb(var(--color-card))] p-6 rounded-xl shadow-sm border border-[rgb(var(--color-border))]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[rgb(var(--color-muted))] text-sm font-medium">Saved Searches</p>
+                <p className="text-[rgb(var(--color-muted))] text-sm font-medium">Price Comparisons</p>
                 <p className="text-3xl font-bold text-[rgb(var(--color-text))] mt-2">{stats.saved_searches}</p>
               </div>
               <div className="bg-green-100 dark:bg-green-900/30 p-3 rounded-lg">
@@ -131,7 +131,7 @@ export default function UserDashboard() {
             <Link href="/offers">
               <Button variant="outline" className="w-full justify-start">
                 <FiShoppingBag className="w-5 h-5 mr-3" />
-                Browse Offers
+Browse Deals
               </Button>
             </Link>
             <Link href="/favorites">
@@ -152,7 +152,7 @@ export default function UserDashboard() {
         {/* Recent Offers */}
         <div className="bg-[rgb(var(--color-card))] rounded-2xl p-6 border border-[rgb(var(--color-border))]">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-[rgb(var(--color-text))]">Trending Offers</h2>
+            <h2 className="text-xl font-bold text-[rgb(var(--color-text))]">Trending Deals</h2>
             <Link href="/offers">
               <Button variant="outline" size="sm">View All</Button>
             </Link>

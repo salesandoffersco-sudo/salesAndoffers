@@ -23,31 +23,30 @@ interface AnalyticsData {
   analytics: {
     total_deals: number;
     active_deals: number;
-    total_vouchers_sold: number;
-    total_revenue: number;
-    vouchers_redeemed: number;
-    monthly_revenue?: number;
-    monthly_vouchers?: number;
-    conversion_rate?: number;
-    avg_deal_value?: number;
+    total_clicks: number;
+    monthly_clicks: number;
+    estimated_commission: number;
+    click_through_rate?: number;
+    avg_commission_per_click?: number;
     top_performing_deals?: Array<{
       id: number;
       title: string;
-      revenue: number;
-      vouchers_sold: number;
+      clicks: number;
+      commission: number;
     }>;
-    daily_revenue_chart?: Array<{
+    daily_clicks_chart?: Array<{
       date: string;
-      revenue: number;
+      clicks: number;
     }>;
     category_performance?: Array<{
       category: string;
       deals: number;
-      revenue: number;
+      clicks: number;
     }>;
-    customer_demographics?: {
-      total_customers: number;
-      repeat_customers: number;
+    traffic_sources?: {
+      direct: number;
+      social: number;
+      search: number;
     };
   };
 }
@@ -133,7 +132,7 @@ export default function AnalyticsPage() {
       }
       
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8000/api/analytics/seller/', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://salesandoffers.onrender.com'}/api/deals/analytics/seller/`, {
         headers: {
           'Authorization': `Token ${token}`,
           'Content-Type': 'application/json',
@@ -216,8 +215,8 @@ export default function AnalyticsPage() {
           className="flex items-center justify-between mb-8"
         >
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Analytics Dashboard</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">Track your performance and insights</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Affiliate Analytics</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-1">Track your clicks, commissions, and performance</p>
           </div>
           <div className="flex items-center gap-4">
             <PlanBadge plan={plan} />
@@ -250,50 +249,50 @@ export default function AnalyticsPage() {
             color="bg-blue-500"
           />
           <StatCard
-            icon={FiDollarSign}
-            title="Total Revenue"
-            value={`KES ${(analytics?.total_revenue || 0).toLocaleString()}`}
+            icon={FiBarChart}
+            title="Total Clicks"
+            value={(analytics?.total_clicks || 0).toLocaleString()}
             color="bg-green-500"
           />
           <StatCard
-            icon={FiUsers}
-            title="Vouchers Sold"
-            value={analytics?.total_vouchers_sold || 0}
+            icon={FiDollarSign}
+            title="Est. Commission"
+            value={`$${(analytics?.estimated_commission || 0).toFixed(2)}`}
             color="bg-purple-500"
           />
           <StatCard
-            icon={FiTarget}
-            title="Redeemed"
-            value={analytics?.vouchers_redeemed || 0}
+            icon={FiTrendingUp}
+            title="Monthly Clicks"
+            value={analytics?.monthly_clicks || 0}
             color="bg-orange-500"
           />
         </div>
 
         {/* Enhanced Stats for Pro/Enterprise */}
-        {plan !== 'Basic' && analytics?.monthly_revenue !== undefined && (
+        {plan !== 'Basic' && analytics?.click_through_rate !== undefined && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <StatCard
-              icon={FiTrendingUp}
-              title="Monthly Revenue"
-              value={`KES ${(analytics.monthly_revenue || 0).toLocaleString()}`}
+              icon={FiActivity}
+              title="Click-Through Rate"
+              value={`${(analytics.click_through_rate || 0).toFixed(1)}%`}
               color="bg-emerald-500"
             />
             <StatCard
-              icon={FiActivity}
-              title="Conversion Rate"
-              value={`${(analytics.conversion_rate || 0).toFixed(1)}%`}
+              icon={FiDollarSign}
+              title="Avg Commission/Click"
+              value={`$${(analytics.avg_commission_per_click || 0).toFixed(3)}`}
               color="bg-indigo-500"
-            />
-            <StatCard
-              icon={FiBarChart}
-              title="Avg Deal Value"
-              value={`KES ${(analytics.avg_deal_value || 0).toLocaleString()}`}
-              color="bg-pink-500"
             />
             <StatCard
               icon={FiEye}
               title="Active Deals"
               value={analytics.active_deals || 0}
+              color="bg-pink-500"
+            />
+            <StatCard
+              icon={FiTarget}
+              title="Conversion Rate"
+              value={`${((analytics.monthly_clicks / (analytics.total_clicks || 1)) * 100).toFixed(1)}%`}
               color="bg-cyan-500"
             />
           </div>
@@ -301,20 +300,20 @@ export default function AnalyticsPage() {
 
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Revenue Chart - Enterprise Only */}
-          {plan === 'Enterprise' && analytics?.daily_revenue_chart && (
-            <ChartCard title="Daily Revenue Trend">
+          {/* Clicks Chart - Enterprise Only */}
+          {plan === 'Enterprise' && analytics?.daily_clicks_chart && (
+            <ChartCard title="Daily Clicks Trend">
               <div className="h-64 flex items-end justify-between gap-2">
-                {analytics.daily_revenue_chart.slice(-14).map((day, index) => (
+                {analytics.daily_clicks_chart.slice(-14).map((day, index) => (
                   <motion.div
                     key={day.date}
                     initial={{ height: 0 }}
-                    animate={{ height: `${Math.max((day.revenue / Math.max(...analytics.daily_revenue_chart!.map(d => d.revenue))) * 100, 5)}%` }}
+                    animate={{ height: `${Math.max((day.clicks / Math.max(...analytics.daily_clicks_chart!.map(d => d.clicks))) * 100, 5)}%` }}
                     transition={{ delay: index * 0.1 }}
                     className="bg-blue-500 rounded-t flex-1 min-h-[20px] relative group"
                   >
                     <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                      KES {day.revenue.toLocaleString()}
+                      {day.clicks} clicks
                     </div>
                   </motion.div>
                 ))}
@@ -342,10 +341,10 @@ export default function AnalyticsPage() {
                       <p className="font-medium text-gray-900 dark:text-white truncate max-w-[200px]">
                         {deal.title}
                       </p>
-                      <p className="text-sm text-gray-500">{deal.vouchers_sold} vouchers sold</p>
+                      <p className="text-sm text-gray-500">{deal.clicks} clicks</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-green-600">KES {deal.revenue.toLocaleString()}</p>
+                      <p className="font-bold text-green-600">${deal.commission.toFixed(2)}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -372,33 +371,36 @@ export default function AnalyticsPage() {
                       <p className="text-sm text-gray-500">{category.deals} deals</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-blue-600">KES {category.revenue.toLocaleString()}</p>
+                      <p className="font-bold text-blue-600">{category.clicks} clicks</p>
                     </div>
                   </motion.div>
                 ))}
               </div>
             </ChartCard>
 
-            {/* Customer Demographics */}
-            {analytics.customer_demographics && (
-              <ChartCard title="Customer Insights">
+            {/* Traffic Sources */}
+            {analytics.traffic_sources && (
+              <ChartCard title="Traffic Sources">
                 <div className="space-y-6">
                   <div className="text-center">
                     <div className="text-3xl font-bold text-blue-600 mb-2">
-                      {analytics.customer_demographics.total_customers}
+                      {(analytics.traffic_sources.direct + analytics.traffic_sources.social + analytics.traffic_sources.search).toLocaleString()}
                     </div>
-                    <p className="text-gray-600 dark:text-gray-400">Total Customers</p>
+                    <p className="text-gray-600 dark:text-gray-400">Total Visitors</p>
                   </div>
                   
-                  <div className="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                    <span className="text-gray-700 dark:text-gray-300">Repeat Customers</span>
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-green-600">
-                        {analytics.customer_demographics.repeat_customers}
-                      </span>
-                      <span className="text-sm text-gray-500">
-                        ({((analytics.customer_demographics.repeat_customers / analytics.customer_demographics.total_customers) * 100).toFixed(1)}%)
-                      </span>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                      <span className="text-gray-700 dark:text-gray-300">Direct Traffic</span>
+                      <span className="font-bold text-green-600">{analytics.traffic_sources.direct}%</span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                      <span className="text-gray-700 dark:text-gray-300">Social Media</span>
+                      <span className="font-bold text-blue-600">{analytics.traffic_sources.social}%</span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                      <span className="text-gray-700 dark:text-gray-300">Search Engines</span>
+                      <span className="font-bold text-purple-600">{analytics.traffic_sources.search}%</span>
                     </div>
                   </div>
                 </div>
@@ -424,7 +426,7 @@ export default function AnalyticsPage() {
             <FiTrendingUp className="w-12 h-12 mx-auto mb-4" />
             <h3 className="text-2xl font-bold mb-2">Unlock Advanced Analytics</h3>
             <p className="mb-6 opacity-90">
-              Get detailed insights, revenue trends, and performance metrics with Pro or Enterprise plans
+              Get detailed insights, click trends, and commission analytics with Pro or Enterprise plans
             </p>
             <button className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
               Upgrade Now

@@ -21,8 +21,10 @@ interface SubscriptionPlan {
 interface SellerStats {
   total_offers: number;
   active_offers: number;
-  revenue: number;
-  growth: number;
+  total_clicks: number;
+  monthly_clicks: number;
+  estimated_commission: number;
+  click_growth: number;
   subscription: {
     has_subscription: boolean;
     plan_name: string;
@@ -47,8 +49,10 @@ export default function SellerDashboardPage() {
   const [stats, setStats] = useState<SellerStats>({
     total_offers: 0,
     active_offers: 0,
-    revenue: 0,
-    growth: 0,
+    total_clicks: 0,
+    monthly_clicks: 0,
+    estimated_commission: 0,
+    click_growth: 0,
     subscription: {
       has_subscription: false,
       plan_name: 'No Plan',
@@ -113,16 +117,16 @@ api.get('/api/sellers/offers/')
                   <FiShoppingBag className="w-6 h-6" />
                 </div>
                 <div>
-                  <h1 className="text-4xl font-bold">Seller Control Panel</h1>
-                  <p className="text-purple-100 text-lg">Hello, {username}! Manage your store, offers, and subscription here.</p>
+                  <h1 className="text-4xl font-bold">Affiliate Dashboard</h1>
+                  <p className="text-purple-100 text-lg">Hello, {username}! Manage your deals, track clicks, and earn commissions.</p>
                 </div>
               </div>
-              <p className="text-xl opacity-90 max-w-2xl">Manage your listings, track performance, and grow your business with powerful tools.</p>
+              <p className="text-xl opacity-90 max-w-2xl">Manage your deals, track clicks, and maximize your affiliate earnings with powerful analytics.</p>
             </div>
             {stats.subscription.can_create_offers ? (
               <Button variant="outline" className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20" onClick={() => setShowCreateModal(true)}>
                 <FiPlus className="w-5 h-5 mr-2" />
-                List Item
+Create Deal
               </Button>
             ) : (
               <Link href="/pricing">
@@ -145,7 +149,7 @@ api.get('/api/sellers/offers/')
           <div className="bg-[rgb(var(--color-card))] p-6 rounded-xl shadow-sm border border-[rgb(var(--color-border))]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[rgb(var(--color-muted))] text-sm font-medium">Total Offers</p>
+                <p className="text-[rgb(var(--color-muted))] text-sm font-medium">Total Deals</p>
                 <p className="text-3xl font-bold text-[rgb(var(--color-text))] mt-2">{stats.total_offers}</p>
               </div>
               <div className="bg-purple-100 dark:bg-purple-900/30 p-3 rounded-lg">
@@ -157,7 +161,7 @@ api.get('/api/sellers/offers/')
           <div className="bg-[rgb(var(--color-card))] p-6 rounded-xl shadow-sm border border-[rgb(var(--color-border))]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[rgb(var(--color-muted))] text-sm font-medium">Active Offers</p>
+                <p className="text-[rgb(var(--color-muted))] text-sm font-medium">Published Deals</p>
                 <p className="text-3xl font-bold text-[rgb(var(--color-text))] mt-2">{stats.active_offers}</p>
               </div>
               <div className="bg-green-100 dark:bg-green-900/30 p-3 rounded-lg">
@@ -169,11 +173,11 @@ api.get('/api/sellers/offers/')
           <div className="bg-[rgb(var(--color-card))] p-6 rounded-xl shadow-sm border border-[rgb(var(--color-border))]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[rgb(var(--color-muted))] text-sm font-medium">Revenue</p>
-                <p className="text-3xl font-bold text-[rgb(var(--color-text))] mt-2">KES {stats.revenue.toLocaleString()}</p>
+                <p className="text-[rgb(var(--color-muted))] text-sm font-medium">Total Clicks</p>
+                <p className="text-3xl font-bold text-[rgb(var(--color-text))] mt-2">{stats.total_clicks || 0}</p>
               </div>
               <div className="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-lg">
-                <FiDollarSign className="text-blue-600 dark:text-blue-400 text-xl" />
+                <FiBarChart className="text-blue-600 dark:text-blue-400 text-xl" />
               </div>
             </div>
           </div>
@@ -181,11 +185,11 @@ api.get('/api/sellers/offers/')
           <div className="bg-[rgb(var(--color-card))] p-6 rounded-xl shadow-sm border border-[rgb(var(--color-border))]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[rgb(var(--color-muted))] text-sm font-medium">Growth</p>
-                <p className="text-3xl font-bold text-[rgb(var(--color-text))] mt-2">+{stats.growth}%</p>
+                <p className="text-[rgb(var(--color-muted))] text-sm font-medium">Est. Commission</p>
+                <p className="text-3xl font-bold text-[rgb(var(--color-text))] mt-2">${(stats.estimated_commission || 0).toFixed(2)}</p>
               </div>
               <div className="bg-orange-100 dark:bg-orange-900/30 p-3 rounded-lg">
-                <FiTrendingUp className="text-orange-600 dark:text-orange-400 text-xl" />
+                <FiDollarSign className="text-orange-600 dark:text-orange-400 text-xl" />
               </div>
             </div>
           </div>
@@ -220,8 +224,8 @@ api.get('/api/sellers/offers/')
           <Link href="/seller/offers" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-4 sm:p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div className="min-w-0 flex-1 pr-3">
-                <h3 className="text-base sm:text-lg font-semibold text-[rgb(var(--color-fg))] truncate">Manage Offers</h3>
-                <p className="text-[rgb(var(--color-muted))] text-xs sm:text-sm mt-1 line-clamp-2">Edit and update your listings</p>
+                <h3 className="text-base sm:text-lg font-semibold text-[rgb(var(--color-fg))] truncate">Manage Deals</h3>
+                <p className="text-[rgb(var(--color-muted))] text-xs sm:text-sm mt-1 line-clamp-2">Edit and update your deals</p>
               </div>
               <div className="bg-green-100 dark:bg-green-900/30 p-2 sm:p-3 rounded-lg flex-shrink-0">
                 <FiEdit className="text-green-600 dark:text-green-400 text-lg sm:text-xl" />
@@ -241,11 +245,11 @@ api.get('/api/sellers/offers/')
             </div>
           </Link>
           
-          <Link href="/seller/withdrawals" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-4 sm:p-6 hover:shadow-md transition-shadow">
+          <Link href="/seller/commissions" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-4 sm:p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div className="min-w-0 flex-1 pr-3">
-                <h3 className="text-base sm:text-lg font-semibold text-[rgb(var(--color-fg))] truncate">Withdrawals</h3>
-                <p className="text-[rgb(var(--color-muted))] text-xs sm:text-sm mt-1 line-clamp-2">Manage your earnings</p>
+                <h3 className="text-base sm:text-lg font-semibold text-[rgb(var(--color-fg))] truncate">Commissions</h3>
+                <p className="text-[rgb(var(--color-muted))] text-xs sm:text-sm mt-1 line-clamp-2">Track your affiliate earnings</p>
               </div>
               <div className="bg-green-100 dark:bg-green-900/30 p-2 sm:p-3 rounded-lg flex-shrink-0">
                 <FiDollarSign className="text-green-600 dark:text-green-400 text-lg sm:text-xl" />
@@ -294,7 +298,7 @@ api.get('/api/sellers/offers/')
         <div className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] mb-8">
           <div className="p-6 border-b border-[rgb(var(--color-border))]">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-bold text-[rgb(var(--color-fg))]">Recent Offers</h2>
+              <h2 className="text-xl font-bold text-[rgb(var(--color-fg))]">Recent Deals</h2>
               <Link href="/seller/offers">
                 <Button variant="outline" size="sm">View All</Button>
               </Link>
@@ -304,7 +308,7 @@ api.get('/api/sellers/offers/')
             {offers.length === 0 ? (
               <div className="text-center py-8">
                 <FiPackage className="text-[rgb(var(--color-muted))] text-4xl mx-auto mb-4" />
-                <p className="text-[rgb(var(--color-muted))]">No offers yet. Create your first offer!</p>
+                <p className="text-[rgb(var(--color-muted))]">No deals yet. Create your first deal!</p>
               </div>
             ) : (
               <div className="space-y-4">

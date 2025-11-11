@@ -11,22 +11,22 @@ import {
 interface DealAnalytics {
   deal_id: number;
   deal_title: string;
-  total_vouchers: number;
-  revenue: number;
-  redeemed: number;
-  redemption_rate: number;
-  daily_sales?: Array<{
+  total_clicks: number;
+  estimated_commission: number;
+  click_through_rate: number;
+  conversion_rate: number;
+  daily_clicks?: Array<{
     date: string;
-    sales: number;
+    clicks: number;
   }>;
-  customer_feedback?: {
-    average_rating: number;
-    total_reviews: number;
-    positive_feedback: number;
+  store_performance?: {
+    best_performing_store: string;
+    total_stores: number;
+    avg_click_rate: number;
   };
   peak_hours?: Array<{
     hour: string;
-    purchases: number;
+    clicks: number;
   }>;
 }
 
@@ -64,7 +64,7 @@ export default function DealAnalyticsPage() {
     const fetchDealAnalytics = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:8000/api/analytics/deal/${dealId}/`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://salesandoffers.onrender.com'}/api/deals/analytics/deal/${dealId}/`, {
           headers: {
             'Authorization': `Token ${token}`,
             'Content-Type': 'application/json',
@@ -150,47 +150,47 @@ export default function DealAnalyticsPage() {
         {/* Main Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <StatCard
-            icon={FiShoppingBag}
-            title="Total Vouchers"
-            value={data.total_vouchers}
+            icon={FiBarChart}
+            title="Total Clicks"
+            value={data.total_clicks.toLocaleString()}
             color="bg-blue-500"
           />
           <StatCard
             icon={FiDollarSign}
-            title="Revenue"
-            value={`KES ${data.revenue.toLocaleString()}`}
+            title="Est. Commission"
+            value={`$${data.estimated_commission.toFixed(2)}`}
             color="bg-green-500"
           />
           <StatCard
             icon={FiTarget}
-            title="Redeemed"
-            value={data.redeemed}
-            subtitle={`${data.redemption_rate.toFixed(1)}% redemption rate`}
+            title="Click-Through Rate"
+            value={`${data.click_through_rate.toFixed(1)}%`}
+            subtitle="From deal views to clicks"
             color="bg-orange-500"
           />
           <StatCard
             icon={FiTrendingUp}
             title="Performance"
-            value={data.redemption_rate > 50 ? "Excellent" : data.redemption_rate > 25 ? "Good" : "Needs Improvement"}
-            subtitle={`${data.redemption_rate.toFixed(1)}% rate`}
-            color={data.redemption_rate > 50 ? "bg-green-500" : data.redemption_rate > 25 ? "bg-yellow-500" : "bg-red-500"}
+            value={data.click_through_rate > 5 ? "Excellent" : data.click_through_rate > 2 ? "Good" : "Needs Improvement"}
+            subtitle={`${data.conversion_rate.toFixed(1)}% conversion`}
+            color={data.click_through_rate > 5 ? "bg-green-500" : data.click_through_rate > 2 ? "bg-yellow-500" : "bg-red-500"}
           />
         </div>
 
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Daily Sales Chart */}
-          {data.daily_sales && (
+          {/* Daily Clicks Chart */}
+          {data.daily_clicks && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700"
             >
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Daily Sales Trend</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Daily Clicks Trend</h3>
               <div className="h-64 flex items-end justify-between gap-1">
-                {data.daily_sales.slice(-14).map((day, index) => {
-                  const maxSales = Math.max(...data.daily_sales!.map(d => d.sales));
-                  const height = maxSales > 0 ? (day.sales / maxSales) * 100 : 0;
+                {data.daily_clicks.slice(-14).map((day, index) => {
+                  const maxClicks = Math.max(...data.daily_clicks!.map(d => d.clicks));
+                  const height = maxClicks > 0 ? (day.clicks / maxClicks) * 100 : 0;
                   
                   return (
                     <motion.div
@@ -201,7 +201,7 @@ export default function DealAnalyticsPage() {
                       className="bg-blue-500 rounded-t flex-1 min-h-[20px] relative group"
                     >
                       <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                        {day.sales} sales
+                        {day.clicks} clicks
                       </div>
                     </motion.div>
                   );
@@ -214,32 +214,40 @@ export default function DealAnalyticsPage() {
             </motion.div>
           )}
 
-          {/* Customer Feedback */}
-          {data.customer_feedback && (
+          {/* Store Performance */}
+          {data.store_performance && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700"
             >
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Customer Feedback</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Store Performance</h3>
               <div className="space-y-6">
                 <div className="text-center">
                   <div className="flex items-center justify-center gap-2 mb-2">
-                    <FiStar className="w-8 h-8 text-yellow-500 fill-current" />
+                    <FiShoppingBag className="w-8 h-8 text-blue-500" />
                     <span className="text-3xl font-bold text-gray-900 dark:text-white">
-                      {data.customer_feedback.average_rating}
+                      {data.store_performance.total_stores}
                     </span>
                   </div>
                   <p className="text-gray-600 dark:text-gray-400">
-                    Average Rating ({data.customer_feedback.total_reviews} reviews)
+                    Total Partner Stores
                   </p>
                 </div>
                 
-                <div className="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                  <span className="text-gray-700 dark:text-gray-300">Positive Feedback</span>
-                  <span className="font-bold text-green-600">
-                    {data.customer_feedback.positive_feedback}%
-                  </span>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <span className="text-gray-700 dark:text-gray-300">Best Performing</span>
+                    <span className="font-bold text-green-600">
+                      {data.store_performance.best_performing_store}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <span className="text-gray-700 dark:text-gray-300">Avg Click Rate</span>
+                    <span className="font-bold text-blue-600">
+                      {data.store_performance.avg_click_rate.toFixed(1)}%
+                    </span>
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -253,7 +261,7 @@ export default function DealAnalyticsPage() {
             animate={{ opacity: 1, y: 0 }}
             className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 mb-8"
           >
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Peak Purchase Hours</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Peak Click Hours</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {data.peak_hours.map((hour, index) => (
                 <motion.div
@@ -267,7 +275,7 @@ export default function DealAnalyticsPage() {
                     <FiClock className="w-5 h-5 text-blue-500" />
                     <span className="font-medium text-gray-900 dark:text-white">{hour.hour}</span>
                   </div>
-                  <span className="font-bold text-blue-600">{hour.purchases} purchases</span>
+                  <span className="font-bold text-blue-600">{hour.clicks} clicks</span>
                 </motion.div>
               ))}
             </div>
@@ -285,20 +293,20 @@ export default function DealAnalyticsPage() {
             <div>
               <h4 className="font-semibold mb-2">Performance Analysis</h4>
               <p className="text-blue-100">
-                {data.redemption_rate > 50 
-                  ? "Excellent redemption rate! Your customers are highly engaged."
-                  : data.redemption_rate > 25
-                  ? "Good performance. Consider promotional campaigns to boost redemption."
-                  : "Low redemption rate. Review your offer terms and customer communication."
+                {data.click_through_rate > 5 
+                  ? "Excellent click-through rate! Your deal is highly engaging."
+                  : data.click_through_rate > 2
+                  ? "Good performance. Consider optimizing deal presentation to boost clicks."
+                  : "Low click-through rate. Review your deal title, description, and pricing."
                 }
               </p>
             </div>
             <div>
               <h4 className="font-semibold mb-2">Growth Opportunities</h4>
               <p className="text-blue-100">
-                {data.total_vouchers > 50
-                  ? "Strong sales volume. Consider creating similar deals to replicate success."
-                  : "Moderate sales. Try different pricing strategies or promotional timing."
+                {data.total_clicks > 100
+                  ? "Strong click volume. Consider creating similar deals to replicate success."
+                  : "Moderate clicks. Try different categories or promotional timing."
                 }
               </p>
             </div>
