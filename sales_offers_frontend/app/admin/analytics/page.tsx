@@ -26,11 +26,11 @@ export default function AnalyticsPage() {
       const sellers = sellersRes.data;
       
       setMetrics({
-        totalRevenue: deals.reduce((sum: number, deal: any) => sum + (deal.price || 0), 0),
+        totalClicks: deals.reduce((sum: number, deal: any) => sum + (deal.click_count || 0), 0),
         totalUsers: users.length,
-        totalDeals: deals.filter((deal: any) => deal.is_active).length,
-        conversionRate: 3.2,
-        revenueGrowth: 18.5,
+        totalDeals: deals.filter((deal: any) => deal.is_published).length,
+        clickThroughRate: 3.2,
+        clickGrowth: 18.5,
         userGrowth: 12.3,
         dealGrowth: 8.7
       });
@@ -43,23 +43,23 @@ export default function AnalyticsPage() {
   };
 
   const [metrics, setMetrics] = useState({
-    totalRevenue: 0,
+    totalClicks: 0,
     totalUsers: 0,
     totalDeals: 0,
-    conversionRate: 0,
-    revenueGrowth: 0,
+    clickThroughRate: 0,
+    clickGrowth: 0,
     userGrowth: 0,
     dealGrowth: 0
   });
 
   const chartData = [
-    { date: "Jan 15", users: 120, revenue: 180000, deals: 8 },
-    { date: "Jan 16", users: 135, revenue: 195000, deals: 12 },
-    { date: "Jan 17", users: 142, revenue: 210000, deals: 15 },
-    { date: "Jan 18", users: 158, revenue: 225000, deals: 18 },
-    { date: "Jan 19", users: 167, revenue: 240000, deals: 22 },
-    { date: "Jan 20", users: 189, revenue: 265000, deals: 25 },
-    { date: "Jan 21", users: 201, revenue: 285000, deals: 28 }
+    { date: "Jan 15", users: 120, clicks: 1800, deals: 8 },
+    { date: "Jan 16", users: 135, clicks: 1950, deals: 12 },
+    { date: "Jan 17", users: 142, clicks: 2100, deals: 15 },
+    { date: "Jan 18", users: 158, clicks: 2250, deals: 18 },
+    { date: "Jan 19", users: 167, clicks: 2400, deals: 22 },
+    { date: "Jan 20", users: 189, clicks: 2650, deals: 25 },
+    { date: "Jan 21", users: 201, clicks: 2850, deals: 28 }
   ];
 
   return (
@@ -90,11 +90,11 @@ export default function AnalyticsPage() {
           <div className="bg-[rgb(var(--color-card))] rounded-xl p-6 border border-[rgb(var(--color-border))]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-[rgb(var(--color-muted))]">Total Revenue</p>
+                <p className="text-sm font-medium text-[rgb(var(--color-muted))]">Total Clicks</p>
                 <p className="text-2xl font-bold text-[rgb(var(--color-fg))] mt-2">
-                  KES {loading ? "..." : metrics.totalRevenue.toLocaleString()}
+                  {loading ? "..." : metrics.totalClicks.toLocaleString()}
                 </p>
-                <p className="text-sm text-green-600 dark:text-green-400 mt-1">+{metrics.revenueGrowth}%</p>
+                <p className="text-sm text-green-600 dark:text-green-400 mt-1">+{metrics.clickGrowth}%</p>
               </div>
               <div className="p-3 rounded-lg bg-green-100 dark:bg-green-900/30">
                 <FiDollarSign className="w-6 h-6 text-green-600 dark:text-green-400" />
@@ -135,9 +135,9 @@ export default function AnalyticsPage() {
           <div className="bg-[rgb(var(--color-card))] rounded-xl p-6 border border-[rgb(var(--color-border))]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-[rgb(var(--color-muted))]">Conversion Rate</p>
+                <p className="text-sm font-medium text-[rgb(var(--color-muted))]">Click-Through Rate</p>
                 <p className="text-2xl font-bold text-[rgb(var(--color-fg))] mt-2">
-                  {loading ? "..." : `${metrics.conversionRate}%`}
+                  {loading ? "..." : `${metrics.clickThroughRate}%`}
                 </p>
                 <p className="text-sm text-red-600 dark:text-red-400 mt-1">+0.8%</p>
               </div>
@@ -151,13 +151,13 @@ export default function AnalyticsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Revenue Chart */}
           <div className="bg-[rgb(var(--color-card))] rounded-xl p-6 border border-[rgb(var(--color-border))]">
-            <h3 className="text-lg font-semibold text-[rgb(var(--color-fg))] mb-4">Revenue Trend</h3>
+            <h3 className="text-lg font-semibold text-[rgb(var(--color-fg))] mb-4">Clicks Trend</h3>
             <div className="h-64 flex items-end justify-between space-x-2">
               {chartData.map((data, index) => (
                 <div key={index} className="flex flex-col items-center flex-1">
                   <div 
                     className="w-full bg-red-500 rounded-t-sm transition-all duration-500 hover:bg-red-600"
-                    style={{ height: `${(data.revenue / 300000) * 200}px` }}
+                    style={{ height: `${(data.clicks / 3000) * 200}px` }}
                   ></div>
                   <span className="text-xs text-[rgb(var(--color-muted))] mt-2 transform -rotate-45 origin-left">
                     {data.date}
@@ -199,11 +199,11 @@ export default function AnalyticsPage() {
                 <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-[rgb(var(--color-ui))]">
                   <div>
                     <p className="text-sm font-medium text-[rgb(var(--color-fg))]">{deal.name}</p>
-                    <p className="text-xs text-[rgb(var(--color-muted))]">{deal.views} views • {deal.conversions} conversions</p>
+                    <p className="text-xs text-[rgb(var(--color-muted))]">{deal.views} views • {deal.conversions} clicks</p>
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-medium text-green-600">{((deal.conversions / deal.views) * 100).toFixed(1)}%</p>
-                    <p className="text-xs text-[rgb(var(--color-muted))]">CVR</p>
+                    <p className="text-xs text-[rgb(var(--color-muted))]">CTR</p>
                   </div>
                 </div>
               ))}
@@ -225,7 +225,7 @@ export default function AnalyticsPage() {
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-medium text-[rgb(var(--color-fg))]">KES {seller.revenue.toLocaleString()}</p>
-                    <p className="text-xs text-[rgb(var(--color-muted))]">Revenue</p>
+                    <p className="text-xs text-[rgb(var(--color-muted))]">Commission</p>
                   </div>
                 </div>
               ))}

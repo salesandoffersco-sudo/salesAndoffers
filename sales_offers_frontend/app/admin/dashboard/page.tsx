@@ -74,7 +74,7 @@ export default function AdminDashboard() {
       
       setStats({
         totalUsers: users.length,
-        totalDeals: deals.filter((d: any) => d.is_active).length,
+        totalDeals: deals.filter((d: any) => d.is_published).length,
         totalSellers: sellers.length,
         newsletterSubscribers: users.filter((u: any) => u.email).length, // Users with emails as subscribers
         revenue: totalRevenue,
@@ -96,7 +96,7 @@ export default function AdminDashboard() {
       change: "+12%"
     },
     {
-      title: "Active Deals",
+      title: "Published Deals",
       value: stats.totalDeals,
       icon: FiTag,
       color: "green",
@@ -117,7 +117,7 @@ export default function AdminDashboard() {
       change: "+23%"
     },
     {
-      title: "Revenue",
+      title: "Platform Fees",
       value: `KES ${stats.revenue.toLocaleString()}`,
       icon: FiDollarSign,
       color: "red",
@@ -196,7 +196,7 @@ export default function AdminDashboard() {
       {
         id: 3,
         type: stats.revenue > 50000 ? "info" : "warning",
-        message: `Total revenue: KES ${stats.revenue.toLocaleString()}`,
+        message: `Platform fees collected: KES ${stats.revenue.toLocaleString()}`,
         time: "15 min ago"
       }
     ];

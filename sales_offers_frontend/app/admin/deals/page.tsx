@@ -44,7 +44,7 @@ export default function DealsManagement() {
           originalPrice: parseFloat(deal.original_price),
           discountedPrice: parseFloat(deal.discounted_price),
           discount: deal.discount_percentage,
-          status: deal.is_active ? 'approved' : 'pending',
+          status: deal.is_published ? 'approved' : 'pending',
           createdAt: deal.created_at,
           expiresAt: deal.expires_at
         })));
@@ -71,7 +71,7 @@ export default function DealsManagement() {
           'Content-Type': 'application/json',
           'Authorization': `Token ${localStorage.getItem('token')}`
         },
-        body: JSON.stringify({ is_active: true })
+        body: JSON.stringify({ is_published: true })
       });
       
       setDeals(prev => prev.map(deal => 
@@ -90,7 +90,7 @@ export default function DealsManagement() {
           'Content-Type': 'application/json',
           'Authorization': `Token ${localStorage.getItem('token')}`
         },
-        body: JSON.stringify({ is_active: false })
+        body: JSON.stringify({ is_published: false })
       });
       
       setDeals(prev => prev.map(deal => 

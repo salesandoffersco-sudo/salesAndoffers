@@ -49,7 +49,7 @@ export default function SellersManagement() {
           rating: parseFloat(seller.rating) || 0,
           totalDeals: seller.total_deals || 0,
           activeDeals: seller.total_deals || 0,
-          revenue: 0, // Would need to calculate from transactions
+          revenue: 0, // Would need to calculate from affiliate commissions
           joinedAt: seller.created_at,
           status: seller.is_verified ? 'active' : 'pending',
           verified: seller.is_verified
@@ -115,7 +115,7 @@ export default function SellersManagement() {
           <div className="bg-[rgb(var(--color-card))] rounded-xl p-4 border border-[rgb(var(--color-border))]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-[rgb(var(--color-muted))]">Total Revenue</p>
+                <p className="text-sm text-[rgb(var(--color-muted))]">Total Commissions</p>
                 <p className="text-2xl font-bold text-[rgb(var(--color-fg))]">KES {sellers.reduce((sum, s) => sum + s.revenue, 0).toLocaleString()}</p>
               </div>
               <FiDollarSign className="w-8 h-8 text-red-500" />

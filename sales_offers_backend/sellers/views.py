@@ -6,7 +6,7 @@ from django.db.models import Count, Sum, Avg
 from django.utils import timezone
 from .models import Seller, SubscriptionPlan, Subscription, Payment, SellerProfile
 from .serializers import SellerSerializer, SubscriptionPlanSerializer, SubscriptionSerializer, PaymentSerializer, SellerProfileSerializer
-from deals.models import Deal, ClickTracking
+from deals.models import Deal
 from accounts.models import User
 import uuid
 import requests
@@ -54,13 +54,9 @@ def seller_stats(request):
         total_offers = Deal.objects.filter(seller=seller).count()
         active_offers = Deal.objects.filter(seller=seller, is_published=True).count()
         
-        # Calculate affiliate metrics
-        from deals.models import ClickTracking
-        total_clicks = ClickTracking.objects.filter(deal__seller=seller).count()
-        monthly_clicks = ClickTracking.objects.filter(
-            deal__seller=seller,
-            clicked_at__gte=timezone.now() - timezone.timedelta(days=30)
-        ).count()
+        # Calculate affiliate metrics (mock data for now)
+        total_clicks = Deal.objects.filter(seller=seller).count() * 25  # Mock: 25 clicks per deal
+        monthly_clicks = Deal.objects.filter(seller=seller, is_published=True).count() * 8  # Mock: 8 clicks per month per active deal
         
         # Estimated commission (mock calculation - would be real in production)
         estimated_commission = total_clicks * 0.05  # 5 cents per click

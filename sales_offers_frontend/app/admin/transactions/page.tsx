@@ -118,7 +118,7 @@ export default function AdminTransactions() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-[rgb(var(--color-fg))]">Transactions</h1>
-            <p className="text-[rgb(var(--color-muted))]">Monitor all platform transactions and commissions</p>
+            <p className="text-[rgb(var(--color-muted))]">Monitor subscription payments and platform fees</p>
           </div>
           <button className="flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
             <FiDownload className="w-4 h-4" />
@@ -142,7 +142,7 @@ export default function AdminTransactions() {
           <div className="bg-[rgb(var(--color-card))] rounded-xl p-6 border border-[rgb(var(--color-border))]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-[rgb(var(--color-muted))]">Total Revenue</p>
+                <p className="text-sm font-medium text-[rgb(var(--color-muted))]">Subscription Revenue</p>
                 <p className="text-2xl font-bold text-[rgb(var(--color-fg))] mt-2">KES {stats.totalRevenue.toLocaleString()}</p>
               </div>
               <div className="p-3 rounded-lg bg-green-100 dark:bg-green-900/30">
@@ -224,11 +224,11 @@ export default function AdminTransactions() {
             <table className="w-full">
               <thead className="bg-[rgb(var(--color-ui))]">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-[rgb(var(--color-muted))] uppercase tracking-wider">Transaction</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-[rgb(var(--color-muted))] uppercase tracking-wider">Buyer</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-[rgb(var(--color-muted))] uppercase tracking-wider">Seller</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[rgb(var(--color-muted))] uppercase tracking-wider">Subscription</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[rgb(var(--color-muted))] uppercase tracking-wider">User</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[rgb(var(--color-muted))] uppercase tracking-wider">Plan</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-[rgb(var(--color-muted))] uppercase tracking-wider">Amount</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-[rgb(var(--color-muted))] uppercase tracking-wider">Commission</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[rgb(var(--color-muted))] uppercase tracking-wider">Platform Fee</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-[rgb(var(--color-muted))] uppercase tracking-wider">Status</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-[rgb(var(--color-muted))] uppercase tracking-wider">Date</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-[rgb(var(--color-muted))] uppercase tracking-wider">Actions</th>

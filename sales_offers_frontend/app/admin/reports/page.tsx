@@ -11,9 +11,9 @@ export default function ReportsPage() {
 
   const reports = [
     {
-      id: "revenue",
-      title: "Revenue Report",
-      description: "Detailed revenue breakdown by time period",
+      id: "clicks",
+      title: "Clicks Report",
+      description: "Detailed click analytics and commission breakdown",
       icon: FiDollarSign,
       color: "green"
     },
@@ -27,14 +27,14 @@ export default function ReportsPage() {
     {
       id: "deals",
       title: "Deals Performance",
-      description: "Deal conversion and performance analytics",
+      description: "Deal click-through rates and affiliate performance",
       icon: FiBarChart,
       color: "purple"
     },
     {
       id: "sellers",
-      title: "Seller Analytics",
-      description: "Seller performance and revenue metrics",
+      title: "Affiliate Analytics",
+      description: "Affiliate performance and commission metrics",
       icon: FiFileText,
       color: "orange"
     }
