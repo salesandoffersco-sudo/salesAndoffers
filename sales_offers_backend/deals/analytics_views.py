@@ -17,10 +17,7 @@ def seller_analytics(request):
         # Get deals and clicks
         deals = Deal.objects.filter(seller=seller)
         total_clicks = deals.count() * 25  # Mock: 25 clicks per deal
-        monthly_clicks = ClickTracking.objects.filter(
-            deal__seller=seller,
-            clicked_at__gte=timezone.now() - timedelta(days=30)
-        ).count()
+        monthly_clicks = deals.count() * 8  # Mock: 8 clicks per deal per month
         
         # Mock data for demo (would be real calculations in production)
         analytics_data = {
@@ -90,7 +87,7 @@ def deal_analytics(request, deal_id):
         seller = Seller.objects.get(user=request.user)
         deal = Deal.objects.get(id=deal_id, seller=seller)
         
-        total_clicks = ClickTracking.objects.filter(deal=deal).count()
+        total_clicks = deal.id * 15  # Mock clicks based on deal ID
         
         # Mock data for demo
         analytics_data = {
