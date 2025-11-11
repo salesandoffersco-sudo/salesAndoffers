@@ -2,23 +2,23 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { FiHeart, FiShoppingCart, FiTrash2 } from "react-icons/fi";
+import { FiHeart, FiTrendingUp, FiTrash2 } from "react-icons/fi";
 import axios from "axios";
 import Button from "../../components/Button";
-import { useCart } from "../../contexts/CartContext";
+import StoreSelectionModal from "../../components/StoreSelectionModal";
 import { API_BASE_URL } from "../../lib/api";
 
 interface Favorite {
   id: number;
-  offer: {
+  deal: {
     id: number;
     title: string;
     description: string;
-    original_price: string;
-    discounted_price: string;
-    discount_percentage: number;
+    best_price?: string;
+    price_range?: string;
+    store_count?: number;
     category: string;
-    valid_until: string;
+    expires_at: string;
     seller: {
       id: number;
       business_name: string;
@@ -30,7 +30,8 @@ interface Favorite {
 export default function FavoritesPage() {
   const [favorites, setFavorites] = useState<Favorite[]>([]);
   const [loading, setLoading] = useState(true);
-  const { addToCart } = useCart();
+  const [showStoreModal, setShowStoreModal] = useState(false);
+  const [selectedDeal, setSelectedDeal] = useState<Favorite['deal'] | null>(null);
 
   useEffect(() => {
     fetchFavorites();
@@ -50,31 +51,21 @@ export default function FavoritesPage() {
     }
   };
 
-  const handleRemoveFavorite = async (favoriteId: number) => {
+  const handleRemoveFavorite = async (dealId: number) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`${API_BASE_URL}/api/accounts/favorites/${favoriteId}/`, {
+      await axios.post(`${API_BASE_URL}/api/accounts/deals/${dealId}/favorite/`, {}, {
         headers: { Authorization: `Token ${token}` }
       });
-      setFavorites(favorites.filter(fav => fav.id !== favoriteId));
+      setFavorites(favorites.filter(fav => fav.deal.id !== dealId));
     } catch (error) {
       console.error("Error removing favorite:", error);
     }
   };
 
-  const handleAddToCart = (offer: Favorite['offer']) => {
-    addToCart({
-      dealId: offer.id,
-      title: offer.title,
-      originalPrice: parseFloat(offer.original_price),
-      discountedPrice: parseFloat(offer.discounted_price),
-      discountPercentage: offer.discount_percentage,
-      maxPurchase: 10,
-      minPurchase: 1,
-      availableVouchers: 100,
-      expiresAt: offer.valid_until,
-      seller: offer.seller
-    });
+  const handleComparePrices = (deal: Favorite['deal']) => {
+    setSelectedDeal(deal);
+    setShowStoreModal(true);
   };
 
   return (
@@ -105,10 +96,10 @@ export default function FavoritesPage() {
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-4">
                     <span className="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-sm font-semibold">
-                      {favorite.offer.category}
+                      {favorite.deal.category}
                     </span>
                     <button
-                      onClick={() => handleRemoveFavorite(favorite.id)}
+                      onClick={() => handleRemoveFavorite(favorite.deal.id)}
                       className="text-red-500 hover:text-red-700 transition-colors"
                     >
                       <FiTrash2 className="text-lg" />
@@ -116,39 +107,38 @@ export default function FavoritesPage() {
                   </div>
                   
                   <h3 className="text-xl font-bold text-[rgb(var(--color-text))] mb-2">
-                    {favorite.offer.title}
+                    {favorite.deal.title}
                   </h3>
                   <p className="text-[rgb(var(--color-muted))] mb-4 line-clamp-2">
-                    {favorite.offer.description}
+                    {favorite.deal.description}
                   </p>
                   
                   <div className="flex items-center space-x-2 mb-4">
                     <span className="text-2xl font-bold text-purple-600">
-                      KES {favorite.offer.discounted_price}
+                      {favorite.deal.price_range || `KSh ${favorite.deal.best_price || 'Price varies'}`}
                     </span>
-                    <span className="text-gray-400 line-through">
-                      KES {favorite.offer.original_price}
-                    </span>
-                    <span className="bg-green-100 text-green-600 px-2 py-1 rounded text-sm font-semibold">
-                      {favorite.offer.discount_percentage}% OFF
-                    </span>
+                    {favorite.deal.store_count && (
+                      <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded text-sm font-semibold">
+                        {favorite.deal.store_count} store{favorite.deal.store_count !== 1 ? 's' : ''}
+                      </span>
+                    )}
                   </div>
                   
                   <div className="border-t border-[rgb(var(--color-border))] pt-4">
                     <p className="text-sm text-[rgb(var(--color-muted))] mb-3">
-                      by {favorite.offer.seller.business_name}
+                      by {favorite.deal.seller.business_name}
                     </p>
                     <div className="flex space-x-2">
                       <Button
                         variant="outline"
                         size="md"
-                        onClick={() => handleAddToCart(favorite.offer)}
+                        onClick={() => handleComparePrices(favorite.deal)}
                         className="flex-1"
                       >
-                        <FiShoppingCart className="w-4 h-4 mr-1" />
-                        Add to Cart
+                        <FiTrendingUp className="w-4 h-4 mr-1" />
+                        Compare Prices
                       </Button>
-                      <Link href={`/offers/${favorite.offer.id}`} className="flex-1">
+                      <Link href={`/offers/${favorite.deal.id}`} className="flex-1">
                         <Button variant="primary" size="md" className="w-full">
                           View Deal
                         </Button>
@@ -161,6 +151,18 @@ export default function FavoritesPage() {
           </div>
         )}
       </div>
+      
+      {selectedDeal && (
+        <StoreSelectionModal
+          isOpen={showStoreModal}
+          onClose={() => {
+            setShowStoreModal(false);
+            setSelectedDeal(null);
+          }}
+          stores={[]}
+          dealTitle={selectedDeal.title}
+        />
+      )}
     </div>
   );
 }
