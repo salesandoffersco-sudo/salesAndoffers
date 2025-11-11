@@ -35,12 +35,14 @@ export default function StoreSelectionModal({ isOpen, onClose, stores = [], deal
   const [newStore, setNewStore] = useState({ name: '', url: '', price: 0, logo: '' });
 
   // Fallback stores if none provided
-  const fallbackStores = [
+  const fallbackStores: Store[] = [
     {
       id: 1,
       store_name: 'Jumia',
       store_url: 'https://jumia.co.ke',
       price: 15000,
+      coupon_code: 'JUMIA15',
+      coupon_discount: '15%',
       is_available: true,
       store_info: {
         name: 'Jumia',
@@ -53,6 +55,8 @@ export default function StoreSelectionModal({ isOpen, onClose, stores = [], deal
       store_name: 'Kilimall',
       store_url: 'https://kilimall.co.ke',
       price: 14500,
+      coupon_code: 'SAVE20',
+      coupon_discount: 'KSh 500',
       is_available: true,
       store_info: {
         name: 'Kilimall',
