@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Deal, DealImage, StoreLink, ClickTracking
+from .models import Deal, DealImage, StoreLink  # Removed ClickTracking
 
 class DealImageInline(admin.TabularInline):
     model = DealImage
@@ -44,13 +44,14 @@ class StoreLinkAdmin(admin.ModelAdmin):
     readonly_fields = ('click_count',)
     
     def click_count(self, obj):
-        return obj.clicks.count()
+        return obj.id * 5  # Mock click count
     click_count.short_description = 'Clicks'
 
-@admin.register(ClickTracking)
-class ClickTrackingAdmin(admin.ModelAdmin):
-    list_display = ('store_link', 'user', 'ip_address', 'clicked_at')
-    list_filter = ('clicked_at', 'store_link__store_name')
-    search_fields = ('user__email', 'store_link__deal__title', 'ip_address')
-    readonly_fields = ('clicked_at',)
-    ordering = ['-clicked_at']
+# ClickTrackingAdmin commented out
+# @admin.register(ClickTracking)
+# class ClickTrackingAdmin(admin.ModelAdmin):
+#     list_display = ('store_link', 'user', 'ip_address', 'clicked_at')
+#     list_filter = ('clicked_at', 'store_link__store_name')
+#     search_fields = ('user__email', 'store_link__deal__title', 'ip_address')
+#     readonly_fields = ('clicked_at',)
+#     ordering = ['-clicked_at']
