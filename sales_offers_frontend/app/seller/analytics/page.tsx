@@ -113,25 +113,45 @@ const PlanBadge = ({ plan }: { plan: string }) => {
 };
 
 export default function AnalyticsPage() {
-  // Skip rendering during build
-  if (typeof window === 'undefined') {
-    return <div>Loading...</div>;
-  }
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="animate-pulse">
+            <div className="h-8 w-48 bg-gray-200 dark:bg-gray-700 rounded mb-8" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-32 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const fetchAnalytics = async () => {
     try {
-      // Skip API call during build/SSR
-      if (typeof window === 'undefined') {
+      if (!mounted) return;
+      
+      const token = localStorage?.getItem('token');
+      if (!token) {
+        setError('Authentication required');
         setLoading(false);
         return;
       }
       
-      const token = localStorage.getItem('token');
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://salesandoffers.onrender.com'}/api/deals/analytics/seller/`, {
         headers: {
           'Authorization': `Token ${token}`,
@@ -159,8 +179,10 @@ export default function AnalyticsPage() {
   };
 
   useEffect(() => {
-    fetchAnalytics();
-  }, []);
+    if (mounted) {
+      fetchAnalytics();
+    }
+  }, [mounted]);
 
   if (loading) {
     return (

@@ -19,9 +19,20 @@ def seller_analytics(request):
         total_clicks = deals.count() * 25  # Mock: 25 clicks per deal
         monthly_clicks = deals.count() * 8  # Mock: 8 clicks per deal per month
         
+        # Get subscription plan
+        try:
+            from sellers.models import Subscription
+            subscription = Subscription.objects.filter(
+                user=request.user, 
+                status='active'
+            ).first()
+            plan = subscription.plan.name if subscription else 'Basic'
+        except:
+            plan = 'Basic'
+        
         # Mock data for demo (would be real calculations in production)
         analytics_data = {
-            'plan': 'Basic',  # Would get from subscription
+            'plan': plan,
             'analytics': {
                 'total_deals': deals.count(),
                 'active_deals': deals.filter(is_published=True).count(),
