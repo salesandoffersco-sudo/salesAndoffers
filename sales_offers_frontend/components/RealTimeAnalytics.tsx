@@ -97,12 +97,33 @@ export default function RealTimeAnalytics({ plan, className = '' }: RealTimeAnal
     recentActivity: []
   });
   const [connected, setConnected] = useState(false);
-  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
+  const [mounted, setMounted] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+    setLastUpdate(new Date());
+  }, []);
+
+  if (!mounted) {
+    return (
+      <div className={`bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 ${className}`}>
+        <div className="animate-pulse">
+          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded mb-4" />
+          <div className="grid grid-cols-3 gap-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="h-20 bg-gray-200 dark:bg-gray-700 rounded" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Simulate real-time data updates
   useEffect(() => {
-    if (plan === 'Basic') return; // Real-time only for Pro/Enterprise
+    if (plan === 'Basic' || !mounted) return; // Real-time only for Pro/Enterprise
 
     const simulateRealTimeData = () => {
       const activities: Array<{
@@ -161,7 +182,7 @@ export default function RealTimeAnalytics({ plan, className = '' }: RealTimeAnal
         clearTimeout(intervalRef.current);
       }
     };
-  }, [plan]);
+  }, [plan, mounted]);
 
   if (plan === 'Basic') {
     return (
@@ -199,7 +220,7 @@ export default function RealTimeAnalytics({ plan, className = '' }: RealTimeAnal
                 {connected ? (
                   <>
                     <FiWifi className="w-4 h-4 text-green-500" />
-                    <span>Connected • Last update {lastUpdate.toLocaleTimeString()}</span>
+                    <span>Connected • Last update {lastUpdate?.toLocaleTimeString()}</span>
                   </>
                 ) : (
                   <>
