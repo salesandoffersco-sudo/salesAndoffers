@@ -41,9 +41,9 @@ export default function DealsManagement() {
           id: deal.id,
           title: deal.title,
           seller: deal.seller?.business_name || 'Unknown Seller',
-          originalPrice: parseFloat(deal.original_price),
-          discountedPrice: parseFloat(deal.discounted_price),
-          discount: deal.discount_percentage,
+          originalPrice: 0, // Not used in affiliate platform
+          discountedPrice: deal.best_price || 0,
+          discount: 0, // Not used in affiliate platform
           status: deal.is_published ? 'approved' : 'pending',
           createdAt: deal.created_at,
           expiresAt: deal.expires_at
@@ -179,9 +179,10 @@ export default function DealsManagement() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
-                          <span className="text-sm font-medium text-green-600">KES {deal.discountedPrice.toLocaleString()}</span>
-                          <span className="text-sm text-[rgb(var(--color-muted))] line-through">KES {deal.originalPrice.toLocaleString()}</span>
-                          <span className="text-xs text-red-600">{deal.discount}% off</span>
+                          <span className="text-sm font-medium text-green-600">
+                            {deal.discountedPrice > 0 ? `KES ${deal.discountedPrice.toLocaleString()}` : 'Price varies'}
+                          </span>
+                          <span className="text-xs text-[rgb(var(--color-muted))]">Compare across stores</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">

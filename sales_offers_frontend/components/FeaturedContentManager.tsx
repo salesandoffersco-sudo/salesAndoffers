@@ -26,7 +26,7 @@ export default function FeaturedContentManager({ onClose }: FeaturedContentManag
       const [featuredDealsRes, featuredSellersRes, allDealsRes, allSellersRes] = await Promise.all([
         api.get('/api/deals/admin/featured-deals/'),
         api.get('/api/deals/admin/featured-sellers/'),
-        api.get('/api/deals/admin/deals/'),
+        api.get('/api/deals/admin/'),
         api.get('/api/sellers/admin/sellers/')
       ]);
       
