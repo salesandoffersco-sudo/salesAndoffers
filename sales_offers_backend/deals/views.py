@@ -146,6 +146,13 @@ def seller_offers(request, seller_id):
         return Response({'error': 'Seller not found'}, status=404)
 
 @api_view(['GET'])
+def available_stores(request):
+    """Get list of all available stores for filtering"""
+    stores = StoreLink.objects.filter(is_available=True).values('store_name').distinct().order_by('store_name')
+    store_list = [{'id': store['store_name'], 'label': store['store_name']} for store in stores]
+    return Response(store_list)
+
+@api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def my_deals(request):
     """Get current user's deals"""

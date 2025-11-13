@@ -36,6 +36,15 @@ interface Offer {
     order: number;
     alt_text?: string;
   }>;
+  store_links?: Array<{
+    id: number;
+    store_name: string;
+    store_url: string;
+    price?: number;
+    coupon_code?: string;
+    coupon_discount?: string;
+    is_available: boolean;
+  }>;
   is_favorited?: boolean;
   is_verified?: boolean;
   rating?: number;
@@ -71,6 +80,7 @@ export default function OffersPage() {
 
   const [storeData, setStoreData] = useState<any[]>([]);
   const [loadingStores, setLoadingStores] = useState(false);
+  const [availableStores, setAvailableStores] = useState<any[]>([]);
 
   const handleComparePrices = async (offer: Offer) => {
     setSelectedOffer(offer);
@@ -117,6 +127,7 @@ export default function OffersPage() {
   useEffect(() => {
     fetchOffers();
     fetchSubscription();
+    fetchAvailableStores();
   }, []);
 
   const fetchOffers = async () => {
@@ -144,6 +155,15 @@ export default function OffersPage() {
     }
   };
 
+  const fetchAvailableStores = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/deals/stores/`);
+      setAvailableStores(response.data);
+    } catch (error) {
+      console.error("Error fetching available stores:", error);
+    }
+  };
+
   const canSeeFeaturedListings = () => {
     if (!subscription) return false;
     const features = subscription.plan?.features;
@@ -154,6 +174,13 @@ export default function OffersPage() {
     if (filters.search && !offer.title.toLowerCase().includes(filters.search.toLowerCase())) return false;
     if (filters.price && parseFloat(offer.discounted_price) > filters.price) return false;
     if (filters.categories && filters.categories.length > 0 && !filters.categories.includes(offer.category)) return false;
+    if (filters.stores && filters.stores.length > 0) {
+      // Check if offer has any store links that match the selected stores
+      const hasMatchingStore = offer.store_links?.some((link: any) => 
+        filters.stores.includes(link.store_name)
+      );
+      if (!hasMatchingStore) return false;
+    }
     return true;
   });
 
@@ -183,6 +210,16 @@ export default function OffersPage() {
         { id: 'Coupons', label: 'Coupons & Deals', count: 12 },
         { id: 'Other', label: 'Other', count: 8 }
       ]
+    },
+    {
+      id: 'stores',
+      title: 'Stores',
+      type: 'checkbox' as const,
+      options: availableStores.map(store => ({
+        id: store.id,
+        label: store.label,
+        count: undefined // We could add store counts later if needed
+      }))
     },
     {
       id: 'price',

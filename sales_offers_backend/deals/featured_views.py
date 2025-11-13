@@ -162,44 +162,39 @@ def get_featured_deals_with_fallback(limit=6):
     """Get featured deals with fallback algorithms"""
     deals = []
     
-    # 1. Manual featured deals
-    manual_featured = FeaturedContent.objects.filter(
-        content_type='deal',
-        algorithm='manual',
-        is_active=True,
-        expires_at__gt=timezone.now()
-    ).order_by('-priority')[:limit//2]
-    
-    for item in manual_featured:
-        try:
-            deal = Deal.objects.get(id=item.object_id, is_published=True)
-            deals.append(DealSerializer(deal).data)
-        except Deal.DoesNotExist:
-            continue
+    try:
+        # 1. Manual featured deals
+        manual_featured = FeaturedContent.objects.filter(
+            content_type='deal',
+            algorithm='manual',
+            is_active=True
+        ).filter(
+            Q(expires_at__isnull=True) | Q(expires_at__gt=timezone.now())
+        ).order_by('-priority')[:limit//2]
+        
+        for item in manual_featured:
+            try:
+                deal = Deal.objects.get(id=item.object_id, is_published=True, status='approved')
+                deals.append(DealSerializer(deal).data)
+            except Deal.DoesNotExist:
+                continue
+    except Exception:
+        pass
     
     remaining = limit - len(deals)
     if remaining > 0:
-        # 2. Premium subscription deals
-        premium_deals = Deal.objects.filter(
-            is_published=True,
-            seller__subscription__status='active',
-            seller__subscription__plan__name__icontains='premium'
-        ).order_by('-created_at')[:remaining//2]
-        
-        for deal in premium_deals:
-            if len(deals) < limit:
-                deals.append(DealSerializer(deal).data)
-        
-        remaining = limit - len(deals)
-        if remaining > 0:
-            # 3. Most clicked deals (fallback)
-            popular_deals = Deal.objects.filter(
-                is_published=True
-            ).order_by('-id')[:remaining]  # Using ID as proxy for clicks
+        try:
+            # 2. Recent deals as fallback
+            recent_deals = Deal.objects.filter(
+                is_published=True,
+                status='approved'
+            ).order_by('-created_at')[:remaining]
             
-            for deal in popular_deals:
+            for deal in recent_deals:
                 if len(deals) < limit:
                     deals.append(DealSerializer(deal).data)
+        except Exception:
+            pass
     
     return deals
 
@@ -207,42 +202,38 @@ def get_featured_sellers_with_fallback(limit=8):
     """Get featured sellers with fallback algorithms"""
     sellers = []
     
-    # 1. Manual featured sellers
-    manual_featured = FeaturedContent.objects.filter(
-        content_type='seller',
-        algorithm='manual',
-        is_active=True,
-        expires_at__gt=timezone.now()
-    ).order_by('-priority')[:limit//2]
-    
-    for item in manual_featured:
-        try:
-            seller = Seller.objects.get(id=item.object_id)
-            sellers.append(SellerSerializer(seller).data)
-        except Seller.DoesNotExist:
-            continue
+    try:
+        # 1. Manual featured sellers
+        manual_featured = FeaturedContent.objects.filter(
+            content_type='seller',
+            algorithm='manual',
+            is_active=True
+        ).filter(
+            Q(expires_at__isnull=True) | Q(expires_at__gt=timezone.now())
+        ).order_by('-priority')[:limit//2]
+        
+        for item in manual_featured:
+            try:
+                seller = Seller.objects.get(id=item.object_id)
+                sellers.append(SellerSerializer(seller).data)
+            except Seller.DoesNotExist:
+                continue
+    except Exception:
+        pass
     
     remaining = limit - len(sellers)
     if remaining > 0:
-        # 2. Premium subscription sellers
-        premium_sellers = Seller.objects.filter(
-            subscription__status='active',
-            subscription__plan__name__icontains='premium'
-        ).order_by('-created_at')[:remaining//2]
-        
-        for seller in premium_sellers:
-            if len(sellers) < limit:
-                sellers.append(SellerSerializer(seller).data)
-        
-        remaining = limit - len(sellers)
-        if remaining > 0:
-            # 3. Most active sellers (fallback)
-            active_sellers = Seller.objects.filter(
-                deals__is_published=True
+        try:
+            # 2. Recent sellers as fallback
+            recent_sellers = Seller.objects.filter(
+                deals__is_published=True,
+                deals__status='approved'
             ).distinct().order_by('-created_at')[:remaining]
             
-            for seller in active_sellers:
+            for seller in recent_sellers:
                 if len(sellers) < limit:
                     sellers.append(SellerSerializer(seller).data)
+        except Exception:
+            pass
     
     return sellers
