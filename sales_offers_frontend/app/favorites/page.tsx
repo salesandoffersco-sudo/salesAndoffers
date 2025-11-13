@@ -96,7 +96,7 @@ export default function FavoritesPage() {
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-4">
                     <span className="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-sm font-semibold">
-                      {favorite.deal.category}
+                      {favorite.deal?.category || 'General'}
                     </span>
                     <button
                       onClick={() => handleRemoveFavorite(favorite.deal.id)}
@@ -107,10 +107,10 @@ export default function FavoritesPage() {
                   </div>
                   
                   <h3 className="text-xl font-bold text-[rgb(var(--color-text))] mb-2">
-                    {favorite.deal.title}
+                    {favorite.deal?.title || 'Untitled Deal'}
                   </h3>
                   <p className="text-[rgb(var(--color-muted))] mb-4 line-clamp-2">
-                    {favorite.deal.description}
+                    {favorite.deal?.description || 'No description available'}
                   </p>
                   
                   <div className="flex items-center space-x-2 mb-4">
@@ -126,7 +126,7 @@ export default function FavoritesPage() {
                   
                   <div className="border-t border-[rgb(var(--color-border))] pt-4">
                     <p className="text-sm text-[rgb(var(--color-muted))] mb-3">
-                      by {favorite.deal.seller.business_name}
+                      by {favorite.deal?.seller?.business_name || 'Unknown Seller'}
                     </p>
                     <div className="flex space-x-2">
                       <Button

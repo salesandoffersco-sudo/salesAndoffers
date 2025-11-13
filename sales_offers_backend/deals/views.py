@@ -148,9 +148,12 @@ def seller_offers(request, seller_id):
 @api_view(['GET'])
 def available_stores(request):
     """Get list of all available stores for filtering"""
-    stores = StoreLink.objects.filter(is_available=True).values('store_name').distinct().order_by('store_name')
-    store_list = [{'id': store['store_name'], 'label': store['store_name']} for store in stores]
-    return Response(store_list)
+    try:
+        stores = StoreLink.objects.filter(is_available=True).values('store_name').distinct().order_by('store_name')
+        store_list = [{'id': store['store_name'], 'label': store['store_name']} for store in stores]
+        return Response(store_list)
+    except Exception as e:
+        return Response([], status=200)  # Return empty list on error
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
