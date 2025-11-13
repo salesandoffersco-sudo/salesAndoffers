@@ -6,8 +6,9 @@ import AdminLayout from "../../../components/AdminLayout";
 import { api } from "../../../lib/api";
 import { 
   FiUsers, FiTag, FiShoppingBag, FiMail, FiTrendingUp, 
-  FiDollarSign, FiActivity, FiAlertCircle 
+  FiDollarSign, FiActivity, FiAlertCircle, FiStar 
 } from "react-icons/fi";
+import FeaturedContentManager from "../../../components/FeaturedContentManager";
 
 interface DashboardStats {
   totalUsers: number;
@@ -172,6 +173,7 @@ export default function AdminDashboard() {
   };
 
   const [alerts, setAlerts] = useState<any[]>([]);
+  const [showFeaturedManager, setShowFeaturedManager] = useState(false);
 
   useEffect(() => {
     if (hasAccess) {
@@ -310,12 +312,24 @@ export default function AdminDashboard() {
               <FiMail className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-2 text-[rgb(var(--color-muted))] group-hover:text-red-600" />
               <span className="text-xs sm:text-sm font-medium text-[rgb(var(--color-fg))]">Send Newsletter</span>
             </button>
+            <button 
+              onClick={() => setShowFeaturedManager(true)}
+              className="p-3 sm:p-4 text-center rounded-lg bg-[rgb(var(--color-ui))] hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors group"
+            >
+              <FiStar className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-2 text-[rgb(var(--color-muted))] group-hover:text-purple-600" />
+              <span className="text-xs sm:text-sm font-medium text-[rgb(var(--color-fg))]">Featured Content</span>
+            </button>
             <button className="p-3 sm:p-4 text-center rounded-lg bg-[rgb(var(--color-ui))] hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors group">
               <FiTrendingUp className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-2 text-[rgb(var(--color-muted))] group-hover:text-red-600" />
               <span className="text-xs sm:text-sm font-medium text-[rgb(var(--color-fg))]">View Analytics</span>
             </button>
           </div>
         </div>
+        
+        {/* Featured Content Manager Modal */}
+        {showFeaturedManager && (
+          <FeaturedContentManager onClose={() => setShowFeaturedManager(false)} />
+        )}
       </div>
     </AdminLayout>
   );

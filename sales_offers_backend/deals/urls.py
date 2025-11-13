@@ -5,6 +5,10 @@ from .views import (
 )
 from .review_views import create_review, get_deal_reviews
 from . import analytics_views
+from .featured_views import (
+    admin_featured_deals, admin_featured_sellers, set_featured_deal, set_featured_seller,
+    remove_featured, get_featured_content
+)
 
 urlpatterns = [
     path('', DealListView.as_view(), name='deal-list'),
@@ -24,4 +28,12 @@ urlpatterns = [
     path('<int:deal_id>/images/<int:image_id>/', update_deal_image, name='update-deal-image'),
     path('<int:deal_id>/images/<int:image_id>/delete/', delete_deal_image, name='delete-deal-image'),
     path('track-click/', track_click, name='track-click'),
+    
+    # Featured content management
+    path('admin/featured-deals/', admin_featured_deals, name='admin-featured-deals'),
+    path('admin/featured-sellers/', admin_featured_sellers, name='admin-featured-sellers'),
+    path('admin/set-featured-deal/', set_featured_deal, name='set-featured-deal'),
+    path('admin/set-featured-seller/', set_featured_seller, name='set-featured-seller'),
+    path('admin/featured/<str:content_type>/<int:object_id>/', remove_featured, name='remove-featured'),
+    path('featured/', get_featured_content, name='get-featured-content'),
 ]

@@ -1,11 +1,33 @@
 "use client";
 
 import Link from "next/link";
-import { FiShoppingBag, FiTag, FiTrendingUp, FiUsers, FiShield, FiStar, FiZap } from "react-icons/fi";
+import { useState, useEffect } from "react";
+import { FiShoppingBag, FiTag, FiTrendingUp, FiUsers, FiShield, FiStar, FiZap, FiArrowRight } from "react-icons/fi";
 import Button from "../components/Button";
 import TrustIndicators from "../components/TrustIndicators";
+import { api } from "../lib/api";
 
 export default function Home() {
+  const [featuredDeals, setFeaturedDeals] = useState<any[]>([]);
+  const [featuredSellers, setFeaturedSellers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchFeaturedContent();
+  }, []);
+
+  const fetchFeaturedContent = async () => {
+    try {
+      const response = await api.get('/api/deals/featured/?deals_limit=6&sellers_limit=8');
+      setFeaturedDeals(response.data.featured_deals || []);
+      setFeaturedSellers(response.data.featured_sellers || []);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching featured content:', error);
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[rgb(var(--color-bg))] relative overflow-hidden">
       {/* Enhanced Animated Background */}
@@ -156,6 +178,130 @@ export default function Home() {
               <span className="text-sm font-medium text-yellow-600 dark:text-yellow-400">Price Match Guarantee</span>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Featured Deals Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl md:text-5xl font-bold text-[rgb(var(--color-fg))] mb-4">
+            Featured Deals
+          </h2>
+          <p className="text-xl text-[rgb(var(--color-muted))] max-w-3xl mx-auto">
+            Handpicked deals from our top-rated sellers with the best prices across multiple stores
+          </p>
+        </div>
+        
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-[rgb(var(--color-card))] rounded-xl p-6 animate-pulse">
+                <div className="h-48 bg-[rgb(var(--color-ui))] rounded-lg mb-4"></div>
+                <div className="h-4 bg-[rgb(var(--color-ui))] rounded mb-2"></div>
+                <div className="h-4 bg-[rgb(var(--color-ui))] rounded w-2/3"></div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {featuredDeals.slice(0, 6).map((deal) => (
+              <Link key={deal.id} href={`/offers/${deal.id}`} className="group">
+                <div className="bg-[rgb(var(--color-card))] rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-[rgb(var(--color-border))] hover:border-purple-300 dark:hover:border-purple-600">
+                  {deal.main_image && (
+                    <img 
+                      src={deal.main_image} 
+                      alt={deal.title}
+                      className="w-full h-48 object-cover rounded-lg mb-4 group-hover:scale-105 transition-transform duration-300"
+                    />
+                  )}
+                  <h3 className="text-lg font-semibold text-[rgb(var(--color-fg))] mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                    {deal.title}
+                  </h3>
+                  <p className="text-[rgb(var(--color-muted))] text-sm mb-3 line-clamp-2">
+                    {deal.description}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-lg font-bold text-green-600 dark:text-green-400">
+                      {deal.price_range}
+                    </span>
+                    <span className="text-sm text-[rgb(var(--color-muted))]">
+                      {deal.store_count} stores
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+        
+        <div className="text-center">
+          <Link href="/offers" passHref>
+            <Button as="a" variant="outline" className="border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white">
+              View All Deals
+              <FiArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          </Link>
+        </div>
+      </section>
+
+      {/* Featured Sellers Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 bg-[rgb(var(--color-ui))]">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl md:text-5xl font-bold text-[rgb(var(--color-fg))] mb-4">
+            Top Sellers
+          </h2>
+          <p className="text-xl text-[rgb(var(--color-muted))] max-w-3xl mx-auto">
+            Discover trusted sellers with verified products and excellent customer service
+          </p>
+        </div>
+        
+        {loading ? (
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="bg-[rgb(var(--color-card))] rounded-xl p-4 animate-pulse">
+                <div className="w-16 h-16 bg-[rgb(var(--color-ui))] rounded-full mx-auto mb-3"></div>
+                <div className="h-3 bg-[rgb(var(--color-ui))] rounded"></div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-8">
+            {featuredSellers.slice(0, 8).map((seller) => (
+              <Link key={seller.id} href={`/sellers/${seller.id}`} className="group">
+                <div className="bg-[rgb(var(--color-card))] rounded-xl p-4 text-center shadow-lg hover:shadow-xl transition-all duration-300 border border-[rgb(var(--color-border))] hover:border-blue-300 dark:hover:border-blue-600">
+                  {seller.business_logo ? (
+                    <img 
+                      src={seller.business_logo} 
+                      alt={seller.business_name}
+                      className="w-16 h-16 object-cover rounded-full mx-auto mb-3 group-hover:scale-110 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mx-auto mb-3 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <FiShoppingBag className="w-8 h-8 text-white" />
+                    </div>
+                  )}
+                  <h3 className="text-sm font-semibold text-[rgb(var(--color-fg))] group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+                    {seller.business_name}
+                  </h3>
+                  <div className="flex items-center justify-center mt-2">
+                    <FiStar className="w-3 h-3 text-yellow-500 mr-1" />
+                    <span className="text-xs text-[rgb(var(--color-muted))]">
+                      {seller.rating || '4.5'}
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+        
+        <div className="text-center">
+          <Link href="/sellers" passHref>
+            <Button as="a" variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white">
+              View All Sellers
+              <FiArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          </Link>
         </div>
       </section>
 

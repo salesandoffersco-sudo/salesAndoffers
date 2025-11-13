@@ -19,9 +19,22 @@ class Seller(models.Model):
     business_license = models.CharField(max_length=100, blank=True)
     verification_date = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    # Featured content fields
+    is_featured = models.BooleanField(default=False)
+    featured_priority = models.IntegerField(default=0)
+    featured_until = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.business_name
+    
+    @property
+    def view_count(self):
+        return self.id * 30  # Mock view count
+    
+    @property
+    def click_count(self):
+        return self.deals.count() * 20  # Mock click count based on deals
 
 class SubscriptionPlan(models.Model):
     name = models.CharField(max_length=100)
