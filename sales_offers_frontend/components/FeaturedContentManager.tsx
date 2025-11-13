@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { api } from "../lib/api";
-import { FiStar, FiX, FiPlus, FiTrendingUp, FiEye, FiHeart, FiCrown } from "react-icons/fi";
+import { FiStar, FiX, FiPlus, FiTrendingUp, FiEye, FiHeart, FiAward } from "react-icons/fi";
 
 interface FeaturedContentManagerProps {
   onClose: () => void;
@@ -71,7 +71,7 @@ export default function FeaturedContentManager({ onClose }: FeaturedContentManag
       case 'likes': return <FiHeart className="w-4 h-4" />;
       case 'views': return <FiEye className="w-4 h-4" />;
       case 'clicks': return <FiTrendingUp className="w-4 h-4" />;
-      case 'subscription': return <FiCrown className="w-4 h-4" />;
+      case 'subscription': return <FiAward className="w-4 h-4" />;
       default: return <FiStar className="w-4 h-4" />;
     }
   };
