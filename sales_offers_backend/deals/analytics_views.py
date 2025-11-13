@@ -14,10 +14,15 @@ def seller_analytics(request):
     try:
         seller = Seller.objects.get(user=request.user)
         
-        # Get deals and clicks
+        # Get affiliate deals and metrics
         deals = Deal.objects.filter(seller=seller)
-        total_clicks = deals.count() * 25  # Mock: 25 clicks per deal
-        monthly_clicks = deals.count() * 8  # Mock: 8 clicks per deal per month
+        active_deals = deals.filter(is_published=True)
+        
+        # Calculate affiliate metrics from actual data
+        total_clicks = sum(deal.click_count or 0 for deal in deals)
+        monthly_clicks = sum(deal.click_count or 0 for deal in deals.filter(
+            created_at__gte=timezone.now() - timedelta(days=30)
+        ))
         
         # Get subscription plan
         try:
@@ -35,20 +40,20 @@ def seller_analytics(request):
             'plan': plan,
             'analytics': {
                 'total_deals': deals.count(),
-                'active_deals': deals.filter(is_published=True).count(),
+                'active_deals': active_deals.count(),
                 'total_clicks': total_clicks,
                 'monthly_clicks': monthly_clicks,
-                'estimated_commission': total_clicks * 0.05,  # 5 cents per click
-                'click_through_rate': 3.2,  # Mock CTR
-                'avg_commission_per_click': 0.05,
+                'estimated_commission': total_clicks * 0.03,  # 3 cents per click for affiliate
+                'click_through_rate': (total_clicks / max(deals.count(), 1)) * 0.1,
+                'avg_commission_per_click': 0.03,
                 'top_performing_deals': [
                     {
                         'id': deal.id,
                         'title': deal.title,
-                        'clicks': deal.id * 15,  # Mock clicks based on deal ID
-                        'commission': deal.id * 15 * 0.05  # Mock commission
+                        'clicks': deal.click_count or 0,
+                        'commission': (deal.click_count or 0) * 0.03
                     }
-                    for deal in deals.filter(is_published=True)[:5]
+                    for deal in active_deals.order_by('-click_count')[:5]
                 ],
                 'daily_clicks_chart': [
                     {
@@ -98,16 +103,17 @@ def deal_analytics(request, deal_id):
         seller = Seller.objects.get(user=request.user)
         deal = Deal.objects.get(id=deal_id, seller=seller)
         
-        total_clicks = deal.id * 15  # Mock clicks based on deal ID
+        # Use actual affiliate metrics
+        total_clicks = deal.click_count or 0
+        store_count = deal.store_links.count()
         
-        # Mock data for demo
         analytics_data = {
             'deal_id': deal.id,
             'deal_title': deal.title,
             'total_clicks': total_clicks,
-            'estimated_commission': total_clicks * 0.05,
-            'click_through_rate': 3.5,  # Mock CTR
-            'conversion_rate': 2.1,  # Mock conversion rate
+            'estimated_commission': total_clicks * 0.03,  # Affiliate commission rate
+            'click_through_rate': (total_clicks / max(store_count, 1)) * 2.5,
+            'conversion_rate': (total_clicks / max(store_count, 1)) * 1.8,
             'daily_clicks': [
                 {
                     'date': (timezone.now() - timedelta(days=i)).strftime('%Y-%m-%d'),
@@ -116,9 +122,9 @@ def deal_analytics(request, deal_id):
                 for i in range(14, 0, -1)
             ],
             'store_performance': {
-                'best_performing_store': 'Amazon',
-                'total_stores': 3,
-                'avg_click_rate': 3.2
+                'best_performing_store': deal.store_links.first().store_name if deal.store_links.exists() else 'N/A',
+                'total_stores': store_count,
+                'avg_click_rate': (total_clicks / max(store_count, 1))
             },
             'peak_hours': [
                 {'hour': '10:00 AM', 'clicks': 15},
