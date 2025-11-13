@@ -160,47 +160,21 @@ def get_featured_content(request):
 
 def get_featured_deals_with_fallback(limit=6):
     """Get featured deals with fallback algorithms"""
-    deals = []
-    used_deal_ids = set()
-    
     try:
-        # 1. Manual featured deals
-        manual_featured = FeaturedContent.objects.filter(
-            content_type='deal',
-            algorithm='manual',
-            is_active=True
-        ).filter(
-            Q(expires_at__isnull=True) | Q(expires_at__gt=timezone.now())
-        ).order_by('-priority')[:limit//2]
+        # Get all available deals first
+        all_deals = Deal.objects.filter(
+            is_published=True,
+            status='approved'
+        ).order_by('-created_at')[:limit]
         
-        for item in manual_featured:
-            try:
-                if item.object_id not in used_deal_ids:
-                    deal = Deal.objects.get(id=item.object_id, is_published=True, status='approved')
-                    deals.append(DealSerializer(deal).data)
-                    used_deal_ids.add(item.object_id)
-            except Deal.DoesNotExist:
-                continue
+        # Serialize and return unique deals
+        deals_data = []
+        for deal in all_deals:
+            deals_data.append(DealSerializer(deal).data)
+        
+        return deals_data
     except Exception:
-        pass
-    
-    remaining = limit - len(deals)
-    if remaining > 0:
-        try:
-            # 2. Recent deals as fallback (exclude already used deals)
-            recent_deals = Deal.objects.filter(
-                is_published=True,
-                status='approved'
-            ).exclude(id__in=used_deal_ids).order_by('-created_at')[:remaining]
-            
-            for deal in recent_deals:
-                if len(deals) < limit and deal.id not in used_deal_ids:
-                    deals.append(DealSerializer(deal).data)
-                    used_deal_ids.add(deal.id)
-        except Exception:
-            pass
-    
-    return deals
+        return []
 
 def get_featured_sellers_with_fallback(limit=8):
     """Get featured sellers with fallback algorithms"""
