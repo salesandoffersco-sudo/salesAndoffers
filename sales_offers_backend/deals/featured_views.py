@@ -161,18 +161,13 @@ def get_featured_content(request):
 def get_featured_deals_with_fallback(limit=6):
     """Get featured deals with fallback algorithms"""
     try:
-        # Get all available deals first
-        all_deals = Deal.objects.filter(
+        # Get unique deals by distinct title and seller to avoid duplicates
+        deals = Deal.objects.filter(
             is_published=True,
             status='approved'
-        ).order_by('-created_at')[:limit]
+        ).select_related('seller').order_by('-created_at').distinct()[:limit]
         
-        # Serialize and return unique deals
-        deals_data = []
-        for deal in all_deals:
-            deals_data.append(DealSerializer(deal).data)
-        
-        return deals_data
+        return [DealSerializer(deal).data for deal in deals]
     except Exception:
         return []
 
