@@ -202,37 +202,41 @@ export default function Home() {
               </div>
             ))}
           </div>
-        ) : (
+        ) : featuredDeals && featuredDeals.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {featuredDeals.slice(0, 6).map((deal) => (
+            {featuredDeals.slice(0, 6).map((deal) => deal && deal.id ? (
               <Link key={deal.id} href={`/offers/${deal.id}`} className="group">
                 <div className="bg-[rgb(var(--color-card))] rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-[rgb(var(--color-border))] hover:border-purple-300 dark:hover:border-purple-600">
                   {deal.main_image && (
                     <img 
                       src={deal.main_image} 
-                      alt={deal.title}
+                      alt={deal.title || 'Deal'}
                       className="w-full h-48 object-cover rounded-lg mb-4 group-hover:scale-105 transition-transform duration-300"
                     />
                   )}
                   <h3 className="text-lg font-semibold text-[rgb(var(--color-fg))] mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
-                    {deal.title}
+                    {deal.title || 'Untitled Deal'}
                   </h3>
                   <p className="text-[rgb(var(--color-muted))] text-sm mb-3 line-clamp-2">
-                    {deal.description}
+                    {deal.description || 'No description available'}
                   </p>
                   <div className="flex items-center justify-between">
                     <span className="text-lg font-bold text-green-600 dark:text-green-400">
-                      {deal.price_range}
+                      {deal.price_range || 'Price varies'}
                     </span>
                     <span className="text-sm text-[rgb(var(--color-muted))]">
-                      {deal.store_count} stores
+                      {deal.store_count || 0} stores
                     </span>
                   </div>
                 </div>
               </Link>
-            ))}
+            ) : null)}
           </div>
-        )}
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-[rgb(var(--color-muted))]">No featured deals available</p>
+          </div>
+        )
         
         <div className="text-center">
           <Link href="/offers" passHref>
@@ -264,15 +268,15 @@ export default function Home() {
               </div>
             ))}
           </div>
-        ) : (
+        ) : featuredSellers && featuredSellers.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-8">
-            {featuredSellers.slice(0, 8).map((seller) => (
+            {featuredSellers.slice(0, 8).map((seller) => seller && seller.id ? (
               <Link key={seller.id} href={`/sellers/${seller.id}`} className="group">
                 <div className="bg-[rgb(var(--color-card))] rounded-xl p-4 text-center shadow-lg hover:shadow-xl transition-all duration-300 border border-[rgb(var(--color-border))] hover:border-blue-300 dark:hover:border-blue-600">
                   {seller.business_logo ? (
                     <img 
                       src={seller.business_logo} 
-                      alt={seller.business_name}
+                      alt={seller.business_name || 'Seller'}
                       className="w-16 h-16 object-cover rounded-full mx-auto mb-3 group-hover:scale-110 transition-transform duration-300"
                     />
                   ) : (
@@ -281,7 +285,7 @@ export default function Home() {
                     </div>
                   )}
                   <h3 className="text-sm font-semibold text-[rgb(var(--color-fg))] group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
-                    {seller.business_name}
+                    {seller.business_name || 'Unknown Seller'}
                   </h3>
                   <div className="flex items-center justify-center mt-2">
                     <FiStar className="w-3 h-3 text-yellow-500 mr-1" />
@@ -291,9 +295,13 @@ export default function Home() {
                   </div>
                 </div>
               </Link>
-            ))}
+            ) : null)}
           </div>
-        )}
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-[rgb(var(--color-muted))]">No featured sellers available</p>
+          </div>
+        )
         
         <div className="text-center">
           <Link href="/sellers" passHref>
