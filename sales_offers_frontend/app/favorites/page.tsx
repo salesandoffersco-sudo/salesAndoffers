@@ -57,7 +57,7 @@ export default function FavoritesPage() {
       await axios.post(`${API_BASE_URL}/api/accounts/deals/${dealId}/favorite/`, {}, {
         headers: { Authorization: `Token ${token}` }
       });
-      setFavorites(favorites.filter(fav => fav.deal.id !== dealId));
+      setFavorites(favorites.filter(fav => fav.deal?.id !== dealId));
     } catch (error) {
       console.error("Error removing favorite:", error);
     }
@@ -99,7 +99,7 @@ export default function FavoritesPage() {
                       {favorite.deal?.category || 'General'}
                     </span>
                     <button
-                      onClick={() => handleRemoveFavorite(favorite.deal.id)}
+                      onClick={() => handleRemoveFavorite(favorite.deal?.id || 0)}
                       className="text-red-500 hover:text-red-700 transition-colors"
                     >
                       <FiTrash2 className="text-lg" />
@@ -115,9 +115,9 @@ export default function FavoritesPage() {
                   
                   <div className="flex items-center space-x-2 mb-4">
                     <span className="text-2xl font-bold text-purple-600">
-                      {favorite.deal.price_range || `KSh ${favorite.deal.best_price || 'Price varies'}`}
+                      {favorite.deal?.price_range || `KSh ${favorite.deal?.best_price || 'Price varies'}`}
                     </span>
-                    {favorite.deal.store_count && (
+                    {favorite.deal?.store_count && (
                       <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded text-sm font-semibold">
                         {favorite.deal.store_count} store{favorite.deal.store_count !== 1 ? 's' : ''}
                       </span>
@@ -138,7 +138,7 @@ export default function FavoritesPage() {
                         <FiTrendingUp className="w-4 h-4 mr-1" />
                         Compare Prices
                       </Button>
-                      <Link href={`/offers/${favorite.deal.id}`} className="flex-1">
+                      <Link href={`/offers/${favorite.deal?.id || 0}`} className="flex-1">
                         <Button variant="primary" size="md" className="w-full">
                           View Deal
                         </Button>
@@ -160,7 +160,7 @@ export default function FavoritesPage() {
             setSelectedDeal(null);
           }}
           stores={[]}
-          dealTitle={selectedDeal.title}
+          dealTitle={selectedDeal?.title || 'Deal'}
         />
       )}
     </div>

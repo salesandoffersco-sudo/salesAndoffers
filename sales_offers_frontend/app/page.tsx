@@ -5,13 +5,11 @@ import { useState, useEffect } from "react";
 import { FiShoppingBag, FiTag, FiTrendingUp, FiUsers, FiShield, FiStar, FiZap, FiArrowRight } from "react-icons/fi";
 import Button from "../components/Button";
 import TrustIndicators from "../components/TrustIndicators";
-import HeroCarousel from "../components/HeroCarousel";
 import { api } from "../lib/api";
 
 export default function Home() {
   const [featuredDeals, setFeaturedDeals] = useState<any[]>([]);
   const [featuredSellers, setFeaturedSellers] = useState<any[]>([]);
-  const [carouselItems, setCarouselItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,26 +19,8 @@ export default function Home() {
   const fetchFeaturedContent = async () => {
     try {
       const response = await api.get('/api/deals/featured/?deals_limit=6&sellers_limit=8');
-      const deals = response.data.featured_deals || [];
-      const sellers = response.data.featured_sellers || [];
-      
-      setFeaturedDeals(deals);
-      setFeaturedSellers(sellers);
-      
-      // Transform deals for carousel format
-      const carouselData = deals.slice(0, 6).map((deal: any) => ({
-        id: deal.id,
-        title: deal.title,
-        description: deal.description,
-        discounted_price: deal.price_range ? parseFloat(deal.price_range.split('-')[0].replace(/[^0-9.]/g, '')) : parseFloat(deal.best_price || '0'),
-        original_price: parseFloat(deal.best_price || '0') * 1.2, // Mock original price
-        average_rating: 4.5,
-        main_image: deal.main_image || deal.image || `https://picsum.photos/400/600?random=${deal.id}`,
-        category: deal.category,
-        discount_percentage: deal.discount_percentage || 20
-      }));
-      
-      setCarouselItems(carouselData);
+      setFeaturedDeals(response.data.featured_deals || []);
+      setFeaturedSellers(response.data.featured_sellers || []);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching featured content:', error);
@@ -78,9 +58,6 @@ export default function Home() {
       
       {/* Content */}
       <div className="relative z-10">
-      {/* Hero Carousel Section */}
-      {carouselItems.length > 0 && <HeroCarousel items={carouselItems} />}
-      
       {/* Hero Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="text-center">

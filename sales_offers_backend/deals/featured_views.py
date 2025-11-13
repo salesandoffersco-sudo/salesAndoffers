@@ -161,6 +161,7 @@ def get_featured_content(request):
 def get_featured_deals_with_fallback(limit=6):
     """Get featured deals with fallback algorithms"""
     deals = []
+    used_deal_ids = set()
     
     try:
         # 1. Manual featured deals
@@ -174,8 +175,10 @@ def get_featured_deals_with_fallback(limit=6):
         
         for item in manual_featured:
             try:
-                deal = Deal.objects.get(id=item.object_id, is_published=True, status='approved')
-                deals.append(DealSerializer(deal).data)
+                if item.object_id not in used_deal_ids:
+                    deal = Deal.objects.get(id=item.object_id, is_published=True, status='approved')
+                    deals.append(DealSerializer(deal).data)
+                    used_deal_ids.add(item.object_id)
             except Deal.DoesNotExist:
                 continue
     except Exception:
@@ -184,15 +187,16 @@ def get_featured_deals_with_fallback(limit=6):
     remaining = limit - len(deals)
     if remaining > 0:
         try:
-            # 2. Recent deals as fallback
+            # 2. Recent deals as fallback (exclude already used deals)
             recent_deals = Deal.objects.filter(
                 is_published=True,
                 status='approved'
-            ).order_by('-created_at')[:remaining]
+            ).exclude(id__in=used_deal_ids).order_by('-created_at')[:remaining]
             
             for deal in recent_deals:
-                if len(deals) < limit:
+                if len(deals) < limit and deal.id not in used_deal_ids:
                     deals.append(DealSerializer(deal).data)
+                    used_deal_ids.add(deal.id)
         except Exception:
             pass
     
@@ -201,6 +205,7 @@ def get_featured_deals_with_fallback(limit=6):
 def get_featured_sellers_with_fallback(limit=8):
     """Get featured sellers with fallback algorithms"""
     sellers = []
+    used_seller_ids = set()
     
     try:
         # 1. Manual featured sellers
@@ -214,8 +219,10 @@ def get_featured_sellers_with_fallback(limit=8):
         
         for item in manual_featured:
             try:
-                seller = Seller.objects.get(id=item.object_id)
-                sellers.append(SellerSerializer(seller).data)
+                if item.object_id not in used_seller_ids:
+                    seller = Seller.objects.get(id=item.object_id)
+                    sellers.append(SellerSerializer(seller).data)
+                    used_seller_ids.add(item.object_id)
             except Seller.DoesNotExist:
                 continue
     except Exception:
@@ -224,15 +231,16 @@ def get_featured_sellers_with_fallback(limit=8):
     remaining = limit - len(sellers)
     if remaining > 0:
         try:
-            # 2. Recent sellers as fallback
+            # 2. Recent sellers as fallback (exclude already used sellers)
             recent_sellers = Seller.objects.filter(
                 deals__is_published=True,
                 deals__status='approved'
-            ).distinct().order_by('-created_at')[:remaining]
+            ).exclude(id__in=used_seller_ids).distinct().order_by('-created_at')[:remaining]
             
             for seller in recent_sellers:
-                if len(sellers) < limit:
+                if len(sellers) < limit and seller.id not in used_seller_ids:
                     sellers.append(SellerSerializer(seller).data)
+                    used_seller_ids.add(seller.id)
         except Exception:
             pass
     
