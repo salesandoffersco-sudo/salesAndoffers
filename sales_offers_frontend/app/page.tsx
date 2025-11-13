@@ -236,7 +236,7 @@ export default function Home() {
           <div className="text-center py-12">
             <p className="text-[rgb(var(--color-muted))]">No featured deals available</p>
           </div>
-        )
+        )}
         
         <div className="text-center">
           <Link href="/offers" passHref>
@@ -301,7 +301,7 @@ export default function Home() {
           <div className="text-center py-12">
             <p className="text-[rgb(var(--color-muted))]">No featured sellers available</p>
           </div>
-        )
+        )}
         
         <div className="text-center">
           <Link href="/sellers" passHref>
