@@ -12,8 +12,8 @@ from accounts.notification_service import NotificationService
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def admin_deals(request):
-    if not request.user.is_staff:
-        return Response({'error': 'Permission denied'}, status=403)
+    if not (request.user.is_staff and request.user.is_superuser):
+        return Response({'error': 'Admin access required'}, status=403)
     
     deals = Deal.objects.select_related('seller').all().order_by('-created_at')
     serializer = DealSerializer(deals, many=True)
