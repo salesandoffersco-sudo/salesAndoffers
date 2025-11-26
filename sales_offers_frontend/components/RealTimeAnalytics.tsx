@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  FiActivity, FiDollarSign, FiShoppingBag, FiUsers, 
+import {
+  FiActivity, FiDollarSign, FiShoppingBag, FiUsers,
   FiTrendingUp, FiZap, FiWifi, FiWifiOff
 } from 'react-icons/fi';
 
@@ -33,17 +33,15 @@ const ActivityItem = ({ activity, index }: any) => (
     transition={{ delay: index * 0.1 }}
     className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
   >
-    <div className={`p-2 rounded-full ${
-      activity.type === 'sale' ? 'bg-green-100 dark:bg-green-900/30' :
-      activity.type === 'redemption' ? 'bg-blue-100 dark:bg-blue-900/30' :
-      'bg-purple-100 dark:bg-purple-900/30'
-    }`}>
+    <div className={`p-2 rounded-full ${activity.type === 'sale' ? 'bg-green-100 dark:bg-green-900/30' :
+        activity.type === 'redemption' ? 'bg-blue-100 dark:bg-blue-900/30' :
+          'bg-purple-100 dark:bg-purple-900/30'
+      }`}>
       {activity.type === 'sale' ? (
-        <FiDollarSign className={`w-4 h-4 ${
-          activity.type === 'sale' ? 'text-green-600 dark:text-green-400' :
-          activity.type === 'redemption' ? 'text-blue-600 dark:text-blue-400' :
-          'text-purple-600 dark:text-purple-400'
-        }`} />
+        <FiDollarSign className={`w-4 h-4 ${activity.type === 'sale' ? 'text-green-600 dark:text-green-400' :
+            activity.type === 'redemption' ? 'text-blue-600 dark:text-blue-400' :
+              'text-purple-600 dark:text-purple-400'
+          }`} />
       ) : activity.type === 'redemption' ? (
         <FiShoppingBag className="w-4 h-4 text-blue-600 dark:text-blue-400" />
       ) : (
@@ -68,9 +66,8 @@ const LiveMetric = ({ icon: Icon, label, value, color, pulse = false }: any) => 
   <motion.div
     initial={{ scale: 0.9, opacity: 0 }}
     animate={{ scale: 1, opacity: 1 }}
-    className={`relative bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700 ${
-      pulse ? 'animate-pulse' : ''
-    }`}
+    className={`relative bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700 ${pulse ? 'animate-pulse' : ''
+      }`}
   >
     <div className="flex items-center justify-between">
       <div>
@@ -106,21 +103,6 @@ export default function RealTimeAnalytics({ plan, className = '' }: RealTimeAnal
     setLastUpdate(new Date());
   }, []);
 
-  if (!mounted) {
-    return (
-      <div className={`bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 ${className}`}>
-        <div className="animate-pulse">
-          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded mb-4" />
-          <div className="grid grid-cols-3 gap-4">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="h-20 bg-gray-200 dark:bg-gray-700 rounded" />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   // Simulate real-time data updates
   useEffect(() => {
     if (plan === 'Basic' || !mounted) return; // Real-time only for Pro/Enterprise
@@ -131,12 +113,12 @@ export default function RealTimeAnalytics({ plan, className = '' }: RealTimeAnal
         message: string;
         amount?: number;
       }> = [
-        { type: 'sale', message: 'New voucher purchased for "50% Off Electronics"', amount: 2500 },
-        { type: 'redemption', message: 'Voucher redeemed at Tech Store Downtown' },
-        { type: 'view', message: '5 new customers viewed your deals' },
-        { type: 'sale', message: 'Bulk purchase: 3 vouchers for "Restaurant Special"', amount: 4500 },
-        { type: 'redemption', message: 'Voucher redeemed at Fashion Outlet' }
-      ];
+          { type: 'sale', message: 'New voucher purchased for "50% Off Electronics"', amount: 2500 },
+          { type: 'redemption', message: 'Voucher redeemed at Tech Store Downtown' },
+          { type: 'view', message: '5 new customers viewed your deals' },
+          { type: 'sale', message: 'Bulk purchase: 3 vouchers for "Restaurant Special"', amount: 4500 },
+          { type: 'redemption', message: 'Voucher redeemed at Fashion Outlet' }
+        ];
 
       setData(prev => {
         const newActivity = activities[Math.floor(Math.random() * activities.length)];
@@ -183,6 +165,21 @@ export default function RealTimeAnalytics({ plan, className = '' }: RealTimeAnal
       }
     };
   }, [plan, mounted]);
+
+  if (!mounted) {
+    return (
+      <div className={`bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 ${className}`}>
+        <div className="animate-pulse">
+          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded mb-4" />
+          <div className="grid grid-cols-3 gap-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="h-20 bg-gray-200 dark:bg-gray-700 rounded" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (plan === 'Basic') {
     return (
