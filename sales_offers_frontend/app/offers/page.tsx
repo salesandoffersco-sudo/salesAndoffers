@@ -458,23 +458,23 @@ export default function OffersPage() {
                   return (
                     <div
                       key={offer.id}
-                      className={`bg-[rgb(var(--color-card))] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border ${isFeatured
-                        ? 'border-purple-500 ring-2 ring-purple-200 dark:ring-purple-800'
+                      className={`bg-[rgb(var(--color-card))] rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border ${isFeatured
+                        ? 'border-purple-500 ring-1 ring-purple-200 dark:ring-purple-800'
                         : 'border-[rgb(var(--color-border))]'
                         }`}
                     >
                       {isFeatured && (
-                        <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 text-sm font-semibold">
+                        <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-3 py-1 text-xs font-semibold">
                           ⭐ Featured Listing
                         </div>
                       )}
                       {/* Offer Image */}
                       {(offer.main_image || offer.image) && (
-                        <div className="bg-gray-100 dark:bg-gray-800 relative">
+                        <div className="bg-gray-100 dark:bg-gray-800 relative h-48">
                           <img
                             src={offer.main_image || offer.image}
                             alt={offer.title}
-                            className="w-full h-auto object-contain"
+                            className="w-full h-full object-contain p-2"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
                               target.style.display = 'none';
@@ -482,15 +482,15 @@ export default function OffersPage() {
                           />
                           {/* Image count indicator */}
                           {offer.images && offer.images.length > 1 && (
-                            <div className="absolute bottom-2 right-2 bg-black bg-opacity-75 text-white px-2 py-1 rounded text-xs">
+                            <div className="absolute bottom-2 right-2 bg-black bg-opacity-75 text-white px-1.5 py-0.5 rounded text-[10px]">
                               +{offer.images.length - 1} more
                             </div>
                           )}
                         </div>
                       )}
-                      <div className="p-6">
-                        <div className="flex justify-between items-start mb-4">
-                          <span className="bg-purple-100 dark:bg-indigo-900/40 text-purple-600 dark:text-indigo-300 px-3 py-1 rounded-full text-sm font-semibold">
+                      <div className="p-4">
+                        <div className="flex justify-between items-start mb-2">
+                          <span className="bg-purple-100 dark:bg-indigo-900/40 text-purple-600 dark:text-indigo-300 px-2 py-0.5 rounded-full text-xs font-semibold">
                             {offer.category}
                           </span>
                           <button
@@ -498,60 +498,60 @@ export default function OffersPage() {
                             className={`transition-colors ${offer.is_favorited ? 'text-red-500' : 'text-gray-400 hover:text-red-500'
                               }`}
                           >
-                            <FiHeart className={`text-2xl ${offer.is_favorited ? 'fill-current' : ''}`} />
+                            <FiHeart className={`text-xl ${offer.is_favorited ? 'fill-current' : ''}`} />
                           </button>
                         </div>
 
-                        <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">{offer.title}</h3>
-                        <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">{offer.description}</p>
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1 line-clamp-1">{offer.title}</h3>
+                        <p className="text-gray-600 dark:text-gray-300 mb-2 text-sm line-clamp-2 h-10">{offer.description}</p>
 
-                        <div className="flex items-center space-x-2 mb-4">
-                          <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                             {offer.price_range || `KES ${offer.discounted_price}`}
                           </span>
                           {offer.store_count && (
-                            <span className="bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 px-3 py-1 rounded-full text-sm font-semibold">
+                            <span className="bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 px-2 py-0.5 rounded-full text-xs font-semibold">
                               {offer.store_count} store{offer.store_count !== 1 ? 's' : ''}
                             </span>
                           )}
                         </div>
 
-                        <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm mb-4">
-                          <FiClock className="mr-2" />
+                        <div className="flex items-center text-gray-500 dark:text-gray-400 text-xs mb-3">
+                          <FiClock className="mr-1" />
                           <span>Valid until {new Date(offer.expires_at).toLocaleDateString()}</span>
                         </div>
 
-                        <div className="border-t border-gray-100 dark:border-gray-800 pt-4">
-                          <div className="flex items-center gap-2 mb-3">
+                        <div className="border-t border-gray-100 dark:border-gray-800 pt-3">
+                          <div className="flex items-center gap-2 mb-2">
                             <ProfilePicture
                               src={offer.seller.profile?.company_logo || offer.seller.user?.profile_picture}
                               alt={offer.seller.business_name}
-                              size="sm"
+                              size="xs"
                               clickable={true}
                             />
-                            <p className="text-sm text-gray-600 dark:text-gray-300">
+                            <p className="text-xs text-gray-600 dark:text-gray-300 truncate max-w-[150px]">
                               By <span className="font-semibold text-purple-600 dark:text-indigo-300">{offer.seller.business_name}</span>
                             </p>
                             <VerificationBadge isVerified={offer.seller.is_verified || false} type="seller" size="sm" />
                           </div>
-                          <TrustIndicators size="sm" className="mb-3" />
+
                           <div className="flex space-x-2">
                             <Button
                               variant="outline"
-                              size="md"
-                              className="flex-1"
+                              size="sm"
+                              className="flex-1 text-xs py-1.5 h-8"
                               onClick={() => handleComparePrices(offer)}
                               disabled={loadingStores && selectedOffer?.id === offer.id}
                             >
                               {loadingStores && selectedOffer?.id === offer.id ? (
-                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-1" />
+                                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-current mr-1" />
                               ) : (
-                                <FiTrendingUp className="w-4 h-4 mr-1" />
+                                <FiTrendingUp className="w-3 h-3 mr-1" />
                               )}
                               View Stores
                             </Button>
                             <Link href={`/offers/${offer.id}`} className="flex-1">
-                              <Button variant="primary" size="md" className="w-full">
+                              <Button variant="primary" size="sm" className="w-full text-xs py-1.5 h-8">
                                 View Details
                               </Button>
                             </Link>
