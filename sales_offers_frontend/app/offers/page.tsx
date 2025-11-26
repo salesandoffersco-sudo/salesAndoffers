@@ -86,7 +86,7 @@ export default function OffersPage() {
     setSelectedOffer(offer);
     setLoadingStores(true);
     setShowStoreModal(true);
-    
+
     try {
       const response = await axios.get(`${API_BASE_URL}/api/deals/${offer.id}/stores/`);
       setStoreData(response.data);
@@ -104,16 +104,16 @@ export default function OffersPage() {
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
-      
+
       setFavoriteLoading(offerId);
       const response = await axios.post(
         `${API_BASE_URL}/api/accounts/deals/${offerId}/favorite/`,
         {},
         { headers: { Authorization: `Token ${token}` } }
       );
-      
-      setOffers(offers.map(offer => 
-        offer.id === offerId 
+
+      setOffers(offers.map(offer =>
+        offer.id === offerId
           ? { ...offer, is_favorited: response.data.favorited }
           : offer
       ));
@@ -176,7 +176,7 @@ export default function OffersPage() {
     if (filters.categories && filters.categories.length > 0 && !filters.categories.includes(offer.category)) return false;
     if (filters.stores && filters.stores.length > 0) {
       // Check if offer has any store links that match the selected stores
-      const hasMatchingStore = offer.store_links?.some((link: any) => 
+      const hasMatchingStore = offer.store_links?.some((link: any) =>
         filters.stores.includes(link.store_name)
       );
       if (!hasMatchingStore) return false;
@@ -245,18 +245,18 @@ export default function OffersPage() {
 
 
   // Use real offers if available, otherwise use mock data
-  const featuredItems = offers.length > 0 
+  const featuredItems = offers.length > 0
     ? offers.slice(0, 6).map(offer => ({
-        id: offer.id,
-        title: offer.title,
-        description: offer.description,
-        discounted_price: offer.price_range ? parseFloat(offer.price_range.split('-')[0].replace(/[^0-9.]/g, '')) : parseFloat(offer.discounted_price || '0'),
-        original_price: parseFloat(offer.original_price || '0'),
-        average_rating: 4.5,
-        main_image: offer.main_image || offer.image || `https://picsum.photos/400/600?random=${offer.id}`,
-        category: offer.category,
-        discount_percentage: offer.discount_percentage || 0
-      }))
+      id: offer.id,
+      title: offer.title,
+      description: offer.description,
+      discounted_price: offer.price_range ? parseFloat(offer.price_range.split('-')[0].replace(/[^0-9.]/g, '')) : parseFloat(offer.discounted_price || '0'),
+      original_price: parseFloat(offer.original_price || '0'),
+      average_rating: 4.5,
+      main_image: offer.main_image || offer.image || `https://picsum.photos/400/600?random=${offer.id}`,
+      category: offer.category,
+      discount_percentage: offer.discount_percentage || 0
+    }))
     : [];
 
   return (
@@ -318,29 +318,28 @@ export default function OffersPage() {
                 <p className="text-xl text-[rgb(var(--color-muted))]">No offers match your filters</p>
               </div>
             ) : (
-              <div className={viewMode === 'grid' 
-                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" 
+              <div className={viewMode === 'grid'
+                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
                 : "space-y-6"
               }>
                 {visibleOffers.map((offer, index) => {
                   const isFeatured = index < 3 && canSeeFeaturedListings();
-                  
+
                   if (viewMode === 'list') {
                     return (
                       <div
                         key={offer.id}
-                        className={`bg-[rgb(var(--color-card))] rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border ${
-                          isFeatured 
-                            ? 'border-purple-500 ring-2 ring-purple-200 dark:ring-purple-800' 
-                            : 'border-[rgb(var(--color-border))]'
-                        }`}
+                        className={`bg-[rgb(var(--color-card))] rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border ${isFeatured
+                          ? 'border-purple-500 ring-2 ring-purple-200 dark:ring-purple-800'
+                          : 'border-[rgb(var(--color-border))]'
+                          }`}
                       >
                         <div className="flex flex-col sm:flex-row">
                           {/* Image Section */}
                           {(offer.main_image || offer.image) && (
                             <div className="w-full sm:w-48 h-32 sm:h-auto flex-shrink-0">
-                              <img 
-                                src={offer.main_image || offer.image} 
+                              <img
+                                src={offer.main_image || offer.image}
                                 alt={offer.title}
                                 className="w-full h-full object-cover"
                                 onError={(e) => {
@@ -350,7 +349,7 @@ export default function OffersPage() {
                               />
                             </div>
                           )}
-                          
+
                           {/* Content Section */}
                           <div className="flex-1 p-4 sm:p-6">
                             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
@@ -366,10 +365,10 @@ export default function OffersPage() {
                                     </span>
                                   )}
                                 </div>
-                                
+
                                 <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 mb-2 line-clamp-1">{offer.title}</h3>
                                 <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm line-clamp-2">{offer.description}</p>
-                                
+
                                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-3">
                                   <div className="flex items-center gap-2 flex-wrap">
                                     <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
@@ -386,7 +385,7 @@ export default function OffersPage() {
                                     <span>Until {new Date(offer.expires_at).toLocaleDateString()}</span>
                                   </div>
                                 </div>
-                                
+
                                 {/* Seller Info */}
                                 <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300">
                                   <ProfilePicture
@@ -401,15 +400,14 @@ export default function OffersPage() {
                                   <VerificationBadge isVerified={offer.seller.is_verified || false} type="seller" size="sm" />
                                 </div>
                               </div>
-                              
+
                               {/* Actions Section */}
                               <div className="flex sm:flex-col items-center gap-2">
-                                <button 
+                                <button
                                   onClick={() => handleFavorite(offer.id)}
                                   disabled={favoriteLoading === offer.id}
-                                  className={`transition-colors p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 ${
-                                    offer.is_favorited ? 'text-red-500' : 'text-gray-400 hover:text-red-500'
-                                  } ${favoriteLoading === offer.id ? 'opacity-50' : ''}`}
+                                  className={`transition-colors p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 ${offer.is_favorited ? 'text-red-500' : 'text-gray-400 hover:text-red-500'
+                                    } ${favoriteLoading === offer.id ? 'opacity-50' : ''}`}
                                 >
                                   {favoriteLoading === offer.id ? (
                                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current" />
@@ -417,7 +415,7 @@ export default function OffersPage() {
                                     <FiHeart className={`text-lg ${offer.is_favorited ? 'fill-current' : ''}`} />
                                   )}
                                 </button>
-                                
+
                                 <div className="flex gap-2">
                                   <Button
                                     variant="outline"
@@ -444,15 +442,14 @@ export default function OffersPage() {
                       </div>
                     );
                   }
-                  
+
                   return (
                     <div
                       key={offer.id}
-                      className={`bg-[rgb(var(--color-card))] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border ${
-                        isFeatured 
-                          ? 'border-purple-500 ring-2 ring-purple-200 dark:ring-purple-800' 
-                          : 'border-[rgb(var(--color-border))]'
-                      }`}
+                      className={`bg-[rgb(var(--color-card))] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border ${isFeatured
+                        ? 'border-purple-500 ring-2 ring-purple-200 dark:ring-purple-800'
+                        : 'border-[rgb(var(--color-border))]'
+                        }`}
                     >
                       {isFeatured && (
                         <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 text-sm font-semibold">
@@ -462,8 +459,8 @@ export default function OffersPage() {
                       {/* Offer Image */}
                       {(offer.main_image || offer.image) && (
                         <div className="bg-gray-100 dark:bg-gray-800 relative">
-                          <img 
-                            src={offer.main_image || offer.image} 
+                          <img
+                            src={offer.main_image || offer.image}
                             alt={offer.title}
                             className="w-full h-auto object-contain"
                             onError={(e) => {
@@ -484,19 +481,18 @@ export default function OffersPage() {
                           <span className="bg-purple-100 dark:bg-indigo-900/40 text-purple-600 dark:text-indigo-300 px-3 py-1 rounded-full text-sm font-semibold">
                             {offer.category}
                           </span>
-                          <button 
+                          <button
                             onClick={() => handleFavorite(offer.id)}
-                            className={`transition-colors ${
-                              offer.is_favorited ? 'text-red-500' : 'text-gray-400 hover:text-red-500'
-                            }`}
+                            className={`transition-colors ${offer.is_favorited ? 'text-red-500' : 'text-gray-400 hover:text-red-500'
+                              }`}
                           >
                             <FiHeart className={`text-2xl ${offer.is_favorited ? 'fill-current' : ''}`} />
                           </button>
                         </div>
-                        
+
                         <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">{offer.title}</h3>
                         <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">{offer.description}</p>
-                        
+
                         <div className="flex items-center space-x-2 mb-4">
                           <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                             {offer.price_range || `KES ${offer.discounted_price}`}
@@ -507,12 +503,12 @@ export default function OffersPage() {
                             </span>
                           )}
                         </div>
-                        
+
                         <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm mb-4">
                           <FiClock className="mr-2" />
                           <span>Valid until {new Date(offer.expires_at).toLocaleDateString()}</span>
                         </div>
-                        
+
                         <div className="border-t border-gray-100 dark:border-gray-800 pt-4">
                           <div className="flex items-center gap-2 mb-3">
                             <ProfilePicture
@@ -540,7 +536,7 @@ export default function OffersPage() {
                               ) : (
                                 <FiTrendingUp className="w-4 h-4 mr-1" />
                               )}
-                              Compare Prices
+                              View Stores
                             </Button>
                             <Link href={`/offers/${offer.id}`} className="flex-1">
                               <Button variant="primary" size="md" className="w-full">
@@ -581,7 +577,7 @@ export default function OffersPage() {
           </div>
         </div>
       </div>
-      
+
       {selectedOffer && (
         <StoreSelectionModal
           isOpen={showStoreModal}

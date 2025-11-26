@@ -146,7 +146,7 @@ export default function DealDetailsPage() {
               mainImage={deal.main_image || deal.image}
               title={deal.title}
             />
-            
+
             {/* Store Availability Info */}
             <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
               <div className="flex justify-between text-sm">
@@ -187,9 +187,9 @@ export default function DealDetailsPage() {
                   </Button>
                 </div>
               </div>
-              
+
               <h1 className="text-3xl font-bold text-[rgb(var(--color-text))] mb-4">{deal.title}</h1>
-              
+
               {deal.lowest_price && (
                 <div className="flex items-center space-x-4 mb-6">
                   <span className="text-3xl font-bold text-purple-600 dark:text-indigo-300">
@@ -220,7 +220,7 @@ export default function DealDetailsPage() {
             {/* Store Comparison Section */}
             <div className="bg-[rgb(var(--color-card))] rounded-xl p-6 border border-[rgb(var(--color-border))]">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-[rgb(var(--color-text))]">Compare Prices</h3>
+                <h3 className="text-lg font-semibold text-[rgb(var(--color-text))]">View Stores</h3>
                 <Button
                   variant="outline"
                   size="sm"
@@ -231,7 +231,7 @@ export default function DealDetailsPage() {
                   {isFavorited ? 'Saved' : 'Save Deal'}
                 </Button>
               </div>
-              
+
               <div className="space-y-4">
                 {deal.store_links && deal.store_links.length > 0 ? (
                   <>
@@ -262,8 +262,8 @@ export default function DealDetailsPage() {
                         </div>
                       ))}
                     </div>
-                    <Button 
-                      variant="primary" 
+                    <Button
+                      variant="primary"
                       className="w-full"
                       onClick={() => setShowStoreModal(true)}
                     >
@@ -274,8 +274,8 @@ export default function DealDetailsPage() {
                   <div className="text-center py-8 text-[rgb(var(--color-muted))]">
                     <FiExternalLink className="w-12 h-12 mx-auto mb-4 opacity-50" />
                     <p>No store links available for this deal.</p>
-                    <Button 
-                      variant="primary" 
+                    <Button
+                      variant="primary"
                       className="mt-4"
                       onClick={() => setShowStoreModal(true)}
                     >
@@ -290,7 +290,7 @@ export default function DealDetailsPage() {
               <h3 className="text-lg font-semibold text-[rgb(var(--color-text))] mb-3">Description</h3>
               <p className="text-[rgb(var(--color-muted))] leading-relaxed">{deal.description}</p>
             </div>
-            
+
 
 
             <div className="bg-[rgb(var(--color-card))] rounded-xl p-6 border border-[rgb(var(--color-border))]">
@@ -345,7 +345,7 @@ export default function DealDetailsPage() {
           </div>
         </div>
       </div>
-      
+
       <StoreSelectionModal
         isOpen={showStoreModal}
         onClose={() => setShowStoreModal(false)}
