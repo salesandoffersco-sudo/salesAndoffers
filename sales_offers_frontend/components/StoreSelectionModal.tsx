@@ -5,6 +5,8 @@ import { FiX, FiSearch, FiExternalLink } from "react-icons/fi";
 import Button from "./Button";
 import { API_BASE_URL } from "../lib/api";
 
+import PhysicalStoreList from "./PhysicalStoreList";
+
 interface Store {
   id: number;
   store_name: string;
@@ -20,19 +22,36 @@ interface Store {
   };
 }
 
+interface PhysicalStore {
+  id: number;
+  store_name: string;
+  address: string;
+  phone_number: string;
+  opening_hours: string;
+  map_url: string;
+  latitude?: number;
+  longitude?: number;
+  images?: Array<{
+    id: number;
+    image_url: string;
+  }>;
+}
+
 interface StoreSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
   stores?: Store[];
+  physicalStores?: PhysicalStore[];
   dealTitle: string;
   mode?: 'view' | 'add';
   loading?: boolean;
   onAddStore?: (store: { name: string; url: string; price: number; logo?: string }) => void;
 }
 
-export default function StoreSelectionModal({ isOpen, onClose, stores = [], dealTitle, mode = 'view', loading = false, onAddStore }: StoreSelectionModalProps) {
+export default function StoreSelectionModal({ isOpen, onClose, stores = [], physicalStores = [], dealTitle, mode = 'view', loading = false, onAddStore }: StoreSelectionModalProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [newStore, setNewStore] = useState({ name: '', url: '', price: 0, logo: '' });
+  const [activeTab, setActiveTab] = useState<'online' | 'physical'>('online');
 
   // Fallback stores if none provided
   const fallbackStores: Store[] = [
@@ -79,7 +98,7 @@ export default function StoreSelectionModal({ isOpen, onClose, stores = [], deal
   ];
 
   const displayStores = stores.length > 0 ? stores : (loading ? [] : fallbackStores);
-  
+
   const filteredStores = displayStores.filter(store =>
     store.store_name.toLowerCase().includes(searchTerm.toLowerCase()) &&
     store.is_available
@@ -102,7 +121,7 @@ export default function StoreSelectionModal({ isOpen, onClose, stores = [], deal
     } catch (error) {
       console.error('Error tracking click:', error);
     }
-    
+
     window.open(store.store_url, '_blank');
     onClose();
   };
@@ -111,7 +130,7 @@ export default function StoreSelectionModal({ isOpen, onClose, stores = [], deal
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-[rgb(var(--color-card))] rounded-xl max-w-2xl w-full max-h-[80vh] overflow-hidden border border-[rgb(var(--color-border))]">
+      <div className="bg-[rgb(var(--color-card))] rounded-xl max-w-2xl w-full max-h-[80vh] overflow-hidden border border-[rgb(var(--color-border))] flex flex-col">
         <div className="flex items-center justify-between p-6 border-b border-[rgb(var(--color-border))]">
           <div>
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">Compare Prices</h2>
@@ -125,7 +144,31 @@ export default function StoreSelectionModal({ isOpen, onClose, stores = [], deal
           </button>
         </div>
 
-        <div className="p-6">
+        {/* Tabs */}
+        {mode === 'view' && (
+          <div className="flex border-b border-[rgb(var(--color-border))]">
+            <button
+              className={`flex-1 py-3 text-sm font-medium transition-colors ${activeTab === 'online'
+                  ? 'text-purple-600 border-b-2 border-purple-600 bg-purple-50 dark:bg-purple-900/10'
+                  : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+                }`}
+              onClick={() => setActiveTab('online')}
+            >
+              Online Stores ({displayStores.length})
+            </button>
+            <button
+              className={`flex-1 py-3 text-sm font-medium transition-colors ${activeTab === 'physical'
+                  ? 'text-purple-600 border-b-2 border-purple-600 bg-purple-50 dark:bg-purple-900/10'
+                  : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+                }`}
+              onClick={() => setActiveTab('physical')}
+            >
+              Physical Stores ({physicalStores.length})
+            </button>
+          </div>
+        )}
+
+        <div className="p-6 overflow-y-auto">
           {mode === 'add' ? (
             <div className="space-y-4">
               <div>
@@ -133,7 +176,7 @@ export default function StoreSelectionModal({ isOpen, onClose, stores = [], deal
                 <input
                   type="text"
                   value={newStore.name}
-                  onChange={(e) => setNewStore({...newStore, name: e.target.value})}
+                  onChange={(e) => setNewStore({ ...newStore, name: e.target.value })}
                   className="w-full px-3 py-2 border border-[rgb(var(--color-border))] rounded-lg bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] focus:ring-2 focus:ring-purple-500"
                   placeholder="e.g., Jumia, Amazon"
                 />
@@ -143,7 +186,7 @@ export default function StoreSelectionModal({ isOpen, onClose, stores = [], deal
                 <input
                   type="url"
                   value={newStore.url}
-                  onChange={(e) => setNewStore({...newStore, url: e.target.value})}
+                  onChange={(e) => setNewStore({ ...newStore, url: e.target.value })}
                   className="w-full px-3 py-2 border border-[rgb(var(--color-border))] rounded-lg bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] focus:ring-2 focus:ring-purple-500"
                   placeholder="https://store.com/product"
                 />
@@ -153,7 +196,7 @@ export default function StoreSelectionModal({ isOpen, onClose, stores = [], deal
                 <input
                   type="number"
                   value={newStore.price}
-                  onChange={(e) => setNewStore({...newStore, price: Number(e.target.value)})}
+                  onChange={(e) => setNewStore({ ...newStore, price: Number(e.target.value) })}
                   className="w-full px-3 py-2 border border-[rgb(var(--color-border))] rounded-lg bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] focus:ring-2 focus:ring-purple-500"
                   placeholder="15000"
                 />
@@ -163,7 +206,7 @@ export default function StoreSelectionModal({ isOpen, onClose, stores = [], deal
                 <input
                   type="url"
                   value={newStore.logo}
-                  onChange={(e) => setNewStore({...newStore, logo: e.target.value})}
+                  onChange={(e) => setNewStore({ ...newStore, logo: e.target.value })}
                   className="w-full px-3 py-2 border border-[rgb(var(--color-border))] rounded-lg bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] focus:ring-2 focus:ring-purple-500"
                   placeholder="https://logo.clearbit.com/store.com"
                 />
@@ -184,86 +227,101 @@ export default function StoreSelectionModal({ isOpen, onClose, stores = [], deal
             </div>
           ) : (
             <>
-              <div className="relative mb-6">
-                <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[rgb(var(--color-muted))]" />
-                <input
-                  type="text"
-                  placeholder="Search stores..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-[rgb(var(--color-border))] rounded-lg bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
-              </div>
-            </>
-          )}
+              {activeTab === 'online' && (
+                <>
+                  <div className="relative mb-6">
+                    <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[rgb(var(--color-muted))]" />
+                    <input
+                      type="text"
+                      placeholder="Search stores..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 border border-[rgb(var(--color-border))] rounded-lg bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  </div>
 
-          {mode === 'view' && (
-            loading ? (
-              <div className="text-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
-                <p className="text-gray-500 dark:text-gray-400">Loading stores...</p>
-              </div>
-            ) : filteredStores.length === 0 ? (
-              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                {stores.length === 0 ? "No stores available for this deal." : "No stores found matching your search."}
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {filteredStores.map((store) => (
-                  <button
-                    key={store.id}
-                    onClick={() => handleStoreClick(store)}
-                    className="w-full flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
-                  >
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-600 flex items-center justify-center">
-                        {store.store_info?.logo ? (
-                          <img
-                            src={store.store_info.logo}
-                            alt={store.store_name}
-                            className="w-8 h-8 object-contain"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.style.display = 'none';
-                              target.parentElement!.innerHTML = store.store_name.charAt(0);
-                            }}
-                          />
-                        ) : (
-                          <span className="text-lg font-bold text-gray-600 dark:text-gray-300">
-                            {store.store_name.charAt(0)}
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-left">
-                        <h3 className="font-semibold text-gray-900 dark:text-white">{store.store_name}</h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">
-                          {store.coupon_code ? `Code: ${store.coupon_code}` : 'Available now'}
-                        </p>
-                      </div>
+                  {loading ? (
+                    <div className="text-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
+                      <p className="text-gray-500 dark:text-gray-400">Loading stores...</p>
                     </div>
-                    <div className="flex items-center space-x-3">
-                      <div className="text-right">
-                        <p className="text-lg font-bold text-purple-600 dark:text-purple-400">
-                          KSh {store.price.toLocaleString()}
-                        </p>
-                        {store.coupon_discount && (
-                          <p className="text-sm text-green-600 font-medium">
-                            Save {store.coupon_discount}
-                          </p>
-                        )}
-                      </div>
-                      <FiExternalLink className="w-4 h-4 text-gray-400 group-hover:text-purple-600 transition-colors" />
+                  ) : filteredStores.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                      {stores.length === 0 ? "No online stores available for this deal." : "No stores found matching your search."}
                     </div>
-                  </button>
-                ))}
-              </div>
-            )
+                  ) : (
+                    <div className="space-y-3">
+                      {filteredStores.map((store) => (
+                        <button
+                          key={store.id}
+                          onClick={() => handleStoreClick(store)}
+                          className="w-full flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
+                        >
+                          <div className="flex items-center space-x-4">
+                            <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-600 flex items-center justify-center">
+                              {store.store_info?.logo ? (
+                                <img
+                                  src={store.store_info.logo}
+                                  alt={store.store_name}
+                                  className="w-8 h-8 object-contain"
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.style.display = 'none';
+                                    target.parentElement!.innerHTML = store.store_name.charAt(0);
+                                  }}
+                                />
+                              ) : (
+                                <span className="text-lg font-bold text-gray-600 dark:text-gray-300">
+                                  {store.store_name.charAt(0)}
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-left">
+                              <h3 className="font-semibold text-gray-900 dark:text-white">{store.store_name}</h3>
+                              <p className="text-sm text-gray-600 dark:text-gray-300">
+                                {store.coupon_code ? `Code: ${store.coupon_code}` : 'Available now'}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-3">
+                            <div className="text-right">
+                              <p className="text-lg font-bold text-purple-600 dark:text-purple-400">
+                                KSh {store.price.toLocaleString()}
+                              </p>
+                              {store.coupon_discount && (
+                                <p className="text-sm text-green-600 font-medium">
+                                  Save {store.coupon_discount}
+                                </p>
+                              )}
+                            </div>
+                            <FiExternalLink className="w-4 h-4 text-gray-400 group-hover:text-purple-600 transition-colors" />
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )
+                  }
+                </>
+              )}
+
+              {activeTab === 'physical' && (
+                <div>
+                  {physicalStores.length > 0 ? (
+                    <PhysicalStoreList stores={physicalStores} />
+                  ) : (
+                    <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                      No physical store locations available for this deal.
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
           )}
 
 
         </div>
 
-        {mode === 'view' && (
+        {mode === 'view' && activeTab === 'online' && (
           <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
             <p className="text-xs text-gray-600 dark:text-gray-300 text-center">
               Prices are updated regularly. Click on a store to visit their website.

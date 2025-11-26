@@ -354,6 +354,7 @@ export default function DealDetailsPage() {
         isOpen={showStoreModal}
         onClose={() => setShowStoreModal(false)}
         stores={deal.store_links || []}
+        physicalStores={deal.physical_stores || []}
         dealTitle={deal.title}
       />
     </div>
