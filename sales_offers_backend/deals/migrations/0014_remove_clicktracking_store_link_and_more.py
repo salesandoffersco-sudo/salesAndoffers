@@ -11,12 +11,7 @@ class Migration(migrations.Migration):
         # Use SQL to safely handle all cleanup operations
         migrations.RunSQL(
             """
-            DO $$ 
-            BEGIN
-                -- This migration marks all model cleanup as complete
-                -- The actual cleanup was already done in previous migrations
-                NULL;
-            END $$;
+            SELECT 1;
             """,
             reverse_sql="-- No reverse needed"
         ),

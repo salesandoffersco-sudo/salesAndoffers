@@ -2,8 +2,8 @@ from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from .models import Deal, DealImage, StoreLink  # Removed Voucher, ClickTracking
-from .serializers import DealSerializer, DealImageSerializer, StoreLinkSerializer  # Removed VoucherSerializer, ClickTrackingSerializer
+from .models import Deal, DealImage, StoreLink, PhysicalStore, PhysicalStoreImage  # Removed Voucher, ClickTracking
+from .serializers import DealSerializer, DealImageSerializer, StoreLinkSerializer, PhysicalStoreSerializer, PhysicalStoreImageSerializer  # Removed VoucherSerializer, ClickTrackingSerializer
 from sellers.models import Seller
 from sellers.serializers import SellerSerializer
 from accounts.models import User
@@ -340,3 +340,87 @@ def track_click(request):
         return Response({'error': 'Store link not found'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_physical_store(request, deal_id):
+    """Create a physical store for a deal"""
+    try:
+        seller = Seller.objects.get(user=request.user)
+        deal = Deal.objects.get(id=deal_id, seller=seller)
+        
+        physical_store = PhysicalStore.objects.create(
+            deal=deal,
+            store_name=request.data.get('store_name'),
+            address=request.data.get('address'),
+            latitude=request.data.get('latitude'),
+            longitude=request.data.get('longitude'),
+            phone_number=request.data.get('phone_number', ''),
+            opening_hours=request.data.get('opening_hours', ''),
+            map_url=request.data.get('map_url', '')
+        )
+        
+        serializer = PhysicalStoreSerializer(physical_store)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+    except (Seller.DoesNotExist, Deal.DoesNotExist):
+        return Response({'error': 'Deal not found'}, status=404)
+    except Exception as e:
+        return Response({'error': str(e)}, status=400)
+
+@api_view(['PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def manage_physical_store(request, deal_id, store_id):
+    """Update or delete a physical store"""
+    try:
+        seller = Seller.objects.get(user=request.user)
+        deal = Deal.objects.get(id=deal_id, seller=seller)
+        store = PhysicalStore.objects.get(id=store_id, deal=deal)
+        
+        if request.method == 'DELETE':
+            store.delete()
+            return Response({'message': 'Store deleted successfully'}, status=status.HTTP_200_OK)
+            
+        elif request.method == 'PUT':
+            store.store_name = request.data.get('store_name', store.store_name)
+            store.address = request.data.get('address', store.address)
+            store.latitude = request.data.get('latitude', store.latitude)
+            store.longitude = request.data.get('longitude', store.longitude)
+            store.phone_number = request.data.get('phone_number', store.phone_number)
+            store.opening_hours = request.data.get('opening_hours', store.opening_hours)
+            store.map_url = request.data.get('map_url', store.map_url)
+            store.save()
+            
+            serializer = PhysicalStoreSerializer(store)
+            return Response(serializer.data)
+            
+    except (Seller.DoesNotExist, Deal.DoesNotExist, PhysicalStore.DoesNotExist):
+        return Response({'error': 'Store not found'}, status=404)
+    except Exception as e:
+        return Response({'error': str(e)}, status=400)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def upload_physical_store_image(request, deal_id, store_id):
+    """Upload image for a physical store"""
+    try:
+        seller = Seller.objects.get(user=request.user)
+        deal = Deal.objects.get(id=deal_id, seller=seller)
+        store = PhysicalStore.objects.get(id=store_id, deal=deal)
+        
+        image_url = request.data.get('image_url')
+        
+        if not image_url:
+            return Response({'error': 'image_url is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        store_image = PhysicalStoreImage.objects.create(
+            store=store,
+            image_url=image_url
+        )
+        
+        serializer = PhysicalStoreImageSerializer(store_image)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+    except (Seller.DoesNotExist, Deal.DoesNotExist, PhysicalStore.DoesNotExist):
+        return Response({'error': 'Store not found'}, status=status.HTTP_404_NOT_FOUND)
+

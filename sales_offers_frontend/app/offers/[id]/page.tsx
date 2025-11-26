@@ -11,6 +11,7 @@ import ProfilePicture from "../../../components/ProfilePicture";
 import DealImageGallery from "../../../components/DealImageGallery";
 import ContactButton from "../../../components/ContactButton";
 import StoreSelectionModal from "../../../components/StoreSelectionModal";
+import PhysicalStoreList from "../../../components/PhysicalStoreList";
 
 interface StoreLink {
   id: number;
@@ -38,6 +39,7 @@ interface Deal {
   image?: string;
   main_image?: string;
   store_links?: StoreLink[];
+  physical_stores?: any[];
   store_count?: number;
   lowest_price?: number;
   images?: Array<{
@@ -285,6 +287,8 @@ export default function DealDetailsPage() {
                 )}
               </div>
             </div>
+
+            <PhysicalStoreList stores={deal.physical_stores || []} />
 
             <div className="bg-[rgb(var(--color-card))] rounded-xl p-6 border border-[rgb(var(--color-border))]">
               <h3 className="text-lg font-semibold text-[rgb(var(--color-text))] mb-3">Description</h3>

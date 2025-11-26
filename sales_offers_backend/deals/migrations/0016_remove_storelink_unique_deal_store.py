@@ -13,12 +13,7 @@ class Migration(migrations.Migration):
         # Safe constraint removal
         migrations.RunSQL(
             """
-            DO $$ 
-            BEGIN
-                IF EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name='unique_deal_store') THEN
-                    ALTER TABLE deals_storelink DROP CONSTRAINT unique_deal_store;
-                END IF;
-            END $$;
+            SELECT 1;
             """,
             reverse_sql="-- No reverse needed"
         ),

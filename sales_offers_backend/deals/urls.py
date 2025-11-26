@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (
     DealListView, DealDetailView, seller_detail, seller_offers, my_deals, deal_analytics, admin_deals,
     upload_deal_image, delete_deal_image, update_deal_image, track_click, deal_stores, create_store_link,
-    available_stores
+    available_stores, create_physical_store, manage_physical_store, upload_physical_store_image
 )
 from .review_views import create_review, get_deal_reviews
 from . import analytics_views
@@ -31,6 +31,11 @@ urlpatterns = [
     path('<int:deal_id>/images/<int:image_id>/delete/', delete_deal_image, name='delete-deal-image'),
     path('track-click/', track_click, name='track-click'),
     path('stores/', available_stores, name='available-stores'),
+    
+    # Physical Stores
+    path('<int:deal_id>/physical-stores/', create_physical_store, name='create-physical-store'),
+    path('<int:deal_id>/physical-stores/<int:store_id>/', manage_physical_store, name='manage-physical-store'),
+    path('<int:deal_id>/physical-stores/<int:store_id>/images/', upload_physical_store_image, name='upload-physical-store-image'),
     
     # Featured content management
     path('admin/featured-deals/', admin_featured_deals, name='admin-featured-deals'),

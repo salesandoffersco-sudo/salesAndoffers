@@ -45,6 +45,7 @@ interface Offer {
     coupon_discount?: string;
     is_available: boolean;
   }>;
+  physical_stores?: Array<any>;
   is_favorited?: boolean;
   is_verified?: boolean;
   rating?: number;
@@ -181,6 +182,9 @@ export default function OffersPage() {
       );
       if (!hasMatchingStore) return false;
     }
+    if (filters.availability && filters.availability.includes('physical_store')) {
+      if (!offer.physical_stores || offer.physical_stores.length === 0) return false;
+    }
     return true;
   });
 
@@ -196,6 +200,14 @@ export default function OffersPage() {
       id: 'search',
       title: 'Search',
       type: 'search' as const
+    },
+    {
+      id: 'availability',
+      title: 'Availability',
+      type: 'checkbox' as const,
+      options: [
+        { id: 'physical_store', label: 'Available in Physical Store' }
+      ]
     },
     {
       id: 'categories',

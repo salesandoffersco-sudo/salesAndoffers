@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Deal, DealImage, StoreLink  # Removed Voucher, ClickTracking
+from .models import Deal, DealImage, StoreLink, PhysicalStore, PhysicalStoreImage
 from sellers.serializers import SellerSerializer
 from .store_logos import get_store_info
 
@@ -23,6 +23,18 @@ class StoreLinkSerializer(serializers.ModelSerializer):
     def get_store_info(self, obj):
         return get_store_info(obj.store_name)
 
+class PhysicalStoreImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PhysicalStoreImage
+        fields = ['id', 'image_url', 'created_at']
+
+class PhysicalStoreSerializer(serializers.ModelSerializer):
+    images = PhysicalStoreImageSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = PhysicalStore
+        fields = ['id', 'store_name', 'address', 'latitude', 'longitude', 'phone_number', 'opening_hours', 'map_url', 'images', 'created_at']
+
 class DealSerializer(serializers.ModelSerializer):
     seller = SellerSerializer(read_only=True)
     store_count = serializers.ReadOnlyField()
@@ -32,31 +44,13 @@ class DealSerializer(serializers.ModelSerializer):
     click_count = serializers.ReadOnlyField()
     images = DealImageSerializer(many=True, read_only=True)
     store_links = StoreLinkSerializer(many=True, read_only=True)
+    physical_stores = PhysicalStoreSerializer(many=True, read_only=True)
     
     class Meta:
         model = Deal
         fields = [
             'id', 'title', 'description', 'best_price', 'image', 'main_image', 'images', 
             'seller', 'category', 'location', 'store_count', 'lowest_price', 'highest_price',
-            'price_range', 'click_count', 'store_links', 'status', 'is_published', 'created_at', 'expires_at'
+            'price_range', 'click_count', 'store_links', 'physical_stores', 'status', 'is_published', 'created_at', 'expires_at'
         ]
-        read_only_fields = ['store_count', 'lowest_price', 'highest_price', 'price_range', 'click_count', 'images', 'store_links']
-
-# ClickTrackingSerializer commented out for now
-# class ClickTrackingSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = ClickTracking
-#         fields = ['id', 'store_link', 'user', 'ip_address', 'clicked_at']
-#         read_only_fields = ['clicked_at']
-
-# Voucher serializer commented out for affiliate platform
-# class VoucherSerializer(serializers.ModelSerializer):
-#     deal = DealSerializer(read_only=True)
-#     
-#     class Meta:
-#         model = Voucher
-#         fields = [
-#             'id', 'code', 'deal', 'quantity', 'total_amount', 'status',
-#             'qr_code', 'purchased_at', 'redeemed_at', 'expires_at'
-#         ]
-#         read_only_fields = ['code', 'qr_code', 'purchased_at', 'redeemed_at']
+        read_only_fields = ['store_count', 'lowest_price', 'highest_price', 'price_range', 'click_count', 'images', 'store_links', 'physical_stores']

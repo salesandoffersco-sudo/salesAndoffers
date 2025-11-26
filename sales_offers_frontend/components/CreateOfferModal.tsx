@@ -6,6 +6,7 @@ import { FiX, FiCalendar } from "react-icons/fi";
 import Button from "./Button";
 import DealImageUpload from "./DealImageUpload";
 import StoreLinkManager from "./StoreLinkManager";
+import PhysicalStoreManager from "./PhysicalStoreManager";
 import { api } from "../lib/api";
 
 interface CreateOfferModalProps {
@@ -27,25 +28,26 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
   });
   const [images, setImages] = useState<any[]>([]);
   const [storeLinks, setStoreLinks] = useState<any[]>([]);
+  const [physicalStores, setPhysicalStores] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | {message: string, actionRequired: boolean, redirectUrl: string}>("");
+  const [error, setError] = useState<string | { message: string, actionRequired: boolean, redirectUrl: string }>("");
   const [subscription, setSubscription] = useState<any>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => {
       const updated = { ...prev, [name]: value };
-      
+
       // Auto-calculate discount percentage
       if (name === "original_price" || name === "discounted_price") {
         const original = parseFloat(name === "original_price" ? value : prev.original_price) || 0;
         const discounted = parseFloat(name === "discounted_price" ? value : prev.discounted_price) || 0;
-        
+
         if (original > 0 && discounted > 0) {
           updated.discount_percentage = Math.round(((original - discounted) / original) * 100);
         }
       }
-      
+
       return updated;
     });
   };
@@ -69,10 +71,10 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
         ...formData,
         main_image: images.find(img => img.is_main)?.image_url || images[0]?.image_url || null
       };
-      
+
       const response = await api.post('/api/deals/', dealData);
       const dealId = response.data.id;
-      
+
       // Upload images to the created deal
       if (images.length > 0) {
         for (const image of images) {
@@ -83,7 +85,7 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
           });
         }
       }
-      
+
       // Create store links for the deal
       if (storeLinks.length > 0) {
         for (const store of storeLinks) {
@@ -97,7 +99,49 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
           });
         }
       }
-      
+
+      // Create physical stores for the deal
+      if (physicalStores.length > 0) {
+        for (const store of physicalStores) {
+          const storeResponse = await api.post(`/api/deals/${dealId}/physical-stores/`, {
+            store_name: store.store_name,
+            address: store.address,
+            phone_number: store.phone_number,
+            opening_hours: store.opening_hours,
+            map_url: store.map_url
+          });
+
+          const storeId = storeResponse.data.id;
+
+          // Upload images for this store
+          if (store.imageFiles && store.imageFiles.length > 0) {
+            for (const file of store.imageFiles) {
+              try {
+                // Upload file to get URL
+                const filename = `stores/${dealId}/${storeId}/${Date.now()}-${file.name}`;
+                const uploadResponse = await fetch(`/api/upload?filename=${encodeURIComponent(filename)}`, {
+                  method: 'POST',
+                  body: file,
+                });
+
+                if (uploadResponse.ok) {
+                  const result = await uploadResponse.json();
+                  const imageUrl = result.url;
+
+                  // Link image to physical store
+                  await api.post(`/api/deals/${dealId}/physical-stores/${storeId}/images/`, {
+                    image_url: imageUrl
+                  });
+                }
+              } catch (imgError) {
+                console.error("Error uploading store image:", imgError);
+                // Continue with other images even if one fails
+              }
+            }
+          }
+        }
+      }
+
       onSuccess();
       onClose();
       setFormData({
@@ -112,7 +156,7 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
       });
       setImages([]);
       setStoreLinks([]);
-      setStoreLinks([]);
+      setPhysicalStores([]);
     } catch (err: any) {
       const errorData = err.response?.data;
       if (errorData?.action_required === 'setup_profile') {
@@ -167,8 +211,8 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
                 <div className="space-y-3">
                   <p>{error.message}</p>
                   {error.actionRequired && (
-                    <Button 
-                      variant="primary" 
+                    <Button
+                      variant="primary"
                       size="sm"
                       onClick={() => window.location.href = error.redirectUrl}
                     >
@@ -292,9 +336,23 @@ export default function CreateOfferModal({ isOpen, onClose, onSuccess }: CreateO
           </div>
 
           <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700/50">
-            <StoreLinkManager 
-              storeLinks={storeLinks} 
-              onChange={setStoreLinks} 
+            <StoreLinkManager
+              storeLinks={storeLinks}
+              onChange={setStoreLinks}
+            />
+          </div>
+
+          <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700/50">
+            <StoreLinkManager
+              storeLinks={storeLinks}
+              onChange={setStoreLinks}
+            />
+          </div>
+
+          <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700/50">
+            <PhysicalStoreManager
+              stores={physicalStores}
+              onChange={setPhysicalStores}
             />
           </div>
 

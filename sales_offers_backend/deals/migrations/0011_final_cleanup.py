@@ -11,12 +11,7 @@ class Migration(migrations.Migration):
         # Mark all voucher and clicktracking cleanup as complete without actually doing anything
         migrations.RunSQL(
             """
-            -- This migration does nothing but ensures Django thinks cleanup is complete
-            DO $$ 
-            BEGIN
-                -- Just a no-op to satisfy Django migration system
-                NULL;
-            END $$;
+            SELECT 1;
             """,
             reverse_sql="-- No reverse needed"
         ),

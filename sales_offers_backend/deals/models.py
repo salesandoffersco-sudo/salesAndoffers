@@ -157,3 +157,22 @@ class FeaturedContent(models.Model):
     
     def __str__(self):
         return f"Featured {self.content_type} #{self.object_id}"
+
+class PhysicalStore(models.Model):
+    deal = models.ForeignKey(Deal, on_delete=models.CASCADE, related_name='physical_stores')
+    store_name = models.CharField(max_length=200)
+    address = models.CharField(max_length=500)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    phone_number = models.CharField(max_length=50, blank=True)
+    opening_hours = models.CharField(max_length=200, blank=True)
+    map_url = models.URLField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.store_name} ({self.deal.title})"
+
+class PhysicalStoreImage(models.Model):
+    store = models.ForeignKey(PhysicalStore, on_delete=models.CASCADE, related_name='images')
+    image_url = models.URLField()
+    created_at = models.DateTimeField(auto_now_add=True)
