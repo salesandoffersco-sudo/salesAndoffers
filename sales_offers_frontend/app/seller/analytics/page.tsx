@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  FiTrendingUp, FiDollarSign, FiShoppingBag, FiUsers, 
+import {
+  FiTrendingUp, FiDollarSign, FiShoppingBag, FiUsers,
   FiBarChart, FiPieChart, FiActivity, FiTarget,
   FiArrowUp, FiArrowDown, FiEye, FiRefreshCw, FiDownload
 } from 'react-icons/fi';
@@ -67,9 +67,8 @@ const StatCard = ({ icon: Icon, title, value, change, color, isLoading }: any) =
             <p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
           )}
           {change && (
-            <span className={`ml-2 flex items-center text-sm ${
-              change > 0 ? 'text-green-600' : 'text-red-600'
-            }`}>
+            <span className={`ml-2 flex items-center text-sm ${change > 0 ? 'text-green-600' : 'text-red-600'
+              }`}>
               {change > 0 ? <FiArrowUp className="w-4 h-4" /> : <FiArrowDown className="w-4 h-4" />}
               {Math.abs(change)}%
             </span>
@@ -124,34 +123,19 @@ export default function AnalyticsPage() {
     setMounted(true);
   }, []);
 
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="animate-pulse">
-            <div className="h-8 w-48 bg-gray-200 dark:bg-gray-700 rounded mb-8" />
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-32 bg-gray-200 dark:bg-gray-700 rounded-xl" />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   const fetchAnalytics = async () => {
     try {
-      if (!mounted) return;
-      
+      // We don't need to check mounted here if we control the useEffect correctly, 
+      // but keeping it doesn't hurt logic, though 'mounted' state might not be updated in the closure if not in dependency.
+      // Actually, since we are moving the effect, let's just keep the function definition here.
+
       const token = localStorage?.getItem('token');
       if (!token) {
         setError('Authentication required');
         setLoading(false);
         return;
       }
-      
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://salesandoffers.onrender.com'}/api/deals/analytics/seller/`, {
         headers: {
           'Authorization': `Token ${token}`,
@@ -184,6 +168,23 @@ export default function AnalyticsPage() {
     }
   }, [mounted]);
 
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="animate-pulse">
+            <div className="h-8 w-48 bg-gray-200 dark:bg-gray-700 rounded mb-8" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-32 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
@@ -195,7 +196,7 @@ export default function AnalyticsPage() {
             </div>
             <div className="h-6 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {[...Array(4)].map((_, i) => (
               <StatCard key={i} isLoading={true} />
@@ -410,7 +411,7 @@ export default function AnalyticsPage() {
                     </div>
                     <p className="text-gray-600 dark:text-gray-400">Total Visitors</p>
                   </div>
-                  
+
                   <div className="space-y-3">
                     <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                       <span className="text-gray-700 dark:text-gray-300">Direct Traffic</span>
