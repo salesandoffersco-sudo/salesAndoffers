@@ -17,20 +17,6 @@ export default function TrustIndicators({
 }: TrustIndicatorsProps) {
   const indicators = [
     {
-      icon: FiShield,
-      text: 'Secure Payment',
-      color: 'text-green-600 dark:text-green-400',
-      bgColor: 'bg-green-50 dark:bg-green-900/20',
-      priority: 1
-    },
-    {
-      icon: FiAward,
-      text: 'Verified Business',
-      color: 'text-blue-600 dark:text-blue-400',
-      bgColor: 'bg-blue-50 dark:bg-blue-900/20',
-      priority: 2
-    },
-    {
       icon: FiLock,
       text: 'SSL Protected',
       color: 'text-purple-600 dark:text-purple-400',

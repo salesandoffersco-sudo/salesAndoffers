@@ -40,9 +40,9 @@ export default function UserInfoSidebar({
 }: UserInfoSidebarProps) {
   const formatMemberSince = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long' 
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long'
     });
   };
 
@@ -83,8 +83,8 @@ export default function UserInfoSidebar({
           <div className="relative inline-block mb-4">
             <div className="w-20 h-20 rounded-full overflow-hidden bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mx-auto">
               {user.avatar ? (
-                <img 
-                  src={user.avatar} 
+                <img
+                  src={user.avatar}
                   alt={user.name}
                   className="w-full h-full object-cover"
                 />
@@ -104,10 +104,10 @@ export default function UserInfoSidebar({
               {user.name}
             </h3>
             {user.is_verified && (
-              <VerificationBadge 
-                isVerified={true} 
-                type={user.role === 'seller' ? 'seller' : 'user'} 
-                size="md" 
+              <VerificationBadge
+                isVerified={true}
+                type={user.role === 'seller' ? 'seller' : 'user'}
+                size="md"
               />
             )}
           </div>
@@ -119,8 +119,8 @@ export default function UserInfoSidebar({
           )}
 
           <p className="text-sm text-[rgb(var(--color-muted))]">
-            {user.is_online 
-              ? 'Online now' 
+            {user.is_online
+              ? 'Online now'
               : `Last seen ${formatLastSeen(user.last_seen || '')}`
             }
           </p>
@@ -132,8 +132,8 @@ export default function UserInfoSidebar({
             <div className="flex items-center space-x-3 mb-3">
               <div className="w-12 h-12 rounded-lg overflow-hidden bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0">
                 {user.avatar ? (
-                  <img 
-                    src={user.avatar} 
+                  <img
+                    src={user.avatar}
                     alt={user.business_name}
                     className="w-full h-full object-cover"
                   />
@@ -185,18 +185,18 @@ export default function UserInfoSidebar({
                 <FiBriefcase className="w-4 h-4 mr-2" />
                 Business Details
               </h4>
-              
+
               <div className="space-y-2 text-sm">
                 <div className="flex items-center text-[rgb(var(--color-muted))]">
                   <FiMapPin className="w-4 h-4 mr-2 flex-shrink-0" />
                   <span>{user.location || 'Location not provided'}</span>
                 </div>
-                
+
                 <div className="flex items-center text-[rgb(var(--color-muted))]">
                   <FiClock className="w-4 h-4 mr-2 flex-shrink-0" />
                   <span>Mon-Sat: 8:00 AM - 8:00 PM</span>
                 </div>
-                
+
                 <div className="flex items-center text-[rgb(var(--color-muted))]">
                   <FiMessageCircle className="w-4 h-4 mr-2 flex-shrink-0" />
                   <span>Usually responds within 2 hours</span>
@@ -229,7 +229,7 @@ export default function UserInfoSidebar({
               <div className="flex flex-wrap gap-2">
                 {user.is_verified && (
                   <span className="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-xs font-medium rounded-full">
-                    Verified Business
+                    Verified Seller
                   </span>
                 )}
                 <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs font-medium rounded-full">
@@ -246,13 +246,13 @@ export default function UserInfoSidebar({
                 <FiUser className="w-4 h-4 mr-2" />
                 User Details
               </h4>
-              
+
               <div className="space-y-2 text-sm">
                 <div className="flex items-center text-[rgb(var(--color-muted))]">
                   <FiMapPin className="w-4 h-4 mr-2 flex-shrink-0" />
                   <span>{user.location || 'Location not provided'}</span>
                 </div>
-                
+
                 <div className="flex items-center text-[rgb(var(--color-muted))]">
                   <FiClock className="w-4 h-4 mr-2 flex-shrink-0" />
                   <span>Member since {formatMemberSince(user.member_since || '2024-01-01')}</span>
@@ -268,7 +268,7 @@ export default function UserInfoSidebar({
             <div className="flex items-center space-x-2 mb-2">
               <FiShield className="w-4 h-4 text-green-600" />
               <span className="font-semibold text-green-700 dark:text-green-300">
-                Verified {user.role === 'seller' ? 'Business' : 'User'}
+                Verified {user.role === 'seller' ? 'Seller' : 'User'}
               </span>
             </div>
             <p className="text-sm text-green-600 dark:text-green-400">
@@ -293,7 +293,7 @@ export default function UserInfoSidebar({
             <FiUser className="w-4 h-4 mr-2" />
             View Profile
           </Button>
-          
+
           <Button variant="outline" size="sm" className="w-full text-red-600 border-red-200 hover:bg-red-50 dark:text-red-400 dark:border-red-800 dark:hover:bg-red-900/20">
             <FiFlag className="w-4 h-4 mr-2" />
             Report User
