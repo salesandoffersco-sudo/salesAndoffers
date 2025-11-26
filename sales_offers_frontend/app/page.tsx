@@ -55,8 +55,7 @@ export default function Home() {
         <div className="absolute top-40 left-1/3 w-32 h-32 border-2 border-purple-500/20 dark:border-purple-400/10 rounded-lg rotate-45 animate-spin" style={{ animationDuration: '20s' }}></div>
         <div className="absolute bottom-40 right-1/3 w-24 h-24 border-2 border-blue-500/25 dark:border-blue-400/15 rounded-full animate-ping" style={{ animationDuration: '3s' }}></div>
 
-        {/* iOS/MacOS Blur Overlay */}
-        <div className="absolute inset-0 bg-white/10 dark:bg-black/10" style={{ backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)' }}></div>
+
       </div>
 
       {/* Content */}
