@@ -313,6 +313,7 @@
     @apply bg-[rgb(var(--color-card))] border rounded-3xl shadow-soft;
     border-color: rgb(var(--color-border));
     backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
   }
 
   .card-glow {
@@ -346,6 +347,7 @@
     @apply rounded-3xl border shadow-inner-border;
     background: rgba(204, 204, 204, 0.55);
     backdrop-filter: blur(26px);
+    -webkit-backdrop-filter: blur(26px);
     border-color: rgba(var(--color-border), 0.6);
   }
 
@@ -455,6 +457,7 @@
   .glass-effect {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
   }
 
