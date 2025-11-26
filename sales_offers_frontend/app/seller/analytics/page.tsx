@@ -226,7 +226,7 @@ export default function AnalyticsPage() {
   }
 
   const analytics = data?.analytics;
-  const plan = data?.plan || 'Basic';
+  const plan = (data?.plan && ['Basic', 'Pro', 'Enterprise'].includes(data.plan)) ? data.plan : 'Basic';
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
@@ -433,7 +433,7 @@ export default function AnalyticsPage() {
         )}
 
         {/* Real-Time Analytics - Pro/Enterprise */}
-        {plan !== 'Basic' && (
+        {plan !== 'Basic' && mounted && (
           <div className="mb-8">
             <RealTimeAnalytics plan={plan} />
           </div>
@@ -459,11 +459,13 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Export Modal */}
-      <AnalyticsExport
-        isOpen={showExportModal}
-        onClose={() => setShowExportModal(false)}
-        plan={plan}
-      />
+      {mounted && (
+        <AnalyticsExport
+          isOpen={showExportModal}
+          onClose={() => setShowExportModal(false)}
+          plan={plan}
+        />
+      )}
     </div>
   );
 }
