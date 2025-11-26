@@ -37,6 +37,7 @@ export default function EditOfferModal({ isOpen, onClose, onSuccess, offerId }: 
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(false);
 
+
   useEffect(() => {
     if (isOpen && offerId) {
       fetchOfferData();
@@ -72,6 +73,7 @@ export default function EditOfferModal({ isOpen, onClose, onSuccess, offerId }: 
 
       // Set existing store links
       const existingStoreLinks = (offer.store_links || []).map((link: any) => ({
+        id: link.id,
         store_name: link.store_name,
         store_url: link.store_url,
         price: link.price,
@@ -89,8 +91,6 @@ export default function EditOfferModal({ isOpen, onClose, onSuccess, offerId }: 
         phone_number: store.phone_number,
         opening_hours: store.opening_hours,
         map_url: store.map_url,
-        // We don't load images back into the file input, but we could show them if PhysicalStoreManager supported it
-        // For now, we just load the text data
       }));
       setPhysicalStores(existingPhysicalStores);
 
@@ -128,7 +128,7 @@ export default function EditOfferModal({ isOpen, onClose, onSuccess, offerId }: 
 
           // Upload new images
           for (const image of images) {
-            if (image.id !== -1) { // Skip the legacy main_image entry
+            if (image.id !== -1) {
               await api.post(`/api/deals/${offerId}/images/`, {
                 image_url: image.image_url,
                 is_main: image.is_main,
@@ -142,20 +142,13 @@ export default function EditOfferModal({ isOpen, onClose, onSuccess, offerId }: 
       }
 
       // Update store links - delete existing and create new ones
-      // Ideally we should update existing ones by ID, but for simplicity we recreate
-      // First, get current links to delete them
       try {
-        // Since we don't have IDs in the state for new links, and we want to sync state
-        // We can just delete all associated with the deal and recreate. 
-        // But we don't have a "delete all" endpoint.
-        // We will just create new ones for now as per previous logic, 
-        // but in a real app we should handle this better.
-        // For this task, I will stick to the pattern used in CreateOfferModal which is just creation.
-        // But wait, this is EDIT. We should probably delete old ones first.
-        // The previous code didn't delete, it just added. That causes duplicates.
-        // I'll leave it as is to avoid breaking existing behavior, or try to delete if I can.
-        // The previous code had a comment: "// Note: We'll need a delete endpoint, for now just create new ones"
-        // I will respect that limitation for now.
+        const currentDealResponse = await api.get(`/api/deals/${offerId}/`);
+        const currentStoreLinks = currentDealResponse.data.store_links || [];
+        for (const link of currentStoreLinks) {
+          await api.delete(`/api/deals/${offerId}/store-links/${link.id}/`);
+        }
+
         for (const store of storeLinks) {
           await api.post(`/api/deals/${offerId}/store-links/`, {
             store_name: store.store_name,
@@ -171,33 +164,45 @@ export default function EditOfferModal({ isOpen, onClose, onSuccess, offerId }: 
       }
 
       // Update physical stores
-      // Similar limitation, we'll just add them. 
-      // In a robust implementation, we would diff and update/delete.
-      if (physicalStores.length > 0) {
+      try {
+        const currentDealResponse = await api.get(`/api/deals/${offerId}/`);
+        const currentPhysicalStores = currentDealResponse.data.physical_stores || [];
+        const currentIds = currentPhysicalStores.map((s: any) => s.id);
+        const stateIds = physicalStores.map(s => s.id).filter(id => id !== undefined);
+
+        // 1. Delete removed stores
+        const toDelete = currentIds.filter((id: number) => !stateIds.includes(id));
+        for (const id of toDelete) {
+          await api.delete(`/api/deals/${offerId}/physical-stores/${id}/`);
+        }
+
+        // 2. Update or Create
         for (const store of physicalStores) {
-          // If it has an ID, maybe update? API might support PUT /api/deals/{id}/physical-stores/{store_id}/
-          // But we only implemented POST /api/deals/{id}/physical-stores/
-          // So we will just create new ones.
-          // To avoid duplicates, we should ideally clear old ones.
-          // But without a clear endpoint, we'll just add.
-          // Wait, I implemented DELETE /api/deals/{deal_id}/physical-stores/{pk}/
-          // So I CAN delete old ones if I fetch them first.
+          let storeId = store.id;
 
-          // For now, let's just add the new ones to ensure the feature works.
-          // Refactoring to full sync is out of scope for "adding the feature".
+          if (storeId) {
+            // Update existing
+            await api.patch(`/api/deals/${offerId}/physical-stores/${storeId}/`, {
+              store_name: store.store_name,
+              address: store.address,
+              phone_number: store.phone_number,
+              opening_hours: store.opening_hours,
+              map_url: store.map_url
+            });
+          } else {
+            // Create new
+            const storeResponse = await api.post(`/api/deals/${offerId}/physical-stores/`, {
+              store_name: store.store_name,
+              address: store.address,
+              phone_number: store.phone_number,
+              opening_hours: store.opening_hours,
+              map_url: store.map_url
+            });
+            storeId = storeResponse.data.id;
+          }
 
-          const storeResponse = await api.post(`/api/deals/${offerId}/physical-stores/`, {
-            store_name: store.store_name,
-            address: store.address,
-            phone_number: store.phone_number,
-            opening_hours: store.opening_hours,
-            map_url: store.map_url
-          });
-
-          const storeId = storeResponse.data.id;
-
-          // Upload images for this store
-          if (store.imageFiles && store.imageFiles.length > 0) {
+          // Upload images (only if new files selected)
+          if (storeId && store.imageFiles && store.imageFiles.length > 0) {
             for (const file of store.imageFiles) {
               try {
                 const filename = `stores/${offerId}/${storeId}/${Date.now()}-${file.name}`;
@@ -219,6 +224,8 @@ export default function EditOfferModal({ isOpen, onClose, onSuccess, offerId }: 
             }
           }
         }
+      } catch (physError) {
+        console.error('Error updating physical stores:', physError);
       }
 
       onSuccess();
