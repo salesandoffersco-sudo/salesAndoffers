@@ -46,7 +46,7 @@ class Deal(models.Model):
     
     @property
     def store_count(self):
-        return self.store_links.filter(is_available=True).count()
+        return self.store_links.filter(is_available=True).count() + self.physical_stores.count()
     
     @property
     def lowest_price(self):

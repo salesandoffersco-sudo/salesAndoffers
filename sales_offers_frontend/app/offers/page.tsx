@@ -386,9 +386,9 @@ export default function OffersPage() {
                                     <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                                       {offer.price_range || `KES ${offer.discounted_price}`}
                                     </span>
-                                    {(offer.store_count || 0) + (offer.physical_stores?.length || 0) > 0 && (
+                                    {offer.store_count && (
                                       <span className="bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 px-2 py-1 rounded-full text-xs font-semibold">
-                                        {(offer.store_count || 0) + (offer.physical_stores?.length || 0)} store{((offer.store_count || 0) + (offer.physical_stores?.length || 0)) !== 1 ? 's' : ''}
+                                        {offer.store_count} store{offer.store_count !== 1 ? 's' : ''}
                                       </span>
                                     )}
                                   </div>
@@ -509,9 +509,9 @@ export default function OffersPage() {
                           <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                             {offer.price_range || `KES ${offer.discounted_price}`}
                           </span>
-                          {(offer.store_count || 0) + (offer.physical_stores?.length || 0) > 0 && (
+                          {offer.store_count && (
                             <span className="bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 px-3 py-1 rounded-full text-sm font-semibold">
-                              {(offer.store_count || 0) + (offer.physical_stores?.length || 0)} store{((offer.store_count || 0) + (offer.physical_stores?.length || 0)) !== 1 ? 's' : ''}
+                              {offer.store_count} store{offer.store_count !== 1 ? 's' : ''}
                             </span>
                           )}
                         </div>
