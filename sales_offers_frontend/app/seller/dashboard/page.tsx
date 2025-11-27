@@ -85,7 +85,7 @@ export default function SellerDashboardPage() {
       const [plansRes, statsRes, offersRes] = await Promise.all([
         api.get('/api/sellers/subscription-plans/'),
         api.get('/api/sellers/stats/'),
-api.get('/api/sellers/offers/')
+        api.get('/api/sellers/offers/')
       ]);
 
       setPlans(plansRes.data);
@@ -105,10 +105,10 @@ api.get('/api/sellers/offers/')
         {/* Animated Background */}
         <div className="absolute inset-0">
           <div className="absolute top-0 left-0 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute top-20 right-0 w-96 h-96 bg-blue-300/20 rounded-full blur-3xl animate-bounce" style={{animationDuration: '3s'}}></div>
-          <div className="absolute bottom-0 left-1/3 w-80 h-80 bg-purple-300/15 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
+          <div className="absolute top-20 right-0 w-96 h-96 bg-blue-300/20 rounded-full blur-3xl animate-bounce" style={{ animationDuration: '3s' }}></div>
+          <div className="absolute bottom-0 left-1/3 w-80 h-80 bg-purple-300/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
         </div>
-        
+
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
             <div>
@@ -126,7 +126,7 @@ api.get('/api/sellers/offers/')
             {stats.subscription.can_create_offers ? (
               <Button variant="outline" className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20" onClick={() => setShowCreateModal(true)}>
                 <FiPlus className="w-5 h-5 mr-2" />
-Create Deal
+                Create Deal
               </Button>
             ) : (
               <Link href="/pricing">
@@ -208,7 +208,7 @@ Create Deal
               </div>
             </div>
           </Link>
-          
+
           <Link href="/seller/analytics" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-4 sm:p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div className="min-w-0 flex-1 pr-3">
@@ -220,7 +220,7 @@ Create Deal
               </div>
             </div>
           </Link>
-          
+
           <Link href="/seller/offers" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-4 sm:p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div className="min-w-0 flex-1 pr-3">
@@ -232,7 +232,7 @@ Create Deal
               </div>
             </div>
           </Link>
-          
+
           <Link href="/seller/reviews" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-4 sm:p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div className="min-w-0 flex-1 pr-3">
@@ -244,7 +244,7 @@ Create Deal
               </div>
             </div>
           </Link>
-          
+
           <Link href="/seller/commissions" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-4 sm:p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div className="min-w-0 flex-1 pr-3">
@@ -256,7 +256,7 @@ Create Deal
               </div>
             </div>
           </Link>
-          
+
           <Link href="/seller/notifications" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-4 sm:p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div className="min-w-0 flex-1 pr-3">
@@ -268,7 +268,7 @@ Create Deal
               </div>
             </div>
           </Link>
-          
+
           <Link href="/seller/settings" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-4 sm:p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div className="min-w-0 flex-1 pr-3">
@@ -280,7 +280,7 @@ Create Deal
               </div>
             </div>
           </Link>
-          
+
           <Link href="/pricing" className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-4 sm:p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div className="min-w-0 flex-1 pr-3">
@@ -356,11 +356,11 @@ Create Deal
           <div className="bg-[rgb(var(--color-card))] rounded-xl shadow-sm border border-[rgb(var(--color-border))] p-6">
             <h3 className="text-lg font-semibold text-[rgb(var(--color-fg))] mb-4">Quick Actions</h3>
             <div className="space-y-3">
-              <Link href="/seller/analytics" className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
+              {/* <Link href="/seller/analytics" className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
                 <FiBarChart className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 <span className="text-blue-600 dark:text-blue-400 font-medium">View Full Analytics</span>
-              </Link>
-              <button 
+              </Link> */}
+              <button
                 onClick={() => setShowCreateModal(true)}
                 className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors w-full text-left"
               >
@@ -399,7 +399,7 @@ Create Deal
       </div>
 
       {stats.subscription.can_create_offers && (
-        <CreateOfferModal 
+        <CreateOfferModal
           isOpen={showCreateModal}
           onClose={() => setShowCreateModal(false)}
           onSuccess={() => {
