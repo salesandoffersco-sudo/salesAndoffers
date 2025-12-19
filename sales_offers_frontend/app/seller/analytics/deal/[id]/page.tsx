@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { 
-  FiArrowLeft, FiDollarSign, FiShoppingBag, FiTarget, 
+import {
+  FiArrowLeft, FiDollarSign, FiShoppingBag, FiTarget,
   FiTrendingUp, FiClock, FiStar, FiUsers, FiBarChart
 } from 'react-icons/fi';
 
@@ -55,7 +55,7 @@ export default function DealAnalyticsPage() {
   const params = useParams();
   const router = useRouter();
   const dealId = params.id;
-  
+
   const [data, setData] = useState<DealAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -64,7 +64,7 @@ export default function DealAnalyticsPage() {
     const fetchDealAnalytics = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://salesandoffers.onrender.com'}/api/deals/analytics/deal/${dealId}/`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://offersandsales.co.ke'}/api/deals/analytics/deal/${dealId}/`, {
           headers: {
             'Authorization': `Token ${token}`,
             'Content-Type': 'application/json',
@@ -191,7 +191,7 @@ export default function DealAnalyticsPage() {
                 {data.daily_clicks.slice(-14).map((day, index) => {
                   const maxClicks = Math.max(...data.daily_clicks!.map(d => d.clicks));
                   const height = maxClicks > 0 ? (day.clicks / maxClicks) * 100 : 0;
-                  
+
                   return (
                     <motion.div
                       key={day.date}
@@ -234,7 +234,7 @@ export default function DealAnalyticsPage() {
                     Total Partner Stores
                   </p>
                 </div>
-                
+
                 <div className="space-y-3">
                   <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <span className="text-gray-700 dark:text-gray-300">Best Performing</span>
@@ -293,11 +293,11 @@ export default function DealAnalyticsPage() {
             <div>
               <h4 className="font-semibold mb-2">Performance Analysis</h4>
               <p className="text-blue-100">
-                {data.click_through_rate > 5 
+                {data.click_through_rate > 5
                   ? "Excellent click-through rate! Your deal is highly engaging."
                   : data.click_through_rate > 2
-                  ? "Good performance. Consider optimizing deal presentation to boost clicks."
-                  : "Low click-through rate. Review your deal title, description, and pricing."
+                    ? "Good performance. Consider optimizing deal presentation to boost clicks."
+                    : "Low click-through rate. Review your deal title, description, and pricing."
                 }
               </p>
             </div>

@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { 
-  FiTrendingUp, FiDollarSign, FiShoppingBag, FiEye, 
+import {
+  FiTrendingUp, FiDollarSign, FiShoppingBag, FiEye,
   FiArrowUp, FiArrowDown, FiBarChart, FiChevronRight
 } from 'react-icons/fi';
 
@@ -55,7 +55,7 @@ export default function AnalyticsWidget({ className = '' }: AnalyticsWidgetProps
     const fetchAnalyticsPreview = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://salesandoffers.onrender.com'}/api/sellers/stats/`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://offersandsales.co.ke'}/api/sellers/stats/`, {
           headers: {
             'Authorization': `Token ${token}`,
             'Content-Type': 'application/json',
@@ -118,7 +118,7 @@ export default function AnalyticsWidget({ className = '' }: AnalyticsWidgetProps
               <p className="text-sm text-gray-600 dark:text-gray-400">Your click performance at a glance</p>
             </div>
           </div>
-          <Link 
+          <Link
             href="/seller/analytics"
             className="flex items-center gap-1 text-blue-600 hover:text-blue-700 text-sm font-medium"
           >
@@ -137,14 +137,14 @@ export default function AnalyticsWidget({ className = '' }: AnalyticsWidgetProps
           change={data?.growth}
           color="bg-green-500"
         />
-        
+
         <MiniStatCard
           icon={FiBarChart}
           label="Total Clicks"
           value={data?.totalClicks || 0}
           color="bg-blue-500"
         />
-        
+
         {data?.plan !== 'Basic' && (
           <MiniStatCard
             icon={FiTrendingUp}
@@ -171,7 +171,7 @@ export default function AnalyticsWidget({ className = '' }: AnalyticsWidgetProps
             <p className="text-xs text-purple-700 dark:text-purple-400 mb-3">
               Get detailed insights, click tracking, and commission analytics
             </p>
-            <Link 
+            <Link
               href="/pricing"
               className="inline-flex items-center gap-1 text-xs font-medium text-purple-600 hover:text-purple-700"
             >
@@ -185,7 +185,7 @@ export default function AnalyticsWidget({ className = '' }: AnalyticsWidgetProps
       {/* Quick Actions */}
       <div className="p-6 pt-0">
         <div className="grid grid-cols-2 gap-3">
-          <Link 
+          <Link
             href="/seller/analytics"
             className="flex items-center justify-center gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors text-sm font-medium"
           >
