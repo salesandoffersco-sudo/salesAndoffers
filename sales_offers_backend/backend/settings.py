@@ -86,24 +86,10 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 # Database configuration
 # Database configuration
-# Fallback URL for when Render injects the wrong one (eu-west-1 instead of eu-central-1)
-CORRECT_DB_URL = "postgresql://postgres.snoihkpyoqrffgvkinav:$Sales123Offers$@aws-0-eu-central-1.pooler.supabase.com:6543/postgres"
-
-if os.environ.get('SUPABASE_DATABASE_URL'):
-    db_url = os.environ.get('SUPABASE_DATABASE_URL')
-elif os.environ.get('DATABASE_URL'):
-    current_url = os.environ.get('DATABASE_URL')
-    # If Render is injecting the old/wrong region URL, force the correct one
-    if 'eu-west-1' in current_url:
-        db_url = CORRECT_DB_URL
-    else:
-        db_url = current_url
-else:
-    db_url = None
-
-if db_url:
+if os.environ.get('SUPABASE_DATABASE_URL') or os.environ.get('DATABASE_URL'):
     # Production database (Supabase PostgreSQL)
     import dj_database_url
+    db_url = os.environ.get('SUPABASE_DATABASE_URL', os.environ.get('DATABASE_URL'))
     DATABASES = {
         'default': dj_database_url.parse(db_url)
     }
