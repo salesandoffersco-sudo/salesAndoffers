@@ -28,17 +28,17 @@ export default function RegisterPage() {
 
   useEffect(() => {
     const checkTheme = () => {
-      const isDark = document.documentElement.classList.contains('dark') || 
-                    localStorage.getItem('theme') === 'dark' ||
-                    (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      const isDark = document.documentElement.classList.contains('dark') ||
+        localStorage.getItem('theme') === 'dark' ||
+        (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
       setIsDarkMode(isDark);
     };
 
     checkTheme();
-    
+
     const observer = new MutationObserver(checkTheme);
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    
+
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     mediaQuery.addEventListener('change', checkTheme);
 
@@ -75,11 +75,11 @@ export default function RegisterPage() {
 
     try {
       const response = await axios.post(`${API_BASE_URL}/api/accounts/register/`, formData);
-      
+
       // Show success message instead of auto-login
       setError("");
       setLoading(false);
-      
+
       // Redirect to login with success message
       router.push("/login?message=Please check your email to verify your account before logging in.");
     } catch (err: any) {
@@ -102,12 +102,13 @@ export default function RegisterPage() {
               <Image
                 src="/images/sales_and_offers_logo.svg"
                 alt="Sales & Offers"
-                width={200}
-                height={32}
+                width={317}
+                height={50}
+                unoptimized
                 className="h-8 w-auto mx-auto mb-4"
-                style={{ 
-                  filter: isDarkMode 
-                    ? 'brightness(0) saturate(100%) invert(89%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(89%) contrast(89%)' 
+                style={{
+                  filter: isDarkMode
+                    ? 'brightness(0) saturate(100%) invert(89%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(89%) contrast(89%)'
                     : 'brightness(0) saturate(100%) invert(9%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(9%) contrast(89%)'
                 }}
               />
