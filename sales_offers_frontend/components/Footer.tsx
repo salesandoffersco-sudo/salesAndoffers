@@ -14,18 +14,18 @@ export default function Footer() {
   useEffect(() => {
     // Check theme
     const checkTheme = () => {
-      const isDark = document.documentElement.classList.contains('dark') || 
-                    localStorage.getItem('theme') === 'dark' ||
-                    (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      const isDark = document.documentElement.classList.contains('dark') ||
+        localStorage.getItem('theme') === 'dark' ||
+        (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
       setIsDarkMode(isDark);
     };
 
     checkTheme();
-    
+
     // Listen for theme changes
     const observer = new MutationObserver(checkTheme);
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    
+
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     mediaQuery.addEventListener('change', checkTheme);
 
@@ -86,16 +86,16 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto" style={{ paddingLeft: '16px', paddingRight: '16px' }}>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-1">
-            <div style={{ marginBottom: '1rem', width: 'fit-content' }}>
+            <div style={{ marginBottom: '1rem', width: 'fit-content', minWidth: '180px' }}>
               <Image
                 src="/images/sales_and_offers_logo.svg"
                 alt="Sales & Offers Logo"
-                width={280}
-                height={44}
+                width={317}
+                height={50}
                 className="h-5 w-auto sm:h-8"
-                style={{ 
-                  filter: isDarkMode 
-                    ? 'brightness(0) saturate(100%) invert(89%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(89%) contrast(89%)' 
+                style={{
+                  filter: isDarkMode
+                    ? 'brightness(0) saturate(100%) invert(89%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(89%) contrast(89%)'
                     : 'brightness(0) saturate(100%) invert(9%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(9%) contrast(89%)'
                 }}
               />
