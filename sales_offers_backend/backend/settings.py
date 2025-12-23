@@ -85,11 +85,12 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 # Database configuration
-if os.environ.get('DATABASE_URL'):
+if os.environ.get('SUPABASE_DATABASE_URL') or os.environ.get('DATABASE_URL'):
     # Production database (Supabase PostgreSQL)
     import dj_database_url
+    db_url = os.environ.get('SUPABASE_DATABASE_URL', os.environ.get('DATABASE_URL'))
     DATABASES = {
-        'default': dj_database_url.parse(os.environ.get('DATABASE_URL'))
+        'default': dj_database_url.parse(db_url)
     }
 else:
     # Development database (SQLite)
