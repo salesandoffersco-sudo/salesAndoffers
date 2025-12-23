@@ -53,7 +53,7 @@ def seller_analytics(request):
                         'clicks': deal.click_count or 0,
                         'commission': (deal.click_count or 0) * 0.03
                     }
-                    for deal in active_deals.order_by('-click_count')[:5]
+                    for deal in sorted(active_deals, key=lambda d: d.click_count, reverse=True)[:5]
                 ],
                 'daily_clicks_chart': [
                     {
