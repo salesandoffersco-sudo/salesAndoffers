@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 316.74 49.85">
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 316.74 49.85" preserveAspectRatio="xMidYMid meet">
   <defs>
     <style>
       .cls-1 {
@@ -7,19 +7,12 @@
       }
 
       .cls-1, .cls-2, .cls-3 {
-        fill: #e2e2e2;
+        fill: currentColor;
       }
 
       .cls-1, .cls-3 {
-        stroke: #e2e2e2;
+        stroke: currentColor;
         stroke-miterlimit: 10;
-      }
-
-      .cls-2 {
-        font-family: Lato-Italic, Lato;
-        font-size: 40px;
-        font-style: italic;
-        letter-spacing: 0em;
       }
     </style>
   </defs>
@@ -32,6 +25,8 @@
     <polygon class="cls-1" points="8.88 32.02 9.93 32.55 9.93 41.3 9.4 41.82 8.88 41.3 8.88 32.02"/>
     <polygon class="cls-1" points="5.38 32.55 5.9 32.03 6.43 32.55 6.43 41.3 5.9 41.82 5.38 41.3 5.38 32.55"/>
     <rect class="cls-1" x="12.38" y="32.02" width=".7" height="9.81"/>
-    <text class="cls-2" transform="translate(67.22 39.85)"><tspan x="0" y="0">SalesAndOffers</tspan></text>
+    <g class="cls-2" style="font-family: Lato, sans-serif; font-size: 40px; font-style: italic; letter-spacing: 0em;">
+      <text transform="translate(67.22 39.85)"><tspan x="0" y="0">SalesAndOffers</tspan></text>
+    </g>
   </g>
 </svg>

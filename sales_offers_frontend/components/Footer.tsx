@@ -92,6 +92,7 @@ export default function Footer() {
                 alt="Sales & Offers Logo"
                 width={317}
                 height={50}
+                unoptimized
                 className="h-5 w-auto sm:h-8"
                 style={{
                   filter: isDarkMode
