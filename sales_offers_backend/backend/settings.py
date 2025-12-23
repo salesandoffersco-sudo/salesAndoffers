@@ -87,27 +87,10 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database configuration
 # Database configuration
 # Database configuration
-# Use Supabase Pooler (Transaction Mode, Port 6543) to avoid IPv6/Network Unreachable errors on Render
-# and to ensure IPv4 compatibility.
-KNOWN_CORRECT_DB_URL = "postgresql://postgres.snoihkpyoqrffgvkinav:$Sales123Offers$@aws-0-eu-central-1.pooler.supabase.com:6543/postgres"
-
-if os.environ.get('SUPABASE_DATABASE_URL'):
-    db_url = os.environ.get('SUPABASE_DATABASE_URL')
-elif os.environ.get('DATABASE_URL'):
-    # Check if DATABASE_URL is pointing to the wrong port (5432) which might cause IPv6 issues
-    current_url = os.environ.get('DATABASE_URL')
-    if ':5432' in current_url and 'supabase' in current_url:
-        # Force upgrade to pooler port 6543 and correct host if needed
-        db_url = KNOWN_CORRECT_DB_URL
-    else:
-        db_url = current_url
-else:
-    # Fallback if no env vars are set (e.g. local dev without .env, though unlikely on Render)
-    db_url = KNOWN_CORRECT_DB_URL
-
-if db_url:
+if os.environ.get('SUPABASE_DATABASE_URL') or os.environ.get('DATABASE_URL'):
     # Production database (Supabase PostgreSQL)
     import dj_database_url
+    db_url = os.environ.get('SUPABASE_DATABASE_URL', os.environ.get('DATABASE_URL'))
     DATABASES = {
         'default': dj_database_url.parse(db_url)
     }
