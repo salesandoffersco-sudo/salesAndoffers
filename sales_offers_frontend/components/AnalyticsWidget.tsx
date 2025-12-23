@@ -55,7 +55,7 @@ export default function AnalyticsWidget({ className = '' }: AnalyticsWidgetProps
     const fetchAnalyticsPreview = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://offersandsales.co.ke'}/api/sellers/stats/`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://salesandoffers.net'}/api/sellers/stats/`, {
           headers: {
             'Authorization': `Token ${token}`,
             'Content-Type': 'application/json',

@@ -64,7 +64,7 @@ export default function DealAnalyticsPage() {
     const fetchDealAnalytics = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://offersandsales.co.ke'}/api/deals/analytics/deal/${dealId}/`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://salesandoffers.net'}/api/deals/analytics/deal/${dealId}/`, {
           headers: {
             'Authorization': `Token ${token}`,
             'Content-Type': 'application/json',

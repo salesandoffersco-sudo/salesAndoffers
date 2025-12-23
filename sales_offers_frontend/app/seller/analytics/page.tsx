@@ -136,7 +136,7 @@ export default function AnalyticsPage() {
         return;
       }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://offersandsales.co.ke'}/api/deals/analytics/seller/`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://salesandoffers.net'}/api/deals/analytics/seller/`, {
         headers: {
           'Authorization': `Token ${token}`,
           'Content-Type': 'application/json',

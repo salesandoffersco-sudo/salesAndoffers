@@ -18,7 +18,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-your-secret-key-here-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,salesandoffers.onrender.com,offersandsales.co.ke,www.offersandsales.co.ke').split(',')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,salesandoffers.onrender.com,offersandsales.co.ke,www.offersandsales.co.ke,salesandoffers.net,www.salesandoffers.net').split(',')
 
 
 # Application definition
@@ -159,6 +159,8 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:3000',
     'https://offersandsales.co.ke',
     'https://www.offersandsales.co.ke',
+    'https://salesandoffers.net',
+    'https://www.salesandoffers.net',
 ]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = DEBUG  # Allow all origins in debug mode
@@ -183,6 +185,8 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
     'https://offersandsales.co.ke',
     'https://www.offersandsales.co.ke',
+    'https://salesandoffers.net',
+    'https://www.salesandoffers.net',
 ]
 
 # REST Framework Settings
