@@ -31,7 +31,7 @@ const MiniStatCard = ({ icon: Icon, label, value, change, color }: any) => (
   >
     <div className="flex items-center gap-3">
       <div className={`p-2 rounded-lg ${color}`}>
-        <Icon className="w-4 h-4 text-white" />
+        {Icon && <Icon className="w-4 h-4 text-white" />}
       </div>
       <div>
         <p className="text-xs text-gray-600 dark:text-gray-400">{label}</p>

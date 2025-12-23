@@ -45,7 +45,7 @@ const StatCard = ({ icon: Icon, title, value, subtitle, color }: any) => (
         )}
       </div>
       <div className={`p-3 rounded-lg ${color}`}>
-        <Icon className="w-6 h-6 text-white" />
+        {Icon && <Icon className="w-6 h-6 text-white" />}
       </div>
     </div>
   </motion.div>
